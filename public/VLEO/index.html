@@ -613,7 +613,7 @@
       <div class="copy">
         <h2>Section 2 · The power-limited floor</h2>
         <h3>Your budget sets the lowest altitude you can hold.</h3>
-        <p>A <strong>1.6 kW</strong> bus with <strong>0.8 kW</strong> for payload leaves <strong>0.8 kW</strong> for thrusters. Where that line meets the demand curve – around <strong>205 km</strong> – is your practical limit.</p>
+        <p>A <strong>1.6 kW</strong> bus with <strong>0.8 kW</strong> for payload leaves <strong>0.8 kW</strong> for thrusters. Where that line meets the demand curve – around <strong>208 km</strong> – is your practical limit.</p>
         <p>Going lower means more solar or more battery. Both add drag and mass – fighting the goal.</p>
       </div>
       <div class="visual">
@@ -873,11 +873,11 @@
 
         <p style="margin:0 0 6px;"><b>Assumption values</b></p>
         <ul style="margin:0; padding-left:20px;">
-          <li><b>Orbital velocity:</b> v = 7.8 km/s, held constant. v varies ~2.4% (7.83 → 7.64 km/s) over 130–450 km, dwarfed by the &gt;100× density variation that dominates drag.</li>
+          <li><b>Orbital velocity:</b> v = 7.8 km/s, held constant. v varies ~2.4% (7.83 → 7.64 km/s) over 130–450 km, dwarfed by the ~2000× density variation that dominates drag.</li>
           <li><b>Solar flux:</b> S = 1361 W/m² — total solar irradiance, Kopp &amp; Lean (2011) SORCE/TIM. <b>PV efficiency:</b> η<sub>PV</sub> = 30% (triple-junction GaAs, e.g. Spectrolab XTJ Prime).</li>
           <li><b>Generic-panel receiver:</b> η<sub>receiver</sub> = 25%, A<sub>rcv</sub> = 0 (beam onto the existing array). Representative of Si/III–V single-wavelength response.</li>
           <li><b>Specialised receiver:</b> η<sub>receiver</sub> = 60%, A<sub>rcv</sub> = 0.3 m² × (1 + δ<sub>drag</sub>/100) (the slider adds a C<sub>d</sub> penalty). Consistent with reported wavelength-tuned PV demonstrations (Steinsiek et al.; LaserMotive).</li>
-          <li><b>Calibration benchmark:</b> P<sub>thr</sub> calibrated on the VLEO drag–power data summarised in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>. Exact at 200 km on the reference 2 m² platform; ~10.7% low at 150 km, ~6.7% low at 250 km against the published points.</li>
+          <li><b>Calibration benchmark:</b> P<sub>thr</sub> calibrated on the VLEO drag–power data summarised in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>. On the reference 2 m² platform the model gives 4 kW at 150 km, 1 kW at 200 km, and 280 W at 250 km — matching Crisp's 4 kW / 1 kW / 300 W reference points to within 7%. Interpolated densities between anchors agree with NRLMSISE-00 nominal values to within ~20%.</li>
         </ul>
       </div>
     </details>
@@ -1011,10 +1011,11 @@
   // ======== shared physics ========
   // Thruster power to maintain orbit against drag:
   //   P(h, A) = K * rho(h) * v² * A
-  // K is calibrated so P(200 km, 2 m²) = 1000 W, matching Crisp et al. (2020)
-  // reference VLEO data to within a few percent across 150–250 km.
+  // K is calibrated so P(200 km, 2 m²) = 1000 W; combined with the atmosphere
+  // spline below this reproduces Crisp et al. (2020) reference points (4 kW at
+  // 150 km, 1 kW at 200 km, 300 W at 250 km) to within 7%.
   const K_THRUST  = 32873;   // calibrated; W·m/(kg·m²) after grouping constants
-  const V_ORB     = 7800;    // m/s, treated as constant (varies <2% across 150–350 km)
+  const V_ORB     = 7800;    // m/s, treated as constant (varies ~2.4% across 130–450 km)
   const REF_AREA  = 2;       // m², reference platform frontal area for story/narrative charts
 
   // Atmospheric density (kg/m³). Anchors: 150–250 km reproduce Crisp et al.'s
