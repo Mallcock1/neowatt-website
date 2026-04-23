@@ -13,7 +13,14 @@ export default defineConfig({
         // Serve public/VLEO/index.html for /VLEO/ and /VLEO in the dev server.
         // In production, Vite copies public/ to dist/ and the host serves it correctly.
         server.middlewares.use((req, res, next) => {
-          if (req.url === "/VLEO/" || req.url === "/VLEO") {
+          // Redirect /VLEO → /VLEO/ so relative URLs (logo, etc.) resolve correctly
+          if (req.url === "/VLEO") {
+            res.statusCode = 301;
+            res.setHeader("Location", "/VLEO/");
+            res.end();
+            return;
+          }
+          if (req.url === "/VLEO/") {
             const file = path.resolve(__dirname, "public/VLEO/index.html");
             res.setHeader("Content-Type", "text/html");
             res.end(fs.readFileSync(file));

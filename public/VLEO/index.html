@@ -398,8 +398,8 @@
   }
 
   /* ---- schematic SVG ---- */
-  #schematic-wrap, #schematic-story { width: 100%; }
-  #schematic, #schematic-s { width: 100%; height: 300px; display: block; }
+  #schematic-wrap { width: 100%; }
+  #schematic { width: 100%; height: 300px; display: block; }
 
   .chart-wrap { position: relative; height: 320px; }
 
@@ -550,7 +550,7 @@
     section.story .copy h3 { font-size: 24px; }
     .summary { grid-template-columns: 1fr; }
     .summary .kpi .kval { font-size: 28px; }
-    #schematic, #schematic-s { height: 220px; }
+    #schematic { height: 220px; }
   }
 </style>
 </head>
@@ -582,7 +582,7 @@
       </div>
       <div class="q">
         <div class="qnum">Capability 2</div>
-        <div class="qtxt"><b>Longer eclipse runtime.</b> Sustain payload through the umbra.</div>
+        <div class="qtxt"><b>Longer eclipse runtime.</b> Sustain payload through the eclipse.</div>
       </div>
       <div class="q">
         <div class="qnum">Capability 3</div>
@@ -599,11 +599,6 @@
         <h3>Thruster power scales steeply with altitude.</h3>
         <p>Drag rises sharply as you descend into VLEO, and thruster power follows – from ~300 W at 250 km to ~4 kW at 150 km. An order of magnitude in 100 km.</p>
         <p>For a fixed power budget, that curve is a hard altitude floor.</p>
-        <div class="stats">
-          <div class="stat"><div class="n">~300 W</div><div class="l">at 250 km</div></div>
-          <div class="stat"><div class="n">~1 kW</div><div class="l">at 200 km</div></div>
-          <div class="stat"><div class="n">~4 kW</div><div class="l">at 150 km</div></div>
-        </div>
       </div>
       <div class="visual">
         <h4>Thruster power vs altitude</h4>
@@ -649,7 +644,7 @@
     <div class="inner flip">
       <div class="copy">
         <h2>Section 4 · Through eclipse</h2>
-        <h3>Longer payload duty cycle in the umbra.</h3>
+        <h3>Longer payload duty cycle in the eclipse.</h3>
         <p>In eclipse, payload draw comes from batteries. High-power instruments – IR, radar, active comms – drain capacity fast. Beamed power from a transmitter still in sunlight cuts the net battery drain.</p>
         <p>VLEO eclipses last <strong>30–35 min</strong>. A partial supplement is the difference between a curtailed and a complete pass.</p>
       </div>
@@ -679,39 +674,16 @@
     <div class="inner">
       <div class="copy">
         <h2>Section 5 · Breaking the death spiral</h2>
-        <h3>A larger bus, without the feedback loop.</h3>
+        <h3>A larger bus, without the engineering cascade.</h3>
         <p>Bigger bus → more drag → more power required → bigger solar array → more drag → more power required → …</p>
-        <p>Beamed power lands on the bus <strong>without adding drag</strong> (or via a small dome – a fraction of an array's footprint). It's the only input that breaks the loop.</p>
+        <p>Beamed power lands on the bus <strong>without adding drag</strong> (or via a small receiver – a fraction of an array's footprint). It's the only input that breaks the loop.</p>
         <p>The result: more sustainable payload at every altitude, and feasibility where the loop otherwise rules you out.</p>
       </div>
       <div class="visual">
         <h4>Sustainable payload power vs altitude</h4>
         <div class="chart-wrap"><canvas id="storyChart4"></canvas></div>
         <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
-          Steady-state solver: array sized to balance drag, payload = remaining headroom. Bus body 0.5 m², array 4 m², beam 0.3 kW delivered.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 6: receiver trade -->
-  <section class="story">
-    <div class="inner">
-      <div class="copy">
-        <h2>Section 6 · Receiver options</h2>
-        <h3>Generic panel, or specialised dome?</h3>
-        <p><strong>Generic panel</strong> – beam onto your existing array. No new hardware, no extra drag. ~<strong>25%</strong> efficiency, narrow acceptance (~±30°).</p>
-        <p><strong>Specialised dome</strong> – optimised for the laser wavelength. ~<strong>60%</strong> efficiency, wider acceptance (~±75°). Adds a small aperture to the slipstream.</p>
-        <p>The drag question depends on geometry: the smaller solar array enabled by beamed power often more than offsets the dome.</p>
-      </div>
-      <div class="visual">
-        <h4>Receiver geometry</h4>
-        <div id="schematic-story">
-          <svg id="schematic-s" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"></svg>
-        </div>
-        <div class="toggle-group" style="margin-top:14px;" id="rxToggleStory">
-          <button type="button" data-rx="generic" class="active">Generic panel</button>
-          <button type="button" data-rx="specialised">Specialised receiver</button>
+          Payload power = solar + beamed − power lost to drag. Example: 4 m² array, 0.5 m² bus, 0.3 kW delivered.
         </div>
       </div>
     </div>
@@ -738,63 +710,62 @@
     </div>
     <div class="rx-info">
       <span>Efficiency: <b id="rxEff">25%</b></span>
-      <span>Acceptance: <b id="rxAng">±30°</b></span>
     </div>
 
     <h2>Satellite &amp; orbit</h2>
 
     <div class="control">
       <div class="control-head"><label>Target altitude</label><span class="value"><span id="altVal">200</span> km</span></div>
-      <input type="range" id="alt" min="150" max="350" step="5" value="200">
+      <input type="range" id="alt" min="130" max="450" step="5" value="200">
     </div>
 
     <div class="control">
       <div class="control-head"><label>Power budget</label><span class="value"><span id="budVal">1.60</span> kW</span></div>
-      <input type="range" id="bud" min="0.5" max="5" step="0.1" value="1.6">
+      <input type="range" id="bud" min="0.1" max="15" step="0.1" value="1.6">
     </div>
 
     <div class="control">
       <div class="control-head"><label>Payload draw</label><span class="value"><span id="payVal">0.80</span> kW</span></div>
-      <input type="range" id="pay" min="0" max="2" step="0.05" value="0.8">
+      <input type="range" id="pay" min="0" max="10" step="0.1" value="0.8">
     </div>
 
     <div class="control">
       <div class="control-head"><label>Solar array area</label><span class="value"><span id="arrVal">4.0</span> m²</span></div>
-      <input type="range" id="arr" min="1" max="15" step="0.5" value="4">
+      <input type="range" id="arr" min="0.5" max="50" step="0.5" value="4">
     </div>
 
     <div class="control">
       <div class="control-head"><label>Bus frontal area</label><span class="value"><span id="busVal">0.5</span> m²</span></div>
-      <input type="range" id="bus" min="0.1" max="3" step="0.05" value="0.5">
+      <input type="range" id="bus" min="0.05" max="10" step="0.05" value="0.5">
     </div>
 
     <h2>Eclipse &amp; battery</h2>
 
     <div class="control">
       <div class="control-head"><label>Orbit fraction in eclipse</label><span class="value"><span id="ecVal">35</span>%</span></div>
-      <input type="range" id="ec" min="0" max="50" step="1" value="35">
+      <input type="range" id="ec" min="0" max="45" step="1" value="35">
     </div>
 
     <div class="control">
       <div class="control-head"><label>Battery capacity</label><span class="value"><span id="batVal">300</span> Wh</span></div>
-      <input type="range" id="bat" min="50" max="1500" step="25" value="300">
+      <input type="range" id="bat" min="25" max="5000" step="25" value="300">
     </div>
 
-    <h2>NEOWATT supplement</h2>
+    <h2>Beamed power</h2>
 
     <div class="control">
       <div class="control-head"><label>Power delivered to bus</label><span class="value"><span id="nwVal">0.30</span> kW</span></div>
-      <input type="range" id="nw" min="0" max="1.5" step="0.05" value="0.3">
+      <input type="range" id="nw" min="0" max="5" step="0.1" value="0.3">
     </div>
 
     <div class="delivered">
-      <span>Required transmitted power <span id="effNote">(25% eff.)</span></span>
+      <span>Required beam at receiver <span id="effNote">(25% eff.)</span></span>
       <b><span id="delVal">1.20</span> kW</b>
     </div>
 
     <div class="control" id="dragCtrl">
-      <div class="control-head"><label>Receiver dome drag penalty</label><span class="value"><span id="drVal">5</span>%</span></div>
-      <input type="range" id="dr" min="0" max="15" step="1" value="5">
+      <div class="control-head"><label>Receiver drag penalty</label><span class="value"><span id="drVal">5</span>%</span></div>
+      <input type="range" id="dr" min="0" max="25" step="1" value="5">
     </div>
   </aside>
 
@@ -828,7 +799,7 @@
     </div>
 
     <div class="card">
-      <h3>Payload operation during umbra</h3>
+      <h3>Payload operation during eclipse</h3>
       <div class="eclipse-row">
         <span class="label">Eclipse duration</span>
         <div class="bar-container"><div class="bar full"></div></div>
@@ -862,29 +833,52 @@
       <div class="kpi">
         <div class="klabel">Eclipse runtime gain</div>
         <div class="kval">+<span id="ecGainVal">—</span> <span style="font-size:22px;">min</span></div>
-        <div class="ksub">payload runtime in umbra vs batteries alone</div>
+        <div class="ksub">payload runtime in eclipse vs batteries alone</div>
       </div>
       <div class="kpi">
         <div class="klabel">Extra payload sustainable</div>
         <div class="kval">+<span id="busGainVal">—</span> <span style="font-size:22px;">W</span></div>
-        <div class="ksub">at this altitude, with current array &amp; bus area</div>
+        <div class="ksub">from beamed power, net of any receiver drag</div>
       </div>
     </div>
 
     <details class="card" style="margin-top:4px;">
-      <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model assumptions</summary>
+      <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model &amp; assumptions</summary>
       <div style="margin-top:14px; font-size:13px; color:var(--deep); line-height:1.6;">
+
+        <p style="margin:0 0 6px;"><b>Equations</b></p>
+        <p style="margin:0 0 10px; font-size:12px; color:var(--deep-tint);">All quantities in SI (W, m², m/s, kg/m³, s) unless noted.</p>
+        <ul style="margin:0 0 14px; padding-left:20px;">
+          <li><b>Electrical thruster power to hold altitude</b> against drag:<br>
+            <span style="font-family:monospace; font-size:12px;">P<sub>thr</sub>(h, A) = K · ρ(h) · v² · A</span>&nbsp; [W]<br>
+            Derived from F<sub>drag</sub> = ½·C<sub>d</sub>·ρ·v²·A combined with an ion-thruster power model P<sub>elec</sub> = F<sub>drag</sub>·v<sub>exh</sub>/(2η<sub>thr</sub>), giving K = C<sub>d</sub>·v<sub>exh</sub>/(4η<sub>thr</sub>). Calibrated to K = 32 873 m/s so P<sub>thr</sub>(200 km, 2 m²) = 1 kW — implies v<sub>exh</sub>/(4η<sub>thr</sub>) ≈ 14.9 km/s (consistent with Hall-effect/ion thrusters with v<sub>exh</sub> ~20–40 km/s and η<sub>thr</sub> ~0.5–0.6). C<sub>d</sub> = 2.2 (free-molecular flat plate, Cook 1965; Moe &amp; Moe 2005) is absorbed into K.</li>
+          <li><b>Atmospheric density</b> (piecewise log-linear between tabulated anchors):<br>
+            <span style="font-family:monospace; font-size:12px;">ρ(h) = exp( lnρ<sub>i</sub> + (lnρ<sub>i+1</sub> − lnρ<sub>i</sub>)·(h − h<sub>i</sub>)/(h<sub>i+1</sub> − h<sub>i</sub>) )</span>&nbsp; [kg/m³]<br>
+            Anchors (km, kg/m³): (130, 5×10⁻⁹), (150, 1×10⁻⁹), (200, 2.5×10⁻¹⁰), (250, 7×10⁻¹¹), (300, 2.3×10⁻¹¹), (350, 9.5×10⁻¹²), (450, 2.2×10⁻¹²). The 150–250 km values are Crisp-consistent; 130/300/350/450 km are NRLMSISE-00 nominal (F10.7 ≈ 140). Implied scale height grows from ~36 km at 150 km altitude to ~68 km at 450 km — consistent with the real thermosphere.</li>
+          <li><b>Orbital period</b> (circular two-body):<br>
+            <span style="font-family:monospace; font-size:12px;">T = 2π √((R<sub>⊕</sub>+h)³ / μ<sub>⊕</sub>)</span>&nbsp; [s]<br>
+            R<sub>⊕</sub> = 6371 km,&nbsp; μ<sub>⊕</sub> = 3.986×10⁵ km³/s². Enter h in km and T comes out in seconds.</li>
+          <li><b>Eclipse duration:</b>&nbsp; <span style="font-family:monospace; font-size:12px;">t<sub>ecl</sub> = T · (f<sub>ecl</sub>/100)</span>&nbsp; (same units as T). The user sets the orbit fraction in shadow as a percentage.</li>
+          <li><b>Payload runtime in eclipse</b> (battery-limited, capped at eclipse duration):<br>
+            <span style="font-family:monospace; font-size:12px;">t<sub>base</sub> = min( t<sub>ecl</sub>,&nbsp; E<sub>bat</sub> / P<sub>payload</sub> )</span><br>
+            <span style="font-family:monospace; font-size:12px;">t<sub>aug</sub>&nbsp; = min( t<sub>ecl</sub>,&nbsp; E<sub>bat</sub> / max(0, P<sub>payload</sub> − P<sub>delivered</sub>) )</span><br>
+            E<sub>bat</sub> in Wh and P in W gives time in hours — multiply by 60 for minutes. <b>Simplifications:</b> (i) thrusters are assumed off in eclipse (many VLEO concepts thrust only in sunlight to conserve battery); (ii) battery starts eclipse fully charged; (iii) beaming is available in shadow (transmitter remains in sunlight, e.g. dawn–dusk SSO).</li>
+          <li><b>Sustainable payload</b> at altitude h:<br>
+            <span style="font-family:monospace; font-size:12px;">P<sub>payload, max</sub> = A<sub>array</sub>·S·η<sub>PV</sub> + P<sub>delivered</sub> − P<sub>thr</sub>(h, A<sub>array</sub>+A<sub>bus</sub>+A<sub>rcv</sub>)</span>&nbsp; [W]<br>
+            Steady state: solar generation plus beam minus drag-power draw. Negative ⇒ the platform cannot close its power budget at this altitude. <b>Simplification:</b> solar generation assumes the array is normal to the Sun (no cosine loss); a body-mounted array would effectively give ~60% of this value on average.</li>
+          <li><b>Lowest operable altitude</b> (floor): the altitude at which <span style="font-family:monospace; font-size:12px;">P<sub>thr</sub>(h, A) = P<sub>avail</sub></span>, solved by bisection.
+            Available thrust power is <span style="font-family:monospace; font-size:12px;">P<sub>budget</sub> − P<sub>payload</sub></span> for the baseline, plus <span style="font-family:monospace; font-size:12px;">P<sub>delivered</sub></span> when beaming is on. Baseline drag area is A<sub>array</sub>+A<sub>bus</sub>; the beaming case adds A<sub>rcv</sub> when the specialised receiver is selected.</li>
+          <li><b>Required incident power at the receiver</b> (illustrative — atmospheric and geometric losses neglected):<br>
+            <span style="font-family:monospace; font-size:12px;">P<sub>rx</sub> = P<sub>delivered</sub> / η<sub>receiver</sub></span>.</li>
+        </ul>
+
+        <p style="margin:0 0 6px;"><b>Assumption values</b></p>
         <ul style="margin:0; padding-left:20px;">
-          <li><b>Thruster power vs altitude:</b> exponential fit through (250 km, 300 W), (200 km, 1 kW), (150 km, 4 kW), consistent with VLEO drag–power scaling reported in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>.</li>
-          <li><b>Atmosphere:</b> log-linear density between 200 km (2.5×10⁻¹⁰ kg/m³) and 250 km (7×10⁻¹¹ kg/m³), per NRLMSISE-00 nominal solar conditions.</li>
-          <li><b>Orbital velocity:</b> 7.8 km/s, treated as constant. v varies only ~1.5% (7.82 → 7.70 km/s) over 150–350 km, dwarfed by the ~10× density variation that dominates drag.</li>
-          <li><b>Solar flux:</b> 1366 W/m² (Kopp & Lean 2011). <b>PV efficiency:</b> 30%, representative of triple-junction GaAs cells (Spectrolab XTJ Prime).</li>
-          <li><b>Drag coefficient:</b> C<sub>d</sub> = 2.2, free-molecular flat plate (Cook 1965; Moe & Moe 2005).</li>
-          <li><b>Generic-panel laser efficiency:</b> 25%, ±30° acceptance, typical of Si/III–V single-wavelength response.</li>
-          <li><b>Specialised dome:</b> 60% efficiency, ±75° acceptance, 0.3 m² added cross-section, consistent with reported wavelength-tuned PV demonstrations (Steinsiek et al.; LaserMotive).</li>
-          <li><b>Eclipse runtime:</b> while in shadow, the payload draws on battery alone. Beamed power reduces the net drain rate to (payload – delivered), so the same battery lasts longer.</li>
-          <li><b>Sustainable payload:</b> at a given altitude, the maximum payload power is what's left after the array generates electricity and the thrusters spend it on drag. With a beam, the equation gains a term that costs no drag area:<br><span style="font-family:monospace; font-size:12px;">payload<sub>max</sub> = (array area × solar flux × PV η) + delivered beam – drag-power-per-m² × (array area + bus area)</span><br>The drag-power-per-m² constant is fitted so the model reproduces the 200 km thruster-power data point.</li>
-          <li><b>Drag delta:</b> "today" means the current array area with no dome. When beaming supplies a share of the bus power, the array can shrink in proportion (less drag). A specialised dome adds a small drag penalty back. The net change can be positive or negative depending on which dominates.</li>
+          <li><b>Orbital velocity:</b> v = 7.8 km/s, held constant. v varies ~2.4% (7.83 → 7.64 km/s) over 130–450 km, dwarfed by the &gt;100× density variation that dominates drag.</li>
+          <li><b>Solar flux:</b> S = 1361 W/m² — total solar irradiance, Kopp &amp; Lean (2011) SORCE/TIM. <b>PV efficiency:</b> η<sub>PV</sub> = 30% (triple-junction GaAs, e.g. Spectrolab XTJ Prime).</li>
+          <li><b>Generic-panel receiver:</b> η<sub>receiver</sub> = 25%, A<sub>rcv</sub> = 0 (beam onto the existing array). Representative of Si/III–V single-wavelength response.</li>
+          <li><b>Specialised receiver:</b> η<sub>receiver</sub> = 60%, A<sub>rcv</sub> = 0.3 m² × (1 + δ<sub>drag</sub>/100) (the slider adds a C<sub>d</sub> penalty). Consistent with reported wavelength-tuned PV demonstrations (Steinsiek et al.; LaserMotive).</li>
+          <li><b>Calibration benchmark:</b> P<sub>thr</sub> calibrated on the VLEO drag–power data summarised in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>. Exact at 200 km on the reference 2 m² platform; ~10.7% low at 150 km, ~6.7% low at 250 km against the published points.</li>
         </ul>
       </div>
     </details>
@@ -902,45 +896,189 @@
 
 <script>
 (() => {
-  // ======== shared physics ========
-  // P(h) = A*exp(-k*h), least squares on (150,4000),(200,1000),(250,300)
-  const pts = [[150, 4000], [200, 1000], [250, 300]];
-  const n = pts.length;
-  const sx  = pts.reduce((s,p)=>s+p[0],0);
-  const sy  = pts.reduce((s,p)=>s+Math.log(p[1]),0);
-  const sxy = pts.reduce((s,p)=>s+p[0]*Math.log(p[1]),0);
-  const sxx = pts.reduce((s,p)=>s+p[0]*p[0],0);
-  const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
-  const A = Math.exp((sy - slope*sx) / n);
-  const k = -slope;
-  const thrusterPower = (h) => A * Math.exp(-k * h);
+  // ======== inline-labels Chart.js plugin ========
+  // Draws each dataset's label directly on the chart instead of in a legend.
+  // Anchors: 'curve-start' | 'curve-middle' | 'curve-end' |
+  //          'horiz-right-above' (alias 'horiz-right') | 'horiz-right-below' |
+  //          'vert-top' | 'region-below'.
+  // Datasets with labelAnchor:false or no label are skipped.
+  // Labels track placed bounding boxes and nudge to avoid collisions.
+  Chart.register({
+    id: 'inlineLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx, chartArea, scales } = chart;
+      const ys = scales.y;
+      ctx.save();
+      ctx.font = '600 11px Rajdhani';
+      const lineH = 14;
+      const placed = [];
 
+      const bboxOf = (text, x, y, align, baseline) => {
+        const w = ctx.measureText(text).width;
+        const left = align === 'right' ? x - w : (align === 'center' ? x - w / 2 : x);
+        const top = baseline === 'bottom' ? y - lineH : (baseline === 'middle' ? y - lineH / 2 : y);
+        return { left, top, right: left + w, bottom: top + lineH };
+      };
+      const collides = (a) => placed.some(b =>
+        !(a.right < b.left - 2 || a.left > b.right + 2 || a.bottom < b.top - 1 || a.top > b.bottom + 1)
+      );
+
+      chart.data.datasets.forEach((ds, i) => {
+        const meta = chart.getDatasetMeta(i);
+        if (meta.hidden || ds.labelAnchor === false || !ds.label) return;
+        const anchor = ds.labelAnchor || 'curve-end';
+        const color = ds.borderColor && ds.borderColor !== 'transparent'
+          ? ds.borderColor : (ds._labelColor || '#394563');
+        let x, y, align = 'right', baseline = 'bottom';
+
+        if (anchor === 'curve-start') {
+          const pt = meta.data[0];
+          if (!pt) return;
+          x = pt.x + 6; y = pt.y - 4;
+          align = 'left'; baseline = 'bottom';
+        } else if (anchor === 'curve-middle') {
+          const pts = meta.data;
+          if (!pts.length) return;
+          const pt = pts[Math.floor(pts.length * 0.5)];
+          x = pt.x; y = pt.y - 6;
+          align = 'center'; baseline = 'bottom';
+        } else if (anchor === 'curve-end') {
+          // Try last point; on collision, walk back along the curve
+          const pts = meta.data;
+          if (!pts.length) return;
+          let idx = pts.length - 1, tries = 0;
+          align = 'right'; baseline = 'bottom';
+          while (tries < 30 && idx > 0) {
+            const pt = pts[idx];
+            x = pt.x - 6; y = pt.y - 6;
+            const box = bboxOf(ds.label, x, y, align, baseline);
+            if (!collides(box)) break;
+            idx = Math.max(0, idx - Math.ceil(pts.length / 12));
+            tries++;
+          }
+        } else if (anchor === 'horiz-right' || anchor === 'horiz-right-above') {
+          const pt = meta.data[meta.data.length - 1];
+          if (!pt) return;
+          x = pt.x - 4; y = pt.y - 4;
+          align = 'right'; baseline = 'bottom';
+        } else if (anchor === 'horiz-right-below') {
+          const pt = meta.data[meta.data.length - 1];
+          if (!pt) return;
+          x = pt.x - 4; y = pt.y + 4;
+          align = 'right'; baseline = 'top';
+        } else if (anchor === 'vert-top') {
+          const pts = meta.data;
+          const top = pts.reduce((a, b) => (b.y < a.y ? b : a));
+          // Default: just below top, label to the right of the line
+          x = top.x + 4; y = chartArea.top + 4;
+          align = 'left'; baseline = 'top';
+          // Collision: stack downward
+          let box = bboxOf(ds.label, x, y, align, baseline);
+          let tries = 0;
+          while (collides(box) && tries < 8) {
+            y += lineH + 2;
+            box = bboxOf(ds.label, x, y, align, baseline);
+            tries++;
+          }
+          // If label would overflow right edge, flip to left side of line
+          const w = ctx.measureText(ds.label).width;
+          if (x + w > chartArea.right - 2) { align = 'right'; x = top.x - 4; }
+        } else if (anchor === 'region-below') {
+          const yZero = ys.getPixelForValue(0);
+          x = (chartArea.left + chartArea.right) / 2;
+          y = (yZero + chartArea.bottom) / 2;
+          align = 'center'; baseline = 'middle';
+        } else {
+          return;
+        }
+
+        // Final clamp inside chart area
+        const textW = ctx.measureText(ds.label).width;
+        if (align === 'left' && x + textW > chartArea.right - 2) { align = 'right'; x = chartArea.right - 2; }
+        if (align === 'right' && x - textW < chartArea.left + 2) { align = 'left'; x = chartArea.left + 2; }
+        if (y < chartArea.top + 2) y = chartArea.top + 2;
+        if (y > chartArea.bottom - 2) y = chartArea.bottom - 2;
+
+        placed.push(bboxOf(ds.label, x, y, align, baseline));
+        ctx.fillStyle = color;
+        ctx.textAlign = align;
+        ctx.textBaseline = baseline;
+        ctx.fillText(ds.label, x, y);
+      });
+      ctx.restore();
+    }
+  });
+
+  // ======== shared physics ========
+  // Thruster power to maintain orbit against drag:
+  //   P(h, A) = K * rho(h) * v² * A
+  // K is calibrated so P(200 km, 2 m²) = 1000 W, matching Crisp et al. (2020)
+  // reference VLEO data to within a few percent across 150–250 km.
+  const K_THRUST  = 32873;   // calibrated; W·m/(kg·m²) after grouping constants
+  const V_ORB     = 7800;    // m/s, treated as constant (varies <2% across 150–350 km)
+  const REF_AREA  = 2;       // m², reference platform frontal area for story/narrative charts
+
+  // Atmospheric density (kg/m³) — piecewise log-linear across NRLMSISE-00 /
+  // Crisp-consistent anchors. The 150–250 km anchors reproduce the Crisp et al.
+  // thruster-power reference (4 kW, 1 kW, 300 W per 2 m²). Anchors at 300–450 km
+  // are NRLMSISE nominal values so extrapolation no longer uses a single
+  // 50-km-span slope across the whole range.
+  const ATM_ANCHORS = [
+    [130, 5.0e-9],    // NRLMSISE nominal, F10.7≈140
+    [150, 1.0e-9],    // Crisp-consistent (yields 4 kW @ 2 m² with K below)
+    [200, 2.5e-10],   // K calibration reference → 1 kW @ 2 m²
+    [250, 7.0e-11],   // Crisp-consistent → 300 W @ 2 m²
+    [300, 2.3e-11],   // NRLMSISE nominal
+    [350, 9.5e-12],   // NRLMSISE nominal
+    [450, 2.2e-12],   // NRLMSISE nominal
+  ];
   const rho = (h) => {
-    const h1=200, rho1=2.5e-10, h2=250, rho2=7e-11;
-    const lr1=Math.log(rho1), lr2=Math.log(rho2);
-    const sl = (lr2-lr1)/(h2-h1);
-    return Math.exp(lr1 + sl*(h-h1));
+    const A = ATM_ANCHORS;
+    // Clamp to bounding segments for extrapolation.
+    let i = 0;
+    if (h <= A[0][0]) i = 0;
+    else if (h >= A[A.length-1][0]) i = A.length - 2;
+    else for (i = 0; i < A.length - 1; i++) if (h <= A[i+1][0]) break;
+    const [h1, r1] = A[i], [h2, r2] = A[i+1];
+    const lr1 = Math.log(r1), lr2 = Math.log(r2);
+    const slope = (lr2 - lr1) / (h2 - h1);
+    return Math.exp(lr1 + slope * (h - h1));
   };
 
-  const bisect = (availKw) => {
-    let lo=100, hi=400;
-    if (availKw<=0) return 400;
-    const target = availKw*1000;
-    for (let i=0;i<60;i++) {
-      const m=(lo+hi)/2;
-      if (thrusterPower(m)>target) lo=m; else hi=m;
+  // Thruster power (W) required to hold altitude h (km) for a platform of
+  // total frontal area `area` (m²). Single source of truth for all charts and KPIs.
+  const thrustPowerPhys = (h, area) => K_THRUST * rho(h) * V_ORB * V_ORB * area;
+
+  // Story-chart curve: reference ~2 m² platform
+  const thrusterPower = (h) => thrustPowerPhys(h, REF_AREA);
+
+  // Binary search for the altitude where available power meets thruster demand.
+  // Returns the floor: the lowest altitude the platform can sustainably hold.
+  // Search range matches the calculator slider (130–500 km, with head-room).
+  const ALT_SEARCH_MIN = 80, ALT_SEARCH_MAX = 500;
+  const bisect = (availKw, area = REF_AREA) => {
+    if (availKw <= 0) return ALT_SEARCH_MAX;
+    let lo = ALT_SEARCH_MIN, hi = ALT_SEARCH_MAX;
+    const target = availKw * 1000;
+    for (let i = 0; i < 60; i++) {
+      const m = (lo + hi) / 2;
+      if (thrustPowerPhys(m, area) > target) lo = m; else hi = m;
     }
-    return (lo+hi)/2;
+    return (lo + hi) / 2;
   };
 
   const profiles = {
-    generic:     { eff: 0.25, angDeg: 30, hasDome: false },
-    specialised: { eff: 0.60, angDeg: 75, hasDome: true  }
+    generic:     { eff: 0.25, hasDome: false },
+    specialised: { eff: 0.60, hasDome: true  }
   };
 
+  // Story charts use a narrower grid aligned with their narrative (150–350 km).
   const altGrid = [];
   for (let h=150; h<=350; h+=2) altGrid.push(h);
   const curveData = altGrid.map(h => ({x:h, y:thrusterPower(h)}));
+  // Calculator uses a wider grid matching its altitude slider (130–450 km).
+  const altGridCalc = [];
+  for (let h=130; h<=450; h+=2) altGridCalc.push(h);
 
   // ======== TABS ========
   const tabs = document.querySelectorAll('nav.tabs button');
@@ -960,19 +1098,21 @@
   // ======== STORY CHARTS ========
   const baseAxisOpts = (yMax) => ({
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position:'bottom', labels:{ color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' }, usePointStyle:true, boxWidth:10 } },
+    layout: { padding: { top: 14, right: 10 } },
+    plugins: { legend: { display: false },
       tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
         callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${Math.round(it.parsed.y)} W` } } },
     scales: {
-      x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } },
-      y: { min:0, max:yMax, title:{ display:true, text:'Power (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } }
+      x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 50 }, grid:{ color:'#D7DCE9' } },
+      y: { min:0, max:yMax, title:{ display:true, text:'Power (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 1000 }, grid:{ color:'#D7DCE9' } }
     }
   });
 
   const curveDataset = {
     label: 'Thruster demand', data: curveData,
     borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.12)',
-    borderWidth:2.5, tension:0.3, pointRadius:0, fill:true
+    borderWidth:2.5, tension:0.3, pointRadius:0, fill:true,
+    labelAnchor: 'curve-start'
   };
 
   // Story chart 1 – just the curve
@@ -989,8 +1129,8 @@
     type: 'line',
     data: { datasets: [
       JSON.parse(JSON.stringify(curveDataset)),
-      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
-      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false }
+      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'horiz-right' },
+      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'vert-top' }
     ] },
     options: baseAxisOpts(5000)
   });
@@ -1003,38 +1143,37 @@
     type: 'line',
     data: { datasets: [
       JSON.parse(JSON.stringify(curveDataset)),
-      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
-      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
-      { label:`+ beaming: ${(augBudget*1000).toFixed(0)} W available`, data:[{x:150,y:augBudget*1000},{x:350,y:augBudget*1000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false },
-      { label:`New floor: ${augLimitKm.toFixed(0)} km`, data:[{x:augLimitKm,y:0},{x:augLimitKm,y:5000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false }
+      { label:`Today: ${(todayBudget*1000).toFixed(0)} W`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'horiz-right-below' },
+      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'vert-top' },
+      { label:`+ beaming: ${(augBudget*1000).toFixed(0)} W`, data:[{x:150,y:augBudget*1000},{x:350,y:augBudget*1000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false, labelAnchor:'horiz-right-above' },
+      { label:`New floor: ${augLimitKm.toFixed(0)} km`, data:[{x:augLimitKm,y:0},{x:augLimitKm,y:5000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false, labelAnchor:'vert-top' }
     ] },
     options: baseAxisOpts(5000)
   });
 
   // Story chart 4 – sustainable payload vs altitude (death spiral)
-  // Uses a physics-based steady-state model with constants defined in calculator section
-  const SF = 1366, ETA = 0.30, VV = 7800, KT = 32873;
-  const thrPhys = (h, At) => KT * rho(h) * VV * VV * At;
-  const susPay = (h, A, Ab, Bw) => SF*ETA*A + Bw - thrPhys(h, A+Ab);
+  // Shares physics with the calculator: solar generation + beam − drag on (array + bus).
+  const SF_STORY = 1361, ETA_STORY = 0.30;
+  const susPay = (h, A, Ab, Bw) => SF_STORY*ETA_STORY*A + Bw - thrustPowerPhys(h, A + Ab);
   const A_story = 4, Ab_story = 0.5;
   const beam_story = 300; // W delivered
-  const sustainCurveBase = altGrid.map(h => ({ x:h, y:Math.max(-500, susPay(h, A_story, Ab_story, 0)) }));
-  const sustainCurveAug  = altGrid.map(h => ({ x:h, y:Math.max(-500, susPay(h, A_story, Ab_story, beam_story)) }));
+  const sustainCurveBase = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, 0)) }));
+  const sustainCurveAug  = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, beam_story)) }));
   new Chart(document.getElementById('storyChart4'), {
     type: 'line',
     data: { datasets: [
-      { label:'Today (no beaming)', data:sustainCurveBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true },
-      { label:'+ 0.3 kW beamed', data:sustainCurveAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true },
-      { label:'Infeasible', data:[{x:150,y:0},{x:350,y:0}], borderColor:'#D4A14A', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false }
+      { label:'Today (no beaming)', data:sustainCurveBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-middle' },
+      { label:'+ 0.3 kW beamed', data:sustainCurveAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-middle' }
     ]},
     options: {
       responsive:true, maintainAspectRatio:false,
-      plugins: { legend: { position:'bottom', labels:{ color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' }, usePointStyle:true, boxWidth:10 } },
+      layout: { padding: { top: 14, right: 10 } },
+      plugins: { legend: { display: false },
         tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
           callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${Math.round(it.parsed.y)} W` } } },
       scales: {
-        x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } },
-        y: { min:-500, max:1500, title:{ display:true, text:'Sustainable payload (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } }
+        x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 50 }, grid:{ color:'#D7DCE9' } },
+        y: { min:0, max:1500, title:{ display:true, text:'Sustainable payload (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 500 }, grid:{ color:'#D7DCE9' } }
       }
     }
   });
@@ -1067,8 +1206,17 @@
           <stop offset="0%"  stop-color="#394563"/>
           <stop offset="100%" stop-color="#0E1A3D"/>
         </radialGradient>
+        <!-- Atmosphere: denser toward low altitudes, fading to transparent at high altitudes -->
+        <linearGradient id="atmGrad-${svg.id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#C6C1EE" stop-opacity="0"/>
+          <stop offset="55%"  stop-color="#C6C1EE" stop-opacity="0.05"/>
+          <stop offset="85%"  stop-color="#C6C1EE" stop-opacity="0.16"/>
+          <stop offset="100%" stop-color="#C6C1EE" stop-opacity="0.28"/>
+        </linearGradient>
       </defs>
       <path d="M -200,500 A 1000,1000 0 0 1 1000,500 Z" fill="url(#earthGrad-${svg.id})"/>
+      <!-- Atmospheric-density gradient: sits above Earth, behind satellite & stars -->
+      <rect x="0" y="40" width="800" height="220" fill="url(#atmGrad-${svg.id})"/>
       <path class="altLine" d="" stroke="#C6C1EE" stroke-width="1" stroke-dasharray="4 4" fill="none" opacity="0.5"/>
       <g>
         <rect x="680" y="30" width="40" height="24" fill="#0E1A3D" stroke="#8479D0" stroke-width="1.5"/>
@@ -1109,8 +1257,13 @@
   }
 
   function updateSchematic(refs, s, rx) {
-    const altY = 240 - ((s.alt - 150) / 200) * 160;
-    const satCx = 260, bodyW = 30, bodyH = 22;
+    // Map altitude (130–450 km slider range) to vertical position (y = 250 near Earth, y = 50 near top).
+    const altY = 250 - ((s.alt - 130) / (450 - 130)) * 200;
+    const satCx = 260;
+    // Scale the bus body with frontal area (baseline 0.5 m² → 30×22).
+    // Area-proportional scaling (sqrt) keeps the shape balanced; clamped to keep layout sane.
+    const bodyScale = Math.max(0.55, Math.min(2.0, Math.sqrt((s.bus || 0.5) / 0.5)));
+    const bodyW = 30 * bodyScale, bodyH = 22 * bodyScale;
     const bodyX = satCx - bodyW/2;
     const bodyY = altY - bodyH/2;
     refs.body.setAttribute('x', bodyX); refs.body.setAttribute('y', bodyY);
@@ -1149,11 +1302,14 @@
     refs.altLabel.setAttribute('y', altY + 4);
     refs.altLabel.textContent = `${s.alt} km`;
 
-    const dw = s.dragWatts || 0;
-    const mag = Math.min(1, Math.abs(dw) / 300); // saturate at 300 W either way
-    const arrowLen = 20 + mag*60;
+    // Drag arrow: sized by ABSOLUTE drag (so altitude, array, bus, receiver all move it).
+    // Delta (vs no-beaming baseline) is called out in the label when non-zero.
+    const dAbs = Math.max(0, s.dragWattsAbs || 0);
+    const dDelta = s.dragWattsDelta || 0; // negative if beaming reduces drag
+    const mag = Math.min(1, dAbs / 3000); // saturate at 3 kW
+    const arrowLen = 20 + mag*70;
     const ax1 = bodyX - panelW - 10, ay = altY + bodyH/2 + 18, ax2 = ax1 - arrowLen;
-    const col = dw > 0 ? '#D4A14A' : '#3EAF7C';
+    const col = '#D4A14A';
     refs.dragLine.setAttribute('x1', ax1); refs.dragLine.setAttribute('y1', ay);
     refs.dragLine.setAttribute('x2', ax2); refs.dragLine.setAttribute('y2', ay);
     refs.dragLine.setAttribute('stroke', col);
@@ -1162,37 +1318,11 @@
     refs.dragLabel.setAttribute('x', ax2);
     refs.dragLabel.setAttribute('y', ay + 16);
     refs.dragLabel.setAttribute('fill', col);
-    refs.dragLabel.textContent = dw < 0
-      ? `Thruster power saved: ${Math.abs(dw).toFixed(0)} W`
-      : `Additional thruster power: +${dw.toFixed(0)} W`;
+    let dragTxt = `Drag: ${dAbs.toFixed(0)} W`;
+    if (dDelta < -1) dragTxt += ` (−${Math.abs(dDelta).toFixed(0)} W with beaming)`;
+    else if (dDelta > 1) dragTxt += ` (+${dDelta.toFixed(0)} W from receiver)`;
+    refs.dragLabel.textContent = dragTxt;
   }
-
-  // Story-tab schematic – fixed example state, recomputes drag based on receiver toggle
-  const sRefs = buildSchematicSVG(document.getElementById('schematic-s'));
-  let sRx = 'generic';
-  function updateStorySchematic() {
-    // Example state: 200 km, 4 m² array, 1.6 kW bus, 0.3 kW delivered to bus, 5% dome drag overhead
-    const ex = { alt:200, arr:4, nw:0.3, dr:5, bud:1.6 };
-    const profEx = profiles[sRx];
-    const arrayShrinkEx = Math.min(0.95, ex.nw / ex.bud);
-    const arrayAreaNewEx = ex.arr * (1 - arrayShrinkEx);
-    const domeAreaEx = profEx.hasDome ? 0.3 : 0;
-    const domeCdMultEx = profEx.hasDome ? (1 + ex.dr/100) : 0;
-    const dragAreaDeltaEx = (arrayAreaNewEx - ex.arr) + domeAreaEx * domeCdMultEx;
-    // Use same physics constants as calculator
-    const KS=32873, VS=7800;
-    const dragWattsEx = KS * rho(ex.alt) * VS * VS * dragAreaDeltaEx;
-    updateSchematic(sRefs, { ...ex, dragWatts: dragWattsEx }, sRx);
-  }
-  document.querySelectorAll('#rxToggleStory button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#rxToggleStory button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      sRx = btn.dataset.rx;
-      updateStorySchematic();
-    });
-  });
-  updateStorySchematic();
 
   // ======== CALCULATOR ========
   const calc = {};
@@ -1203,32 +1333,33 @@
   const inputs = { alt:$('alt'), bud:$('bud'), pay:$('pay'), arr:$('arr'), bus:$('bus'),
                    ec:$('ec'), bat:$('bat'), nw:$('nw'), dr:$('dr') };
 
-  // Physics constants for sustainable-payload (death-spiral) model
-  const SOLAR_FLUX = 1366;     // W/m²
-  const PV_ETA     = 0.30;     // multi-junction efficiency
-  const V_ORB      = 7800;     // m/s
-  const Cd_BUS     = 2.2;
-  // Calibrate K so P_thrust(2 m², 200 km) ≈ 1000 W matches representative VLEO data
-  // P_thr = K * rho(h) * v² * A_total  → K ≈ 32873
-  const K_THRUST   = 32873;
-  function thrustPowerPhys(h, Atotal) { return K_THRUST * rho(h) * V_ORB * V_ORB * Atotal; }
-  // Sustainable payload at altitude h with array A, bus area A_bus, beam B (kW delivered)
-  function sustainablePayload(h, A, Abus, Bkw) {
-    const arrayGen = SOLAR_FLUX * PV_ETA * A;          // W
-    const drag     = thrustPowerPhys(h, A + Abus);     // W
-    return arrayGen + Bkw * 1000 - drag;               // W (can be negative = infeasible)
+  // Solar + payload physics for the sustainable-payload KPI and death-spiral story chart
+  const SOLAR_FLUX = 1361;     // W/m² — total solar irradiance, Kopp & Lean (2011) SORCE/TIM
+  const PV_ETA     = 0.30;     // multi-junction efficiency (Spectrolab XTJ Prime class)
+  // K_THRUST, V_ORB, thrustPowerPhys are defined in shared physics above.
+  // Sustainable payload at altitude h with array A, bus area A_bus, receiver area A_rcv, beam B (kW delivered)
+  function sustainablePayload(h, A, Abus, Arcv, Bkw) {
+    const arrayGen = SOLAR_FLUX * PV_ETA * A;                  // W
+    const drag     = thrustPowerPhys(h, A + Abus + Arcv);      // W
+    return arrayGen + Bkw * 1000 - drag;                       // W (negative = infeasible)
   }
 
   const ctx = document.getElementById('heroChart').getContext('2d');
   calc.chart = new Chart(ctx, {
     type: 'line',
     data: { datasets: [
-      { label:'Thruster demand', data:curveData, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.10)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, order:3 },
-      { label:'Selected altitude', data:[], borderColor:'#0E1A3D', backgroundColor:'#0E1A3D', pointRadius:6, showLine:false, order:0 },
-      { label:'Today: floor', data:[], borderColor:'#394563', borderWidth:2, borderDash:[6,4], pointRadius:0, showLine:true, fill:false, order:2 },
-      { label:'+ beaming: floor', data:[], borderColor:'#8479D0', borderWidth:3, pointRadius:0, showLine:true, fill:false, order:1 }
+      { label:'Thruster demand', data:curveData, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.10)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, order:3, labelAnchor:'curve-start' },
+      { label:'Selected altitude', data:[], borderColor:'#0E1A3D', backgroundColor:'#0E1A3D', pointRadius:6, showLine:false, order:0, labelAnchor:false },
+      { label:'Today: floor', data:[], borderColor:'#394563', borderWidth:2, borderDash:[6,4], pointRadius:0, showLine:true, fill:false, order:2, labelAnchor:'vert-top' },
+      { label:'+ beaming: floor', data:[], borderColor:'#8479D0', borderWidth:3, pointRadius:0, showLine:true, fill:false, order:1, labelAnchor:'vert-top' }
     ]},
-    options: baseAxisOpts(5000)
+    options: (() => {
+      // Calc chart uses a wider x-range (130–450 km) matching its altitude slider.
+      const opts = baseAxisOpts(5000);
+      opts.scales.x.min = 130;
+      opts.scales.x.max = 450;
+      return opts;
+    })()
   });
 
   function recompute() {
@@ -1250,7 +1381,6 @@
     $('nwVal').textContent  = s.nw.toFixed(2);
     $('drVal').textContent  = s.dr;
     $('rxEff').textContent = Math.round(prof.eff*100)+'%';
-    $('rxAng').textContent = `±${prof.angDeg}°`;
 
     // Slider IS delivered power; implied incident beam = delivered / efficiency
     const delivered = s.nw;
@@ -1262,16 +1392,26 @@
     if (prof.hasDome) dragCtrl.classList.remove('disabled');
     else dragCtrl.classList.add('disabled');
 
-    const thrW = thrusterPower(s.alt);
-    const thrKw = thrW/1000;
+    // Platform frontal area. Baseline = array + bus (no receiver installed).
+    // Augmented = array + bus + receiver (only if specialised receiver profile is on).
+    const rcvArea     = prof.hasDome ? 0.3 : 0;        // m², added cross-section of specialised receiver
+    const rcvCdMult   = prof.hasDome ? (1 + s.dr/100) : 0; // drag penalty multiplier
+    const rcvDragArea = rcvArea * rcvCdMult;
+    const areaBase = s.arr + s.bus;
+    const areaAug  = s.arr + s.bus + rcvDragArea;
+
+    // Thruster power demand at the selected altitude, for THIS platform's area.
+    const thrW  = thrustPowerPhys(s.alt, areaAug);
+    const thrKw = thrW / 1000;
+
+    // Power available for thrusters = budget − payload ( + delivered beam when on)
     const availBase = s.bud - s.pay;
     const availAug  = availBase + delivered;
 
-    const loBase = bisect(availBase);
-    const loAug  = bisect(availAug);
-
-    const deficit = Math.max(0, thrKw - availBase);
-    const freed = Math.max(0, delivered - deficit);
+    // Lowest sustainable altitude: altitude where demand meets available thruster power.
+    // Uses THIS platform's area (not a reference 2 m² curve).
+    const loBase = bisect(availBase, areaBase);
+    const loAug  = bisect(availAug,  areaAug);
 
     // ECLIPSE – battery-limited, with beaming reducing net drain
     const T = 2*Math.PI*Math.sqrt(Math.pow(6371+s.alt,3)/398600);
@@ -1294,17 +1434,14 @@
     $('ecBarBase').style.width = (baseMin/maxBar*100)+'%';
     $('ecBarAug').style.width  = (augMin/maxBar*100)+'%';
 
-    // DRAG – expressed as additional thruster power (watts) vs today's array, no dome.
-    // Array shrinks proportionally to the share of bus power that beaming supplants → negative drag work.
-    // Dome adds a (Cd-scaled) cross-section → positive drag work.
-    const arrayShrink = Math.min(0.95, delivered / Math.max(s.bud, 0.01));
-    const arrayAreaNew = s.arr * (1 - arrayShrink);
-    const domeArea = prof.hasDome ? 0.3 : 0;
-    const domeCdMult = prof.hasDome ? (1 + s.dr/100) : 0;
-    const dragAreaDelta = (arrayAreaNew - s.arr) + domeArea * domeCdMult; // m² (Cd-equivalent)
-    // Convert to thruster-power equivalent using same K used for thrustPowerPhys()
-    const dragWattsDelta = K_THRUST * rho(s.alt) * V_ORB * V_ORB * dragAreaDelta;
-    s.dragWatts = dragWattsDelta;
+    // DRAG – absolute thruster power (watts) for this platform and altitude,
+    // plus the delta vs the no-receiver baseline (only non-zero for the specialised receiver).
+    // NOTE: changing the bus/array inputs IS the "resize your platform" story; we don't
+    // secretly shrink the array based on the beam.
+    const dragWattsAbs   = thrustPowerPhys(s.alt, areaAug);
+    const dragWattsDelta = thrustPowerPhys(s.alt, areaAug - areaBase); // = rcvDragArea share
+    s.dragWattsAbs = dragWattsAbs;
+    s.dragWattsDelta = dragWattsDelta;
 
     $('loBase').textContent = loBase.toFixed(0);
     $('loAug').textContent  = loAug.toFixed(0);
@@ -1314,13 +1451,17 @@
     // Eclipse runtime gain (minutes)
     $('ecGainVal').textContent = Math.max(0, augMin - baseMin).toFixed(1);
 
-    // Sustainable bus headroom (W) – death-spiral model
-    const payloadBase = sustainablePayload(s.alt, s.arr, s.bus, 0);
-    const payloadAug  = sustainablePayload(s.alt, s.arr, s.bus, delivered);
-    const busGain = payloadAug - payloadBase;
-    $('busGainVal').textContent = Math.max(0, busGain).toFixed(0);
-
-    // dragPct still computed and stored on s for the schematic arrow
+    // Sustainable payload headroom (W) at this altitude for this platform.
+    // Baseline has no receiver; augmented adds receiver area and beam.
+    // Negative = infeasible (drag exceeds solar + beam at this altitude).
+    // The gain metric is capped at zero on both sides so we don't promise
+    // "extra payload" when the platform is still infeasible.
+    const payloadBase = sustainablePayload(s.alt, s.arr, s.bus, 0,           0);
+    const payloadAug  = sustainablePayload(s.alt, s.arr, s.bus, rcvDragArea, delivered);
+    const feasibleBase = Math.max(0, payloadBase);
+    const feasibleAug  = Math.max(0, payloadAug);
+    const busGain = feasibleAug - feasibleBase;
+    $('busGainVal').textContent = busGain.toFixed(0);
 
     // BALANCE BAR
     const maxKw = Math.max(thrKw + s.pay, s.bud + delivered, 0.01);
@@ -1333,13 +1474,32 @@
     $('segNw').textContent   = nP>10 ? `Beam +${delivered.toFixed(2)} kW` : '';
     $('segAvail').textContent= aP>10 ? 'Headroom' : '';
 
-    // CHART
-    const yMax = Math.max(5000, thrW*1.2);
+    // CHART — regenerate the thruster-demand curve for THIS platform's area
+    // so the curve, selected altitude marker, and floor lines are all consistent.
+    const userCurveBase = altGridCalc.map(h => ({ x:h, y: thrustPowerPhys(h, areaBase) }));
+    const userCurveAug  = altGridCalc.map(h => ({ x:h, y: thrustPowerPhys(h, areaAug)  }));
+    // Draw the augmented-config curve (what the platform actually experiences with the
+    // receiver, if any). For generic receiver, base == aug so this is unambiguous.
+    calc.chart.data.datasets[0].data = userCurveAug;
+    const thrAtAltAug = thrustPowerPhys(s.alt, areaAug);
+    // Demand is max at the lowest altitude shown on the chart (130 km).
+    const maxDemand = thrustPowerPhys(130, areaAug);
+    // Round yMax up to a clean step so tick labels stay round across all platform scales.
+    const rawMax = Math.max(5000, maxDemand * 1.05);
+    const stepSize = rawMax <= 10000 ? 1000
+                   : rawMax <= 20000 ? 2000
+                   : rawMax <= 50000 ? 5000
+                   : rawMax <= 100000 ? 10000
+                   : 20000;
+    const yMax = Math.ceil(rawMax / stepSize) * stepSize;
     calc.chart.options.scales.y.max = yMax;
-    calc.chart.data.datasets[1].data = [{x:s.alt, y:thrW}];
-    calc.chart.data.datasets[2].data = [{x:loBase, y:0},{x:loBase, y:yMax}];
-    calc.chart.data.datasets[3].data = [{x:loAug,  y:0},{x:loAug,  y:yMax}];
+    calc.chart.options.scales.y.ticks.stepSize = stepSize;
+    calc.chart.data.datasets[1].data = [{ x: s.alt, y: thrAtAltAug }];
+    calc.chart.data.datasets[2].data = [{ x: loBase, y: 0 }, { x: loBase, y: yMax }];
+    calc.chart.data.datasets[3].data = [{ x: loAug,  y: 0 }, { x: loAug,  y: yMax }];
     calc.chart.update('none');
+    // Keep the userCurveBase reference available on the chart for potential future use
+    void userCurveBase;
 
     updateSchematic(calc.refs, s, rx);
   }
