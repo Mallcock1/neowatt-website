@@ -852,9 +852,8 @@
           <li><b>Electrical thruster power to hold altitude</b> against drag:<br>
             <span style="font-family:monospace; font-size:12px;">P<sub>thr</sub>(h, A) = K · ρ(h) · v² · A</span>&nbsp; [W]<br>
             Derived from F<sub>drag</sub> = ½·C<sub>d</sub>·ρ·v²·A combined with an ion-thruster power model P<sub>elec</sub> = F<sub>drag</sub>·v<sub>exh</sub>/(2η<sub>thr</sub>), giving K = C<sub>d</sub>·v<sub>exh</sub>/(4η<sub>thr</sub>). Calibrated to K = 32 873 m/s so P<sub>thr</sub>(200 km, 2 m²) = 1 kW — implies v<sub>exh</sub>/(4η<sub>thr</sub>) ≈ 14.9 km/s (consistent with Hall-effect/ion thrusters with v<sub>exh</sub> ~20–40 km/s and η<sub>thr</sub> ~0.5–0.6). C<sub>d</sub> = 2.2 (free-molecular flat plate, Cook 1965; Moe &amp; Moe 2005) is absorbed into K.</li>
-          <li><b>Atmospheric density</b> (piecewise log-linear between tabulated anchors):<br>
-            <span style="font-family:monospace; font-size:12px;">ρ(h) = exp( lnρ<sub>i</sub> + (lnρ<sub>i+1</sub> − lnρ<sub>i</sub>)·(h − h<sub>i</sub>)/(h<sub>i+1</sub> − h<sub>i</sub>) )</span>&nbsp; [kg/m³]<br>
-            Anchors (km, kg/m³): (130, 5×10⁻⁹), (150, 1×10⁻⁹), (200, 2.5×10⁻¹⁰), (250, 7×10⁻¹¹), (300, 2.3×10⁻¹¹), (350, 9.5×10⁻¹²), (450, 2.2×10⁻¹²). The 150–250 km values are Crisp-consistent; 130/300/350/450 km are NRLMSISE-00 nominal (F10.7 ≈ 140). Implied scale height grows from ~36 km at 150 km altitude to ~68 km at 450 km — consistent with the real thermosphere.</li>
+          <li><b>Atmospheric density</b> — cubic Hermite spline in log-density through published anchors, C¹-smooth (no kinks at anchor points):<br>
+            Anchors (km, kg/m³): (130, 5×10⁻⁹), (150, 1×10⁻⁹), (200, 2.5×10⁻¹⁰), (250, 7×10⁻¹¹), (300, 2.3×10⁻¹¹), (350, 9.5×10⁻¹²), (450, 2.2×10⁻¹²). The 150–250 km values are Crisp-consistent; 130/300/350/450 km are NRLMSISE-00 nominal (F10.7 ≈ 140). Below 130 km and above 450 km the spline falls back to the outermost segment's log-slope.</li>
           <li><b>Orbital period</b> (circular two-body):<br>
             <span style="font-family:monospace; font-size:12px;">T = 2π √((R<sub>⊕</sub>+h)³ / μ<sub>⊕</sub>)</span>&nbsp; [s]<br>
             R<sub>⊕</sub> = 6371 km,&nbsp; μ<sub>⊕</sub> = 3.986×10⁵ km³/s². Enter h in km and T comes out in seconds.</li>
@@ -1018,31 +1017,47 @@
   const V_ORB     = 7800;    // m/s, treated as constant (varies <2% across 150–350 km)
   const REF_AREA  = 2;       // m², reference platform frontal area for story/narrative charts
 
-  // Atmospheric density (kg/m³) — piecewise log-linear across NRLMSISE-00 /
-  // Crisp-consistent anchors. The 150–250 km anchors reproduce the Crisp et al.
-  // thruster-power reference (4 kW, 1 kW, 300 W per 2 m²). Anchors at 300–450 km
-  // are NRLMSISE nominal values so extrapolation no longer uses a single
-  // 50-km-span slope across the whole range.
+  // Atmospheric density (kg/m³). Anchors: 150–250 km reproduce Crisp et al.'s
+  // thruster-power reference (4 kW, 1 kW, 300 W at 2 m²); 130/300/350/450 km
+  // are NRLMSISE-00 nominal (F10.7 ≈ 140). Interpolation is a cubic Hermite
+  // spline in log-density — smooth (C¹) through every anchor, so scale height
+  // varies continuously instead of jumping between segments.
   const ATM_ANCHORS = [
-    [130, 5.0e-9],    // NRLMSISE nominal, F10.7≈140
-    [150, 1.0e-9],    // Crisp-consistent (yields 4 kW @ 2 m² with K below)
-    [200, 2.5e-10],   // K calibration reference → 1 kW @ 2 m²
-    [250, 7.0e-11],   // Crisp-consistent → 300 W @ 2 m²
-    [300, 2.3e-11],   // NRLMSISE nominal
-    [350, 9.5e-12],   // NRLMSISE nominal
-    [450, 2.2e-12],   // NRLMSISE nominal
+    [130, 5.0e-9],
+    [150, 1.0e-9],
+    [200, 2.5e-10],
+    [250, 7.0e-11],
+    [300, 2.3e-11],
+    [350, 9.5e-12],
+    [450, 2.2e-12],
   ];
+  const _atm_x = ATM_ANCHORS.map(p => p[0]);
+  const _atm_y = ATM_ANCHORS.map(p => Math.log(p[1]));
   const rho = (h) => {
-    const A = ATM_ANCHORS;
-    // Clamp to bounding segments for extrapolation.
+    const x = _atm_x, y = _atm_y, n = x.length;
+    // Below/above the anchor range, fall back to the outermost segment's slope.
+    if (h <= x[0]) {
+      const s = (y[1] - y[0]) / (x[1] - x[0]);
+      return Math.exp(y[0] + s * (h - x[0]));
+    }
+    if (h >= x[n-1]) {
+      const s = (y[n-1] - y[n-2]) / (x[n-1] - x[n-2]);
+      return Math.exp(y[n-1] + s * (h - x[n-1]));
+    }
+    // Find bracketing segment.
     let i = 0;
-    if (h <= A[0][0]) i = 0;
-    else if (h >= A[A.length-1][0]) i = A.length - 2;
-    else for (i = 0; i < A.length - 1; i++) if (h <= A[i+1][0]) break;
-    const [h1, r1] = A[i], [h2, r2] = A[i+1];
-    const lr1 = Math.log(r1), lr2 = Math.log(r2);
-    const slope = (lr2 - lr1) / (h2 - h1);
-    return Math.exp(lr1 + slope * (h - h1));
+    for (; i < n - 1; i++) if (h <= x[i+1]) break;
+    const x0 = x[i], x1 = x[i+1], y0 = y[i], y1 = y[i+1];
+    const dx = x1 - x0, t = (h - x0) / dx;
+    // Cardinal (Catmull–Rom-style) tangents from neighbours; one-sided at ends.
+    const m0 = i === 0      ? (y1 - y0) / dx : (y1 - y[i-1]) / (x1 - x[i-1]);
+    const m1 = i === n - 2  ? (y1 - y0) / dx : (y[i+2] - y0) / (x[i+2] - x0);
+    const t2 = t*t, t3 = t2*t;
+    const h00 =  2*t3 - 3*t2 + 1;
+    const h10 =     t3 - 2*t2 + t;
+    const h01 = -2*t3 + 3*t2;
+    const h11 =     t3 -   t2;
+    return Math.exp(h00*y0 + h10*m0*dx + h01*y1 + h11*m1*dx);
   };
 
   // Thruster power (W) required to hold altitude h (km) for a platform of
