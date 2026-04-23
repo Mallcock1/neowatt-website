@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>VLEO Power Beaming Capability Study – NEOWATT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --deep: #0E1A3D;
+    --deep-shadow: #070E21;
+    --deep-tint: #394563;
+    --lav: #8479D0;
+    --lav-shadow: #4D4682;
+    --lav-tint: #C6C1EE;
+    --off: #F6F8FE;
+    --off-shadow: #D7DCE9;
+    --white: #FFFFFF;
+    --ok: #3EAF7C;
+    --warn: #D4A14A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--deep);
+    color: var(--white);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ---------- HEADER ---------- */
+  header.site {
+    background: var(--deep);
+    padding: 22px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header.site .logo { display: flex; align-items: center; gap: 28px; }
+  header.site img {
+    height: 72px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  header.site .tagline {
+    font-size: 22px;
+    color: var(--lav-tint);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    padding-left: 28px;
+    border-left: 1px solid var(--deep-tint);
+  }
+  header.site .title {
+    font-size: 12px;
+    color: var(--lav-tint);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ---------- TABS ---------- */
+  nav.tabs {
+    background: var(--deep);
+    border-bottom: 1px solid var(--deep-tint);
+    padding: 0 32px;
+    display: flex;
+    gap: 4px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  nav.tabs button {
+    background: transparent;
+    border: none;
+    color: var(--lav-tint);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+  }
+  nav.tabs button:hover { color: var(--white); }
+  nav.tabs button.active {
+    color: var(--white);
+    border-bottom-color: var(--lav);
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ---------- HERO / INTRO ---------- */
+  section.hero {
+    padding: 60px 32px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  section.hero h1 {
+    font-size: 42px;
+    font-weight: 600;
+    margin: 0 0 18px 0;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+  }
+  section.hero h1 .accent { color: var(--lav); }
+  section.hero .lede {
+    font-size: 19px;
+    color: var(--lav-tint);
+    max-width: 720px;
+    margin: 0 auto 28px;
+    font-weight: 300;
+  }
+  section.hero .questions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  section.hero .q {
+    background: rgba(132,121,208,0.08);
+    border: 1px solid var(--deep-tint);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  section.hero .q .qnum {
+    color: var(--lav);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  section.hero .q .qtxt { font-size: 16px; color: var(--white); font-weight: 400; }
+
+  /* ---------- NARRATIVE SECTIONS ---------- */
+  section.story {
+    padding: 60px 32px;
+    border-top: 1px solid var(--deep-tint);
+  }
+  section.story.alt { background: var(--deep-shadow); }
+  section.story .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 48px;
+    align-items: center;
+  }
+  section.story .inner.flip { grid-template-columns: 1.3fr 1fr; }
+  section.story .inner.flip .copy { order: 2; }
+  section.story .inner.flip .visual { order: 1; }
+  section.story .copy h2 {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--lav);
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+  section.story .copy h3 {
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+  section.story .copy p {
+    font-size: 16px;
+    color: var(--lav-tint);
+    margin: 0 0 14px 0;
+    font-weight: 300;
+  }
+  section.story .copy p strong { color: var(--white); font-weight: 500; }
+  section.story .copy .stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  section.story .copy .stat {
+    background: rgba(132,121,208,0.1);
+    border-left: 3px solid var(--lav);
+    padding: 10px 16px;
+    border-radius: 0 6px 6px 0;
+  }
+  section.story .copy .stat .n {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--lav);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  section.story .copy .stat .l {
+    font-size: 12px;
+    color: var(--lav-tint);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  section.story .visual {
+    background: var(--off);
+    border-radius: 12px;
+    padding: 24px;
+    color: var(--deep);
+    border: 1px solid var(--deep-tint);
+  }
+  section.story .visual h4 {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+    font-weight: 600;
+  }
+  section.story .visual .chart-wrap { height: 280px; position: relative; }
+
+  /* CTA between story and calculator */
+  section.cta {
+    padding: 50px 32px;
+    text-align: center;
+    border-top: 1px solid var(--deep-tint);
+  }
+  section.cta h3 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+  }
+  section.cta p {
+    color: var(--lav-tint);
+    margin: 0 0 24px 0;
+    font-weight: 300;
+  }
+  section.cta button.go {
+    background: var(--lav);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  section.cta button.go:hover { background: var(--lav-shadow); }
+
+  /* ---------- CALCULATOR ---------- */
+  main.calc {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    padding: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: var(--off);
+    color: var(--deep);
+    border-radius: 10px;
+    padding: 22px;
+    border: 1px solid var(--off-shadow);
+    align-self: start;
+  }
+  .panel h2 {
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+  }
+  .panel h2:not(:first-child) { margin-top: 22px; }
+  .results { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+  /* ---- receiver toggle ---- */
+  .toggle-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--white);
+    border: 1px solid var(--off-shadow);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .toggle-group button {
+    font-family: inherit;
+    background: transparent;
+    border: none;
+    padding: 10px 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--deep);
+    letter-spacing: 0.3px;
+    transition: background 0.15s ease;
+  }
+  .toggle-group button.active {
+    background: var(--lav);
+    color: var(--white);
+    font-weight: 600;
+  }
+  .toggle-group button:not(.active):hover { background: var(--off-shadow); }
+  .rx-info {
+    font-size: 12px;
+    color: var(--deep-tint);
+    margin-top: 2px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.3;
+  }
+  .rx-info b { color: var(--deep); font-weight: 600; }
+
+  /* ---- sliders ---- */
+  .control { margin-bottom: 16px; }
+  .control.disabled { opacity: 0.4; pointer-events: none; }
+  .control-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .control-head label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--deep-tint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .control-head .value {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--lav-shadow);
+    font-variant-numeric: tabular-nums;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--off-shadow);
+    border-radius: 3px;
+    outline: none;
+    margin: 6px 0;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--lav);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 2px var(--white);
+    transition: transform 0.1s ease;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    background: var(--lav);
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  /* ---- result cards ---- */
+  .card {
+    background: var(--off);
+    color: var(--deep);
+    border-radius: 10px;
+    padding: 22px 24px;
+    border: 1px solid var(--off-shadow);
+  }
+  .card h3 {
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+  }
+
+  /* ---- schematic SVG ---- */
+  #schematic-wrap, #schematic-story { width: 100%; }
+  #schematic, #schematic-s { width: 100%; height: 300px; display: block; }
+
+  .chart-wrap { position: relative; height: 320px; }
+
+  /* ---- power balance ---- */
+  .balance-bar {
+    display: flex;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--off-shadow);
+    margin-bottom: 10px;
+  }
+  .balance-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: flex 0.25s ease;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .balance-seg.thr { background: var(--deep); }
+  .balance-seg.pay { background: var(--lav-shadow); }
+  .balance-seg.nw  { background: var(--lav); }
+  .balance-seg.avail { background: var(--off-shadow); color: var(--deep-tint); }
+  .balance-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--deep-tint);
+  }
+  .swatch {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .sw-thr { background: var(--deep); }
+  .sw-pay { background: var(--lav-shadow); }
+  .sw-nw  { background: var(--lav); }
+
+  /* ---- eclipse panel ---- */
+  .eclipse-row {
+    display: grid;
+    grid-template-columns: 170px 1fr 110px;
+    gap: 10px;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+  .eclipse-row .bar-container {
+    background: var(--off-shadow);
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .eclipse-row .bar {
+    height: 100%;
+    transition: width 0.25s ease;
+  }
+  .eclipse-row .bar.full { background: var(--deep-tint); position: absolute; opacity: 0.3; width: 100%; }
+  .eclipse-row .bar.base { background: var(--deep-tint); position: relative; }
+  .eclipse-row .bar.aug  { background: var(--lav); position: relative; }
+  .eclipse-row .label { color: var(--deep-tint); font-weight: 500; }
+  .eclipse-row .value { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--deep); }
+
+  /* ---- summary callouts ---- */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .summary .kpi {
+    background: var(--deep);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 22px;
+    text-align: left;
+    border: 1px solid var(--deep-tint);
+  }
+  .summary .kpi .klabel {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--lav-tint);
+    margin-bottom: 6px;
+  }
+  .summary .kpi .kval {
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--lav);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .summary .kpi .ksub {
+    font-size: 13px;
+    color: var(--lav-tint);
+    margin-top: 6px;
+  }
+  .summary .kpi .kval.good { color: var(--ok); }
+  .summary .kpi .kval.bad  { color: var(--warn); }
+
+  /* ---- delivered readout ---- */
+  .delivered {
+    background: var(--white);
+    border: 1px solid var(--off-shadow);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-top: -4px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--deep-tint);
+    display: flex;
+    justify-content: space-between;
+  }
+  .delivered b { color: var(--lav-shadow); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  footer {
+    margin-top: 12px;
+    padding: 24px 32px 32px;
+    text-align: center;
+    color: var(--lav-tint);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    border-top: 1px solid var(--deep-tint);
+  }
+  footer a { color: var(--lav); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    main.calc { grid-template-columns: 1fr; padding: 16px; }
+    header.site { padding: 12px 16px; }
+    nav.tabs { padding: 0 16px; overflow-x: auto; }
+    section.hero { padding: 40px 20px 30px; }
+    section.hero h1 { font-size: 30px; }
+    section.hero .lede { font-size: 16px; }
+    section.hero .questions { grid-template-columns: 1fr; }
+    section.story { padding: 40px 20px; }
+    section.story .inner, section.story .inner.flip { grid-template-columns: 1fr; gap: 28px; }
+    section.story .inner.flip .copy { order: 1; }
+    section.story .inner.flip .visual { order: 2; }
+    section.story .copy h3 { font-size: 24px; }
+    .summary { grid-template-columns: 1fr; }
+    .summary .kpi .kval { font-size: 28px; }
+    #schematic, #schematic-s { height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="logo">
+    <img src="NEOWATT_logo.png" alt="NEOWATT">
+    <div class="tagline">Energy beyond Earth</div>
+  </div>
+  <div class="title">VLEO Power Beaming · Capability Study</div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="story" class="active">The case</button>
+  <button data-tab="calc">Interactive study</button>
+</nav>
+
+<!-- ============ STORY TAB ============ -->
+<div class="tab-pane active" id="tab-story">
+
+  <section class="hero">
+    <h1>What could your VLEO satellites do<br>with <span class="accent">supplemental power</span> from orbit?</h1>
+    <p class="lede">Quantify what laser power beaming from NEOWATT could unlock for your platform – across three capability dimensions.</p>
+    <div class="questions" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="q">
+        <div class="qnum">Capability 1</div>
+        <div class="qtxt"><b>Lower altitude.</b> Fly below today's power-limited floor.</div>
+      </div>
+      <div class="q">
+        <div class="qnum">Capability 2</div>
+        <div class="qtxt"><b>Longer eclipse runtime.</b> Sustain payload through the umbra.</div>
+      </div>
+      <div class="q">
+        <div class="qnum">Capability 3</div>
+        <div class="qtxt"><b>Larger bus.</b> Support more payload at any altitude.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: the problem -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 1 · The constraint</h2>
+        <h3>Thruster power scales steeply with altitude.</h3>
+        <p>Drag rises sharply as you descend into VLEO, and thruster power follows – from ~300 W at 250 km to ~4 kW at 150 km. An order of magnitude in 100 km.</p>
+        <p>For a fixed power budget, that curve is a hard altitude floor.</p>
+        <div class="stats">
+          <div class="stat"><div class="n">~300 W</div><div class="l">at 250 km</div></div>
+          <div class="stat"><div class="n">~1 kW</div><div class="l">at 200 km</div></div>
+          <div class="stat"><div class="n">~4 kW</div><div class="l">at 150 km</div></div>
+        </div>
+      </div>
+      <div class="visual">
+        <h4>Thruster power vs altitude</h4>
+        <div class="chart-wrap"><canvas id="storyChart1"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: today's limit -->
+  <section class="story alt">
+    <div class="inner flip">
+      <div class="copy">
+        <h2>Section 2 · The power-limited floor</h2>
+        <h3>Your budget sets the lowest altitude you can hold.</h3>
+        <p>A <strong>1.6 kW</strong> bus with <strong>0.8 kW</strong> for payload leaves <strong>0.8 kW</strong> for thrusters. Where that line meets the demand curve – around <strong>205 km</strong> – is your practical limit.</p>
+        <p>Going lower means more solar or more battery. Both add drag and mass – fighting the goal.</p>
+      </div>
+      <div class="visual">
+        <h4>Today's operating envelope</h4>
+        <div class="chart-wrap"><canvas id="storyChart2"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: power beaming -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 3 · Going lower</h2>
+        <h3>Beamed power lowers the altitude floor.</h3>
+        <p>NEOWATT beams laser power from a transmitter satellite in sunlight to the receiver. Even <strong>0.3 kW</strong> delivered to the bus shifts the floor.</p>
+        <p>At <strong>0.5 kW</strong>, expect <strong>15–20 km lower</strong> without resizing. At <strong>1 kW</strong>, sub-180 km becomes feasible.</p>
+      </div>
+      <div class="visual">
+        <h4>With supplemental power</h4>
+        <div class="chart-wrap"><canvas id="storyChart3"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: eclipse -->
+  <section class="story alt">
+    <div class="inner flip">
+      <div class="copy">
+        <h2>Section 4 · Through eclipse</h2>
+        <h3>Longer payload duty cycle in the umbra.</h3>
+        <p>In eclipse, payload draw comes from batteries. High-power instruments – IR, radar, active comms – drain capacity fast. Beamed power from a transmitter still in sunlight cuts the net battery drain.</p>
+        <p>VLEO eclipses last <strong>30–35 min</strong>. A partial supplement is the difference between a curtailed and a complete pass.</p>
+      </div>
+      <div class="visual">
+        <h4>Payload runtime in eclipse</h4>
+        <div style="margin-top:8px;">
+          <div class="eclipse-row">
+            <span class="label">Batteries only</span>
+            <div class="bar-container"><div class="bar full"></div><div class="bar base" id="eStoryBase"></div></div>
+            <span class="value"><span id="eStoryBaseVal">22</span> min</span>
+          </div>
+          <div class="eclipse-row">
+            <span class="label">+ power beaming</span>
+            <div class="bar-container"><div class="bar full"></div><div class="bar aug" id="eStoryAug"></div></div>
+            <span class="value"><span id="eStoryAugVal">34</span> min</span>
+          </div>
+          <div style="margin-top:14px; font-size:13px; color:var(--deep-tint);">
+            Example: 0.8 kW payload, 35% of orbit in eclipse, 300 Wh battery, 0.3 kW delivered.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: death spiral / larger bus -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 5 · Breaking the death spiral</h2>
+        <h3>A larger bus, without the feedback loop.</h3>
+        <p>Bigger bus → more drag → more power required → bigger solar array → more drag → more power required → …</p>
+        <p>Beamed power lands on the bus <strong>without adding drag</strong> (or via a small dome – a fraction of an array's footprint). It's the only input that breaks the loop.</p>
+        <p>The result: more sustainable payload at every altitude, and feasibility where the loop otherwise rules you out.</p>
+      </div>
+      <div class="visual">
+        <h4>Sustainable payload power vs altitude</h4>
+        <div class="chart-wrap"><canvas id="storyChart4"></canvas></div>
+        <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+          Steady-state solver: array sized to balance drag, payload = remaining headroom. Bus body 0.5 m², array 4 m², beam 0.3 kW delivered.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: receiver trade -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 6 · Receiver options</h2>
+        <h3>Generic panel, or specialised dome?</h3>
+        <p><strong>Generic panel</strong> – beam onto your existing array. No new hardware, no extra drag. ~<strong>25%</strong> efficiency, narrow acceptance (~±30°).</p>
+        <p><strong>Specialised dome</strong> – optimised for the laser wavelength. ~<strong>60%</strong> efficiency, wider acceptance (~±75°). Adds a small aperture to the slipstream.</p>
+        <p>The drag question depends on geometry: the smaller solar array enabled by beamed power often more than offsets the dome.</p>
+      </div>
+      <div class="visual">
+        <h4>Receiver geometry</h4>
+        <div id="schematic-story">
+          <svg id="schematic-s" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="toggle-group" style="margin-top:14px;" id="rxToggleStory">
+          <button type="button" data-rx="generic" class="active">Generic panel</button>
+          <button type="button" data-rx="specialised">Specialised receiver</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h3>Run the numbers on your own configuration</h3>
+    <p>Adjust altitude, power budget, payload, and beam parameters live.</p>
+    <button class="go" id="goCalc">Open interactive study →</button>
+  </section>
+
+</div>
+
+<!-- ============ CALCULATOR TAB ============ -->
+<div class="tab-pane" id="tab-calc">
+
+<main class="calc">
+  <!-- INPUTS -->
+  <aside class="panel" id="inputs">
+    <h2>Receiver configuration</h2>
+    <div class="toggle-group" id="rxToggle">
+      <button type="button" data-rx="generic" class="active">Generic panel</button>
+      <button type="button" data-rx="specialised">Specialised receiver</button>
+    </div>
+    <div class="rx-info">
+      <span>Efficiency: <b id="rxEff">25%</b></span>
+      <span>Acceptance: <b id="rxAng">±30°</b></span>
+    </div>
+
+    <h2>Satellite &amp; orbit</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Target altitude</label><span class="value"><span id="altVal">200</span> km</span></div>
+      <input type="range" id="alt" min="150" max="350" step="5" value="200">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Power budget</label><span class="value"><span id="budVal">1.60</span> kW</span></div>
+      <input type="range" id="bud" min="0.5" max="5" step="0.1" value="1.6">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Payload draw</label><span class="value"><span id="payVal">0.80</span> kW</span></div>
+      <input type="range" id="pay" min="0" max="2" step="0.05" value="0.8">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Solar array area</label><span class="value"><span id="arrVal">4.0</span> m²</span></div>
+      <input type="range" id="arr" min="1" max="15" step="0.5" value="4">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Bus frontal area</label><span class="value"><span id="busVal">0.5</span> m²</span></div>
+      <input type="range" id="bus" min="0.1" max="3" step="0.05" value="0.5">
+    </div>
+
+    <h2>Eclipse &amp; battery</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Orbit fraction in eclipse</label><span class="value"><span id="ecVal">35</span>%</span></div>
+      <input type="range" id="ec" min="0" max="50" step="1" value="35">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Battery capacity</label><span class="value"><span id="batVal">300</span> Wh</span></div>
+      <input type="range" id="bat" min="50" max="1500" step="25" value="300">
+    </div>
+
+    <h2>NEOWATT supplement</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Power delivered to bus</label><span class="value"><span id="nwVal">0.30</span> kW</span></div>
+      <input type="range" id="nw" min="0" max="1.5" step="0.05" value="0.3">
+    </div>
+
+    <div class="delivered">
+      <span>Required transmitted power <span id="effNote">(25% eff.)</span></span>
+      <b><span id="delVal">1.20</span> kW</b>
+    </div>
+
+    <div class="control" id="dragCtrl">
+      <div class="control-head"><label>Receiver dome drag penalty</label><span class="value"><span id="drVal">5</span>%</span></div>
+      <input type="range" id="dr" min="0" max="15" step="1" value="5">
+    </div>
+  </aside>
+
+  <section class="results">
+
+    <div class="card">
+      <h3>Live schematic</h3>
+      <div id="schematic-wrap">
+        <svg id="schematic" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Thruster power vs altitude</h3>
+      <div class="chart-wrap"><canvas id="heroChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Power balance at selected altitude</h3>
+      <div class="balance-bar" id="balanceBar">
+        <div class="balance-seg thr" id="segThr"></div>
+        <div class="balance-seg pay" id="segPay"></div>
+        <div class="balance-seg nw" id="segNw"></div>
+        <div class="balance-seg avail" id="segAvail"></div>
+      </div>
+      <div class="balance-legend">
+        <span><span class="swatch sw-thr"></span>Thruster demand</span>
+        <span><span class="swatch sw-pay"></span>Payload</span>
+        <span><span class="swatch sw-nw"></span>Power beaming delivered</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Payload operation during umbra</h3>
+      <div class="eclipse-row">
+        <span class="label">Eclipse duration</span>
+        <div class="bar-container"><div class="bar full"></div></div>
+        <span class="value"><span id="ecDurVal">0</span> min</span>
+      </div>
+      <div class="eclipse-row">
+        <span class="label">Batteries only</span>
+        <div class="bar-container"><div class="bar full"></div><div class="bar base" id="ecBarBase"></div></div>
+        <span class="value"><span id="ecBaseVal">0</span> min</span>
+      </div>
+      <div class="eclipse-row">
+        <span class="label">+ power beaming</span>
+        <div class="bar-container"><div class="bar full"></div><div class="bar aug" id="ecBarAug"></div></div>
+        <span class="value"><span id="ecAugVal">0</span> min</span>
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+        Orbital period: <b id="orbPeriod" style="color:var(--deep);">—</b>.
+        Beaming reduces net battery drain rate during eclipse.
+      </div>
+      <div id="ecNote" style="margin-top:10px; padding:10px 12px; background:rgba(212,161,74,0.12); border-left:3px solid var(--warn); border-radius:0 6px 6px 0; font-size:13px; color:var(--deep); display:none;">
+        Battery already covers the full eclipse at this payload draw – no benefit from beaming for duty cycle. (Beaming still helps with altitude and sustainable bus.)
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="kpi">
+        <div class="klabel">Lowest operable altitude</div>
+        <div class="kval"><span id="loBase">—</span> → <span id="loAug">—</span> <span style="font-size:22px;">km</span></div>
+        <div class="ksub">today → with beaming (<span id="loDelta">—</span> lower)</div>
+      </div>
+      <div class="kpi">
+        <div class="klabel">Eclipse runtime gain</div>
+        <div class="kval">+<span id="ecGainVal">—</span> <span style="font-size:22px;">min</span></div>
+        <div class="ksub">payload runtime in umbra vs batteries alone</div>
+      </div>
+      <div class="kpi">
+        <div class="klabel">Extra payload sustainable</div>
+        <div class="kval">+<span id="busGainVal">—</span> <span style="font-size:22px;">W</span></div>
+        <div class="ksub">at this altitude, with current array &amp; bus area</div>
+      </div>
+    </div>
+
+    <details class="card" style="margin-top:4px;">
+      <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model assumptions</summary>
+      <div style="margin-top:14px; font-size:13px; color:var(--deep); line-height:1.6;">
+        <ul style="margin:0; padding-left:20px;">
+          <li><b>Thruster power vs altitude:</b> exponential fit through (250 km, 300 W), (200 km, 1 kW), (150 km, 4 kW), consistent with VLEO drag–power scaling reported in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>.</li>
+          <li><b>Atmosphere:</b> log-linear density between 200 km (2.5×10⁻¹⁰ kg/m³) and 250 km (7×10⁻¹¹ kg/m³), per NRLMSISE-00 nominal solar conditions.</li>
+          <li><b>Orbital velocity:</b> 7.8 km/s, treated as constant. v varies only ~1.5% (7.82 → 7.70 km/s) over 150–350 km, dwarfed by the ~10× density variation that dominates drag.</li>
+          <li><b>Solar flux:</b> 1366 W/m² (Kopp & Lean 2011). <b>PV efficiency:</b> 30%, representative of triple-junction GaAs cells (Spectrolab XTJ Prime).</li>
+          <li><b>Drag coefficient:</b> C<sub>d</sub> = 2.2, free-molecular flat plate (Cook 1965; Moe & Moe 2005).</li>
+          <li><b>Generic-panel laser efficiency:</b> 25%, ±30° acceptance, typical of Si/III–V single-wavelength response.</li>
+          <li><b>Specialised dome:</b> 60% efficiency, ±75° acceptance, 0.3 m² added cross-section, consistent with reported wavelength-tuned PV demonstrations (Steinsiek et al.; LaserMotive).</li>
+          <li><b>Eclipse runtime:</b> while in shadow, the payload draws on battery alone. Beamed power reduces the net drain rate to (payload – delivered), so the same battery lasts longer.</li>
+          <li><b>Sustainable payload:</b> at a given altitude, the maximum payload power is what's left after the array generates electricity and the thrusters spend it on drag. With a beam, the equation gains a term that costs no drag area:<br><span style="font-family:monospace; font-size:12px;">payload<sub>max</sub> = (array area × solar flux × PV η) + delivered beam – drag-power-per-m² × (array area + bus area)</span><br>The drag-power-per-m² constant is fitted so the model reproduces the 200 km thruster-power data point.</li>
+          <li><b>Drag delta:</b> "today" means the current array area with no dome. When beaming supplies a share of the bus power, the array can shrink in proportion (less drag). A specialised dome adds a small drag penalty back. The net change can be positive or negative depending on which dominates.</li>
+        </ul>
+      </div>
+    </details>
+
+
+  </section>
+</main>
+
+</div>
+
+<footer>
+  <div style="font-size:16px; font-weight:500; color:var(--white); margin-bottom:6px;">Get in touch</div>
+  <div><a href="mailto:contact@neowatt.co.uk">contact@neowatt.co.uk</a> · <a href="https://neowatt.co.uk">neowatt.co.uk</a></div>
+</footer>
+
+<script>
+(() => {
+  // ======== shared physics ========
+  // P(h) = A*exp(-k*h), least squares on (150,4000),(200,1000),(250,300)
+  const pts = [[150, 4000], [200, 1000], [250, 300]];
+  const n = pts.length;
+  const sx  = pts.reduce((s,p)=>s+p[0],0);
+  const sy  = pts.reduce((s,p)=>s+Math.log(p[1]),0);
+  const sxy = pts.reduce((s,p)=>s+p[0]*Math.log(p[1]),0);
+  const sxx = pts.reduce((s,p)=>s+p[0]*p[0],0);
+  const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+  const A = Math.exp((sy - slope*sx) / n);
+  const k = -slope;
+  const thrusterPower = (h) => A * Math.exp(-k * h);
+
+  const rho = (h) => {
+    const h1=200, rho1=2.5e-10, h2=250, rho2=7e-11;
+    const lr1=Math.log(rho1), lr2=Math.log(rho2);
+    const sl = (lr2-lr1)/(h2-h1);
+    return Math.exp(lr1 + sl*(h-h1));
+  };
+
+  const bisect = (availKw) => {
+    let lo=100, hi=400;
+    if (availKw<=0) return 400;
+    const target = availKw*1000;
+    for (let i=0;i<60;i++) {
+      const m=(lo+hi)/2;
+      if (thrusterPower(m)>target) lo=m; else hi=m;
+    }
+    return (lo+hi)/2;
+  };
+
+  const profiles = {
+    generic:     { eff: 0.25, angDeg: 30, hasDome: false },
+    specialised: { eff: 0.60, angDeg: 75, hasDome: true  }
+  };
+
+  const altGrid = [];
+  for (let h=150; h<=350; h+=2) altGrid.push(h);
+  const curveData = altGrid.map(h => ({x:h, y:thrusterPower(h)}));
+
+  // ======== TABS ========
+  const tabs = document.querySelectorAll('nav.tabs button');
+  const panes = document.querySelectorAll('.tab-pane');
+  function activateTab(name) {
+    tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    panes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+    if (name === 'calc') {
+      // resize charts after becoming visible
+      setTimeout(() => calc.chart && calc.chart.resize(), 50);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }
+  tabs.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.tab)));
+  document.getElementById('goCalc').addEventListener('click', () => activateTab('calc'));
+
+  // ======== STORY CHARTS ========
+  const baseAxisOpts = (yMax) => ({
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position:'bottom', labels:{ color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' }, usePointStyle:true, boxWidth:10 } },
+      tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
+        callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${Math.round(it.parsed.y)} W` } } },
+    scales: {
+      x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } },
+      y: { min:0, max:yMax, title:{ display:true, text:'Power (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } }
+    }
+  });
+
+  const curveDataset = {
+    label: 'Thruster demand', data: curveData,
+    borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.12)',
+    borderWidth:2.5, tension:0.3, pointRadius:0, fill:true
+  };
+
+  // Story chart 1 – just the curve
+  new Chart(document.getElementById('storyChart1'), {
+    type: 'line',
+    data: { datasets: [JSON.parse(JSON.stringify(curveDataset))] },
+    options: baseAxisOpts(5000)
+  });
+
+  // Story chart 2 – curve + horizontal "today's available power" line + intersection marker
+  const todayBudget = 0.8; // kW left for thrusters at 1.6 budget, 0.8 payload
+  const todayLimitKm = bisect(todayBudget);
+  new Chart(document.getElementById('storyChart2'), {
+    type: 'line',
+    data: { datasets: [
+      JSON.parse(JSON.stringify(curveDataset)),
+      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
+      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false }
+    ] },
+    options: baseAxisOpts(5000)
+  });
+
+  // Story chart 3 – adds beamed power and new floor (same line styles as chart 2 for shared elements)
+  const beamedKw = 0.3; // kW delivered to bus
+  const augBudget = todayBudget + beamedKw;
+  const augLimitKm = bisect(augBudget);
+  new Chart(document.getElementById('storyChart3'), {
+    type: 'line',
+    data: { datasets: [
+      JSON.parse(JSON.stringify(curveDataset)),
+      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
+      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false },
+      { label:`+ beaming: ${(augBudget*1000).toFixed(0)} W available`, data:[{x:150,y:augBudget*1000},{x:350,y:augBudget*1000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false },
+      { label:`New floor: ${augLimitKm.toFixed(0)} km`, data:[{x:augLimitKm,y:0},{x:augLimitKm,y:5000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false }
+    ] },
+    options: baseAxisOpts(5000)
+  });
+
+  // Story chart 4 – sustainable payload vs altitude (death spiral)
+  // Uses a physics-based steady-state model with constants defined in calculator section
+  const SF = 1366, ETA = 0.30, VV = 7800, KT = 32873;
+  const thrPhys = (h, At) => KT * rho(h) * VV * VV * At;
+  const susPay = (h, A, Ab, Bw) => SF*ETA*A + Bw - thrPhys(h, A+Ab);
+  const A_story = 4, Ab_story = 0.5;
+  const beam_story = 300; // W delivered
+  const sustainCurveBase = altGrid.map(h => ({ x:h, y:Math.max(-500, susPay(h, A_story, Ab_story, 0)) }));
+  const sustainCurveAug  = altGrid.map(h => ({ x:h, y:Math.max(-500, susPay(h, A_story, Ab_story, beam_story)) }));
+  new Chart(document.getElementById('storyChart4'), {
+    type: 'line',
+    data: { datasets: [
+      { label:'Today (no beaming)', data:sustainCurveBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true },
+      { label:'+ 0.3 kW beamed', data:sustainCurveAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true },
+      { label:'Infeasible', data:[{x:150,y:0},{x:350,y:0}], borderColor:'#D4A14A', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false }
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: { legend: { position:'bottom', labels:{ color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' }, usePointStyle:true, boxWidth:10 } },
+        tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
+          callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${Math.round(it.parsed.y)} W` } } },
+      scales: {
+        x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } },
+        y: { min:-500, max:1500, title:{ display:true, text:'Sustainable payload (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } }
+      }
+    }
+  });
+
+  // Story eclipse panel – fixed example
+  (() => {
+    const T = 2*Math.PI*Math.sqrt(Math.pow(6371+200,3)/398600);
+    const eclipseMin = T*0.35/60;
+    const battery = 300; // Wh
+    const payload = 800; // W
+    const beamed  = 300; // W delivered
+    const baseMin = Math.min(eclipseMin, battery/payload*60);
+    const augMin  = Math.min(eclipseMin, battery/Math.max(1, payload-beamed)*60);
+    document.getElementById('eStoryBaseVal').textContent = baseMin.toFixed(0);
+    document.getElementById('eStoryAugVal').textContent  = augMin.toFixed(0);
+    const max = eclipseMin;
+    document.getElementById('eStoryBase').style.width = (baseMin/max*100)+'%';
+    document.getElementById('eStoryAug').style.width  = (augMin/max*100)+'%';
+  })();
+
+  // ======== SCHEMATIC RENDERER (shared) ========
+  function buildSchematicSVG(svg) {
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="beamGrad-${svg.id}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="#8479D0" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#8479D0" stop-opacity="0.3"/>
+        </linearGradient>
+        <radialGradient id="earthGrad-${svg.id}" cx="50%" cy="0%" r="100%">
+          <stop offset="0%"  stop-color="#394563"/>
+          <stop offset="100%" stop-color="#0E1A3D"/>
+        </radialGradient>
+      </defs>
+      <path d="M -200,500 A 1000,1000 0 0 1 1000,500 Z" fill="url(#earthGrad-${svg.id})"/>
+      <path class="altLine" d="" stroke="#C6C1EE" stroke-width="1" stroke-dasharray="4 4" fill="none" opacity="0.5"/>
+      <g>
+        <rect x="680" y="30" width="40" height="24" fill="#0E1A3D" stroke="#8479D0" stroke-width="1.5"/>
+        <rect x="655" y="34" width="20" height="16" fill="#394563" stroke="#8479D0" stroke-width="1"/>
+        <rect x="725" y="34" width="20" height="16" fill="#394563" stroke="#8479D0" stroke-width="1"/>
+        <text x="700" y="20" text-anchor="middle" font-family="Rajdhani" font-size="11" fill="#C6C1EE" font-weight="500">TRANSMITTER</text>
+      </g>
+      <path class="beam" d="" fill="url(#beamGrad-${svg.id})" opacity="0.7"/>
+      <g class="rxSat">
+        <rect class="panelL" x="0" y="0" width="0" height="0" fill="#394563" stroke="#8479D0" stroke-width="1"/>
+        <rect class="panelR" x="0" y="0" width="0" height="0" fill="#394563" stroke="#8479D0" stroke-width="1"/>
+        <rect class="body" x="0" y="0" width="0" height="0" fill="#0E1A3D" stroke="#8479D0" stroke-width="1.5"/>
+        <path class="dome" d="" fill="#8479D0" stroke="#4D4682" stroke-width="1.5" opacity="0.95"/>
+        <text class="altLabel" x="0" y="0" font-family="Rajdhani" font-size="13" font-weight="600" fill="#C6C1EE">200 km</text>
+        <g class="dragArrow">
+          <line class="dragLine" x1="0" y1="0" x2="0" y2="0" stroke="#D4A14A" stroke-width="2.5"/>
+          <polygon class="dragHead" points="0,0" fill="#D4A14A"/>
+          <text class="dragLabel" x="0" y="0" font-family="Rajdhani" font-size="11" fill="#D4A14A" font-weight="500">drag</text>
+        </g>
+      </g>
+      <g opacity="0.6">
+        <circle cx="50"  cy="40"  r="1" fill="#C6C1EE"/>
+        <circle cx="120" cy="80"  r="1" fill="#C6C1EE"/>
+        <circle cx="220" cy="30"  r="1" fill="#C6C1EE"/>
+        <circle cx="350" cy="60"  r="1" fill="#C6C1EE"/>
+        <circle cx="470" cy="25"  r="1" fill="#C6C1EE"/>
+        <circle cx="560" cy="95"  r="1" fill="#C6C1EE"/>
+        <circle cx="600" cy="140" r="1" fill="#C6C1EE"/>
+        <circle cx="80"  cy="130" r="1" fill="#C6C1EE"/>
+      </g>`;
+    return {
+      panelL: svg.querySelector('.panelL'), panelR: svg.querySelector('.panelR'),
+      body: svg.querySelector('.body'), dome: svg.querySelector('.dome'),
+      beam: svg.querySelector('.beam'),
+      altLabel: svg.querySelector('.altLabel'), altLine: svg.querySelector('.altLine'),
+      dragLine: svg.querySelector('.dragLine'), dragHead: svg.querySelector('.dragHead'), dragLabel: svg.querySelector('.dragLabel')
+    };
+  }
+
+  function updateSchematic(refs, s, rx) {
+    const altY = 240 - ((s.alt - 150) / 200) * 160;
+    const satCx = 260, bodyW = 30, bodyH = 22;
+    const bodyX = satCx - bodyW/2;
+    const bodyY = altY - bodyH/2;
+    refs.body.setAttribute('x', bodyX); refs.body.setAttribute('y', bodyY);
+    refs.body.setAttribute('width', bodyW); refs.body.setAttribute('height', bodyH);
+    refs.altLine.setAttribute('d', '');
+
+    const panelW = Math.max(14, s.arr * 7);
+    const panelH = 16;
+    const panelY = altY - panelH/2;
+    refs.panelL.setAttribute('x', bodyX - panelW - 2); refs.panelL.setAttribute('y', panelY);
+    refs.panelL.setAttribute('width', panelW); refs.panelL.setAttribute('height', panelH);
+    refs.panelR.setAttribute('x', bodyX + bodyW + 2); refs.panelR.setAttribute('y', panelY);
+    refs.panelR.setAttribute('width', panelW); refs.panelR.setAttribute('height', panelH);
+
+    const prof = profiles[rx];
+    if (prof.hasDome) {
+      const rd = 9 + s.dr * 0.4;
+      refs.dome.setAttribute('d', `M ${satCx - rd},${bodyY} A ${rd},${rd} 0 0 1 ${satCx + rd},${bodyY} Z`);
+      refs.dome.setAttribute('opacity', '0.95');
+    } else {
+      refs.dome.setAttribute('d', '');
+    }
+
+    const txX=700, txY=54;
+    const rcvX=satCx, rcvY=prof.hasDome ? bodyY-(9+s.dr*0.4) : bodyY;
+    // Beam width represents the required incident beam (delivered / efficiency)
+    const beamKw = prof.eff > 0 ? s.nw / prof.eff : 0;
+    const bw = 4 + Math.min(beamKw, 4) * 6;
+    const dx=rcvX-txX, dy=rcvY-txY, len=Math.hypot(dx,dy);
+    const px=-dy/len*bw/2, py=dx/len*bw/2;
+    const beamPath = `M ${txX+px} ${txY+py} L ${txX-px} ${txY-py} L ${rcvX-px*0.3} ${rcvY-py*0.3} L ${rcvX+px*0.3} ${rcvY+py*0.3} Z`;
+    refs.beam.setAttribute('d', beamPath);
+    refs.beam.setAttribute('opacity', s.nw < 0.01 ? '0' : (0.35 + prof.eff*0.6).toFixed(2));
+
+    refs.altLabel.setAttribute('x', bodyX + panelW + bodyW + 12);
+    refs.altLabel.setAttribute('y', altY + 4);
+    refs.altLabel.textContent = `${s.alt} km`;
+
+    const dw = s.dragWatts || 0;
+    const mag = Math.min(1, Math.abs(dw) / 300); // saturate at 300 W either way
+    const arrowLen = 20 + mag*60;
+    const ax1 = bodyX - panelW - 10, ay = altY + bodyH/2 + 18, ax2 = ax1 - arrowLen;
+    const col = dw > 0 ? '#D4A14A' : '#3EAF7C';
+    refs.dragLine.setAttribute('x1', ax1); refs.dragLine.setAttribute('y1', ay);
+    refs.dragLine.setAttribute('x2', ax2); refs.dragLine.setAttribute('y2', ay);
+    refs.dragLine.setAttribute('stroke', col);
+    refs.dragHead.setAttribute('points', `${ax2},${ay} ${ax2+8},${ay-4} ${ax2+8},${ay+4}`);
+    refs.dragHead.setAttribute('fill', col);
+    refs.dragLabel.setAttribute('x', ax2);
+    refs.dragLabel.setAttribute('y', ay + 16);
+    refs.dragLabel.setAttribute('fill', col);
+    refs.dragLabel.textContent = dw < 0
+      ? `Thruster power saved: ${Math.abs(dw).toFixed(0)} W`
+      : `Additional thruster power: +${dw.toFixed(0)} W`;
+  }
+
+  // Story-tab schematic – fixed example state, recomputes drag based on receiver toggle
+  const sRefs = buildSchematicSVG(document.getElementById('schematic-s'));
+  let sRx = 'generic';
+  function updateStorySchematic() {
+    // Example state: 200 km, 4 m² array, 1.6 kW bus, 0.3 kW delivered to bus, 5% dome drag overhead
+    const ex = { alt:200, arr:4, nw:0.3, dr:5, bud:1.6 };
+    const profEx = profiles[sRx];
+    const arrayShrinkEx = Math.min(0.95, ex.nw / ex.bud);
+    const arrayAreaNewEx = ex.arr * (1 - arrayShrinkEx);
+    const domeAreaEx = profEx.hasDome ? 0.3 : 0;
+    const domeCdMultEx = profEx.hasDome ? (1 + ex.dr/100) : 0;
+    const dragAreaDeltaEx = (arrayAreaNewEx - ex.arr) + domeAreaEx * domeCdMultEx;
+    // Use same physics constants as calculator
+    const KS=32873, VS=7800;
+    const dragWattsEx = KS * rho(ex.alt) * VS * VS * dragAreaDeltaEx;
+    updateSchematic(sRefs, { ...ex, dragWatts: dragWattsEx }, sRx);
+  }
+  document.querySelectorAll('#rxToggleStory button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#rxToggleStory button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      sRx = btn.dataset.rx;
+      updateStorySchematic();
+    });
+  });
+  updateStorySchematic();
+
+  // ======== CALCULATOR ========
+  const calc = {};
+  calc.refs = buildSchematicSVG(document.getElementById('schematic'));
+  let rx = 'generic';
+
+  const $ = id => document.getElementById(id);
+  const inputs = { alt:$('alt'), bud:$('bud'), pay:$('pay'), arr:$('arr'), bus:$('bus'),
+                   ec:$('ec'), bat:$('bat'), nw:$('nw'), dr:$('dr') };
+
+  // Physics constants for sustainable-payload (death-spiral) model
+  const SOLAR_FLUX = 1366;     // W/m²
+  const PV_ETA     = 0.30;     // multi-junction efficiency
+  const V_ORB      = 7800;     // m/s
+  const Cd_BUS     = 2.2;
+  // Calibrate K so P_thrust(2 m², 200 km) ≈ 1000 W matches representative VLEO data
+  // P_thr = K * rho(h) * v² * A_total  → K ≈ 32873
+  const K_THRUST   = 32873;
+  function thrustPowerPhys(h, Atotal) { return K_THRUST * rho(h) * V_ORB * V_ORB * Atotal; }
+  // Sustainable payload at altitude h with array A, bus area A_bus, beam B (kW delivered)
+  function sustainablePayload(h, A, Abus, Bkw) {
+    const arrayGen = SOLAR_FLUX * PV_ETA * A;          // W
+    const drag     = thrustPowerPhys(h, A + Abus);     // W
+    return arrayGen + Bkw * 1000 - drag;               // W (can be negative = infeasible)
+  }
+
+  const ctx = document.getElementById('heroChart').getContext('2d');
+  calc.chart = new Chart(ctx, {
+    type: 'line',
+    data: { datasets: [
+      { label:'Thruster demand', data:curveData, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.10)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, order:3 },
+      { label:'Selected altitude', data:[], borderColor:'#0E1A3D', backgroundColor:'#0E1A3D', pointRadius:6, showLine:false, order:0 },
+      { label:'Today: floor', data:[], borderColor:'#394563', borderWidth:2, borderDash:[6,4], pointRadius:0, showLine:true, fill:false, order:2 },
+      { label:'+ beaming: floor', data:[], borderColor:'#8479D0', borderWidth:3, pointRadius:0, showLine:true, fill:false, order:1 }
+    ]},
+    options: baseAxisOpts(5000)
+  });
+
+  function recompute() {
+    const s = {
+      alt:+inputs.alt.value, bud:+inputs.bud.value, pay:+inputs.pay.value,
+      arr:+inputs.arr.value, bus:+inputs.bus.value,
+      ec:+inputs.ec.value/100, bat:+inputs.bat.value,
+      nw:+inputs.nw.value, dr:+inputs.dr.value
+    };
+    const prof = profiles[rx];
+
+    $('altVal').textContent = s.alt;
+    $('budVal').textContent = s.bud.toFixed(2);
+    $('payVal').textContent = s.pay.toFixed(2);
+    $('arrVal').textContent = s.arr.toFixed(1);
+    $('busVal').textContent = s.bus.toFixed(2);
+    $('ecVal').textContent  = Math.round(s.ec*100);
+    $('batVal').textContent = s.bat;
+    $('nwVal').textContent  = s.nw.toFixed(2);
+    $('drVal').textContent  = s.dr;
+    $('rxEff').textContent = Math.round(prof.eff*100)+'%';
+    $('rxAng').textContent = `±${prof.angDeg}°`;
+
+    // Slider IS delivered power; implied incident beam = delivered / efficiency
+    const delivered = s.nw;
+    const requiredBeam = prof.eff > 0 ? delivered / prof.eff : 0;
+    $('delVal').textContent = requiredBeam.toFixed(2);
+    $('effNote').textContent = `(${Math.round(prof.eff*100)}% eff.)`;
+
+    const dragCtrl = $('dragCtrl');
+    if (prof.hasDome) dragCtrl.classList.remove('disabled');
+    else dragCtrl.classList.add('disabled');
+
+    const thrW = thrusterPower(s.alt);
+    const thrKw = thrW/1000;
+    const availBase = s.bud - s.pay;
+    const availAug  = availBase + delivered;
+
+    const loBase = bisect(availBase);
+    const loAug  = bisect(availAug);
+
+    const deficit = Math.max(0, thrKw - availBase);
+    const freed = Math.max(0, delivered - deficit);
+
+    // ECLIPSE – battery-limited, with beaming reducing net drain
+    const T = 2*Math.PI*Math.sqrt(Math.pow(6371+s.alt,3)/398600);
+    const eclipseMin = T*s.ec/60;
+    const payloadW = s.pay*1000;
+    const deliveredW = delivered*1000;
+    // Baseline runtime: battery / payload, capped at eclipse duration
+    const baseMin = s.pay > 0.001 ? Math.min(eclipseMin, s.bat / payloadW * 60) : eclipseMin;
+    // With beaming: net drain rate = max(0, payload - delivered)
+    const netDrainW = Math.max(0, payloadW - deliveredW);
+    const augMin = netDrainW < 1 ? eclipseMin : Math.min(eclipseMin, s.bat / netDrainW * 60);
+
+    $('orbPeriod').textContent = `${(T/60).toFixed(1)} min`;
+    $('ecDurVal').textContent  = eclipseMin.toFixed(1);
+    $('ecBaseVal').textContent = baseMin.toFixed(1);
+    $('ecAugVal').textContent  = augMin.toFixed(1);
+    // Show note when batteries alone already cover the whole eclipse
+    $('ecNote').style.display = (baseMin >= eclipseMin - 0.01 && eclipseMin > 0) ? 'block' : 'none';
+    const maxBar = Math.max(eclipseMin, 0.1);
+    $('ecBarBase').style.width = (baseMin/maxBar*100)+'%';
+    $('ecBarAug').style.width  = (augMin/maxBar*100)+'%';
+
+    // DRAG – expressed as additional thruster power (watts) vs today's array, no dome.
+    // Array shrinks proportionally to the share of bus power that beaming supplants → negative drag work.
+    // Dome adds a (Cd-scaled) cross-section → positive drag work.
+    const arrayShrink = Math.min(0.95, delivered / Math.max(s.bud, 0.01));
+    const arrayAreaNew = s.arr * (1 - arrayShrink);
+    const domeArea = prof.hasDome ? 0.3 : 0;
+    const domeCdMult = prof.hasDome ? (1 + s.dr/100) : 0;
+    const dragAreaDelta = (arrayAreaNew - s.arr) + domeArea * domeCdMult; // m² (Cd-equivalent)
+    // Convert to thruster-power equivalent using same K used for thrustPowerPhys()
+    const dragWattsDelta = K_THRUST * rho(s.alt) * V_ORB * V_ORB * dragAreaDelta;
+    s.dragWatts = dragWattsDelta;
+
+    $('loBase').textContent = loBase.toFixed(0);
+    $('loAug').textContent  = loAug.toFixed(0);
+    const dAlt = loBase - loAug;
+    $('loDelta').textContent = Math.max(0, dAlt).toFixed(0) + ' km';
+
+    // Eclipse runtime gain (minutes)
+    $('ecGainVal').textContent = Math.max(0, augMin - baseMin).toFixed(1);
+
+    // Sustainable bus headroom (W) – death-spiral model
+    const payloadBase = sustainablePayload(s.alt, s.arr, s.bus, 0);
+    const payloadAug  = sustainablePayload(s.alt, s.arr, s.bus, delivered);
+    const busGain = payloadAug - payloadBase;
+    $('busGainVal').textContent = Math.max(0, busGain).toFixed(0);
+
+    // dragPct still computed and stored on s for the schematic arrow
+
+    // BALANCE BAR
+    const maxKw = Math.max(thrKw + s.pay, s.bud + delivered, 0.01);
+    const tP = thrKw/maxKw*100, pP = s.pay/maxKw*100, nP = delivered/maxKw*100;
+    const aP = Math.max(0, 100-tP-pP-nP);
+    $('segThr').style.flex = tP; $('segPay').style.flex = pP;
+    $('segNw').style.flex  = nP; $('segAvail').style.flex = aP;
+    $('segThr').textContent  = tP>10 ? `Thrusters ${thrKw.toFixed(2)} kW` : '';
+    $('segPay').textContent  = pP>10 ? `Payload ${s.pay.toFixed(2)} kW` : '';
+    $('segNw').textContent   = nP>10 ? `Beam +${delivered.toFixed(2)} kW` : '';
+    $('segAvail').textContent= aP>10 ? 'Headroom' : '';
+
+    // CHART
+    const yMax = Math.max(5000, thrW*1.2);
+    calc.chart.options.scales.y.max = yMax;
+    calc.chart.data.datasets[1].data = [{x:s.alt, y:thrW}];
+    calc.chart.data.datasets[2].data = [{x:loBase, y:0},{x:loBase, y:yMax}];
+    calc.chart.data.datasets[3].data = [{x:loAug,  y:0},{x:loAug,  y:yMax}];
+    calc.chart.update('none');
+
+    updateSchematic(calc.refs, s, rx);
+  }
+
+  Object.values(inputs).forEach(el => el.addEventListener('input', recompute));
+  document.querySelectorAll('#rxToggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#rxToggle button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      rx = btn.dataset.rx;
+      recompute();
+    });
+  });
+  recompute();
+}
+})();
+</script>
+</body>
+</html>
