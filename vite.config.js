@@ -8,6 +8,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [
     {
+      // Images referenced only as strings in JSON (supporter logos, team photos)
+      // are invisible to Vite's bundler, so copy the whole assets/ dir into the
+      // build output verbatim. Matches what scripts/build-previews.mjs does.
+      name: "copy-assets-dir",
+      closeBundle() {
+        const src = path.resolve(__dirname, "assets");
+        const dest = path.resolve(__dirname, "dist/assets");
+        if (fs.existsSync(src)) {
+          fs.cpSync(src, dest, { recursive: true });
+        }
+      }
+    },
+    {
       name: "serve-vleo-static",
       configureServer(server) {
         // Serve public/VLEO/index.html for /VLEO/ and /VLEO in the dev server.
