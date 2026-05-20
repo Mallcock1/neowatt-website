@@ -22,5 +22,11 @@
     "name": "Barclays Eagle Labs",
     "logoPath": "./assets/images/supporters/barclays-eagle-labs-logo.png",
     "url": "https://labs.uk.barclays/"
+  },
+  {
+    "id": "scotlandis",
+    "name": "ScotlandIS",
+    "logoPath": "./assets/images/supporters/scotlandis-logo.jpg",
+    "url": "https://www.scotlandis.com/"
   }
 ]
