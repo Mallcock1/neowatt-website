@@ -42,6 +42,28 @@ export default defineConfig({
           next();
         });
       }
+    },
+    {
+      name: "serve-haps-static",
+      configureServer(server) {
+        // Serve public/HAPS/index.html for /HAPS/ and /HAPS in the dev server.
+        // In production, Vite copies public/ to dist/ and the host serves it correctly.
+        server.middlewares.use((req, res, next) => {
+          if (req.url === "/HAPS") {
+            res.statusCode = 301;
+            res.setHeader("Location", "/HAPS/");
+            res.end();
+            return;
+          }
+          if (req.url === "/HAPS/") {
+            const file = path.resolve(__dirname, "public/HAPS/index.html");
+            res.setHeader("Content-Type", "text/html");
+            res.end(fs.readFileSync(file));
+            return;
+          }
+          next();
+        });
+      }
     }
   ],
   server: {

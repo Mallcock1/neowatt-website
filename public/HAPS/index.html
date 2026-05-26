@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>HAPS Power Beaming Capability Study – NEOWATT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --deep: #0E1A3D;
+    --deep-shadow: #070E21;
+    --deep-tint: #394563;
+    --lav: #8479D0;
+    --lav-shadow: #4D4682;
+    --lav-tint: #C6C1EE;
+    --off: #F6F8FE;
+    --off-shadow: #D7DCE9;
+    --white: #FFFFFF;
+    --ok: #3EAF7C;
+    --warn: #D4A14A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--deep);
+    color: var(--white);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  header.site {
+    background: var(--deep);
+    padding: 22px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header.site .logo { display: flex; align-items: center; gap: 28px; }
+  header.site img {
+    height: 72px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  header.site .tagline {
+    font-size: 22px;
+    color: var(--lav-tint);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    padding-left: 28px;
+    border-left: 1px solid var(--deep-tint);
+  }
+  header.site .title {
+    font-size: 12px;
+    color: var(--lav-tint);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  nav.tabs {
+    background: var(--deep);
+    border-bottom: 1px solid var(--deep-tint);
+    padding: 0 32px;
+    display: flex;
+    gap: 4px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  nav.tabs button {
+    background: transparent;
+    border: none;
+    color: var(--lav-tint);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+  }
+  nav.tabs button:hover { color: var(--white); }
+  nav.tabs button.active {
+    color: var(--white);
+    border-bottom-color: var(--lav);
+  }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  section.hero {
+    padding: 60px 32px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  section.hero h1 {
+    font-size: 42px;
+    font-weight: 600;
+    margin: 0 0 18px 0;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+  }
+  section.hero h1 .accent { color: var(--lav); }
+  section.hero .lede {
+    font-size: 19px;
+    color: var(--lav-tint);
+    max-width: 760px;
+    margin: 0 auto 28px;
+    font-weight: 300;
+  }
+  section.hero .questions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 920px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  section.hero .q {
+    background: rgba(132,121,208,0.08);
+    border: 1px solid var(--deep-tint);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  section.hero .q .qnum {
+    color: var(--lav);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  section.hero .q .qtxt { font-size: 16px; color: var(--white); font-weight: 400; }
+
+  section.story {
+    padding: 60px 32px;
+    border-top: 1px solid var(--deep-tint);
+  }
+  section.story.alt { background: var(--deep-shadow); }
+  section.story .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 48px;
+    align-items: center;
+  }
+  section.story .inner.flip { grid-template-columns: 1.3fr 1fr; }
+  section.story .inner.flip .copy { order: 2; }
+  section.story .inner.flip .visual { order: 1; }
+  section.story .copy h2 {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--lav);
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+  section.story .copy h3 {
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+  section.story .copy p {
+    font-size: 16px;
+    color: var(--lav-tint);
+    margin: 0 0 14px 0;
+    font-weight: 300;
+  }
+  section.story .copy p strong { color: var(--white); font-weight: 500; }
+  section.story .copy .stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  section.story .copy .stat {
+    background: rgba(132,121,208,0.1);
+    border-left: 3px solid var(--lav);
+    padding: 10px 16px;
+    border-radius: 0 6px 6px 0;
+  }
+  section.story .copy .stat .n {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--lav);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  section.story .copy .stat .l {
+    font-size: 12px;
+    color: var(--lav-tint);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  section.story .visual {
+    background: var(--off);
+    border-radius: 12px;
+    padding: 24px;
+    color: var(--deep);
+    border: 1px solid var(--deep-tint);
+  }
+  section.story .visual h4 {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+    font-weight: 600;
+  }
+  section.story .visual .chart-wrap { height: 280px; position: relative; }
+
+  /* season-coverage bars used in section 1 */
+  .cov-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 90px;
+    gap: 10px;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+  .cov-row .bar-container {
+    background: var(--off-shadow);
+    height: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .cov-row .bar {
+    height: 100%;
+    background: var(--lav);
+    transition: width 0.25s ease;
+  }
+  .cov-row .label { color: var(--deep-tint); font-weight: 600; }
+  .cov-row .value { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--deep); }
+
+  /* mass-breakdown stack used in section 2 */
+  .mass-stack {
+    display: flex;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--off-shadow);
+    margin: 14px 0 8px;
+  }
+  .mass-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 13px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .mass-seg.batt   { background: var(--warn); }
+  .mass-seg.struct { background: var(--deep); }
+  .mass-seg.avi    { background: var(--lav-shadow); }
+  .mass-seg.pay    { background: var(--ok); }
+  .mass-legend {
+    display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--deep-tint);
+  }
+  .mass-legend .sw {
+    display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+    margin-right: 6px; vertical-align: middle;
+  }
+  .mass-legend .sw.batt   { background: var(--warn); }
+  .mass-legend .sw.struct { background: var(--deep); }
+  .mass-legend .sw.avi    { background: var(--lav-shadow); }
+  .mass-legend .sw.pay    { background: var(--ok); }
+
+  /* aperture table for section 3 */
+  table.ap {
+    width: 100%; border-collapse: collapse; font-size: 13px; color: var(--deep);
+    margin-top: 10px;
+  }
+  table.ap th, table.ap td {
+    padding: 7px 10px; text-align: left;
+    border-bottom: 1px solid var(--off-shadow);
+  }
+  table.ap th {
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--deep-tint); font-weight: 600;
+  }
+  table.ap td.n { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  section.cta {
+    padding: 50px 32px;
+    text-align: center;
+    border-top: 1px solid var(--deep-tint);
+  }
+  section.cta h3 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+  }
+  section.cta p {
+    color: var(--lav-tint);
+    margin: 0 0 24px 0;
+    font-weight: 300;
+  }
+  section.cta button.go {
+    background: var(--lav);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  section.cta button.go:hover { background: var(--lav-shadow); }
+
+  main.calc {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    padding: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: var(--off);
+    color: var(--deep);
+    border-radius: 10px;
+    padding: 22px;
+    border: 1px solid var(--off-shadow);
+    align-self: start;
+  }
+  .panel h2 {
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+  }
+  .panel h2:not(:first-child) { margin-top: 22px; }
+  .results { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+  .toggle-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--white);
+    border: 1px solid var(--off-shadow);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .toggle-group.four { grid-template-columns: repeat(4, 1fr); }
+  .toggle-group button {
+    font-family: inherit;
+    background: transparent;
+    border: none;
+    padding: 10px 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--deep);
+    letter-spacing: 0.3px;
+    transition: background 0.15s ease;
+  }
+  .toggle-group.four button { font-size: 12px; padding: 9px 4px; }
+  .toggle-group button.active {
+    background: var(--lav);
+    color: var(--white);
+    font-weight: 600;
+  }
+  .toggle-group button:not(.active):hover { background: var(--off-shadow); }
+  .rx-info {
+    font-size: 12px;
+    color: var(--deep-tint);
+    margin-top: 2px;
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  .rx-info b { color: var(--deep); font-weight: 600; }
+
+  .control { margin-bottom: 16px; }
+  .control.disabled { opacity: 0.4; pointer-events: none; }
+  .control-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .control-head label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--deep-tint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .control-head .value {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--lav-shadow);
+    font-variant-numeric: tabular-nums;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--off-shadow);
+    border-radius: 3px;
+    outline: none;
+    margin: 6px 0;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--lav);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 2px var(--white);
+    transition: transform 0.1s ease;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    background: var(--lav);
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .card {
+    background: var(--off);
+    color: var(--deep);
+    border-radius: 10px;
+    padding: 22px 24px;
+    border: 1px solid var(--off-shadow);
+  }
+  .card h3 {
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+  }
+
+  #schematic-wrap { width: 100%; }
+  #schematic { width: 100%; height: 320px; display: block; }
+
+  .chart-wrap { position: relative; height: 320px; }
+
+  .balance-bar {
+    display: flex;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--off-shadow);
+    margin-bottom: 10px;
+  }
+  .balance-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: flex 0.25s ease;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .balance-seg.cru { background: var(--deep); }
+  .balance-seg.pay { background: var(--lav-shadow); }
+  .balance-seg.sol { background: var(--ok); }
+  .balance-seg.beam { background: var(--lav); }
+  .balance-seg.def  { background: var(--warn); color: var(--white); }
+  .balance-seg.head { background: var(--off-shadow); color: var(--deep-tint); }
+  .balance-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--deep-tint);
+  }
+  .swatch {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .sw-cru { background: var(--deep); }
+  .sw-pay { background: var(--lav-shadow); }
+  .sw-sol { background: var(--ok); }
+  .sw-beam { background: var(--lav); }
+  .sw-def { background: var(--warn); }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .summary .kpi {
+    background: var(--deep);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 22px;
+    text-align: left;
+    border: 1px solid var(--deep-tint);
+  }
+  .summary .kpi .klabel {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--lav-tint);
+    margin-bottom: 6px;
+  }
+  .summary .kpi .kval {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--lav);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .summary .kpi .ksub {
+    font-size: 13px;
+    color: var(--lav-tint);
+    margin-top: 6px;
+  }
+  .summary .kpi .kval.good { color: var(--ok); }
+  .summary .kpi .kval.bad  { color: var(--warn); }
+
+  .delivered {
+    background: var(--white);
+    border: 1px solid var(--off-shadow);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-top: -4px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--deep-tint);
+    display: flex;
+    justify-content: space-between;
+  }
+  .delivered b { color: var(--lav-shadow); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  footer {
+    margin-top: 12px;
+    padding: 24px 32px 32px;
+    text-align: center;
+    color: var(--lav-tint);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    border-top: 1px solid var(--deep-tint);
+  }
+  footer a { color: var(--lav); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    main.calc { grid-template-columns: 1fr; padding: 16px; }
+    header.site { padding: 12px 16px; }
+    nav.tabs { padding: 0 16px; overflow-x: auto; }
+    section.hero { padding: 40px 20px 30px; }
+    section.hero h1 { font-size: 30px; }
+    section.hero .lede { font-size: 16px; }
+    section.hero .questions { grid-template-columns: 1fr; }
+    section.story { padding: 40px 20px; }
+    section.story .inner, section.story .inner.flip { grid-template-columns: 1fr; gap: 28px; }
+    section.story .inner.flip .copy { order: 1; }
+    section.story .inner.flip .visual { order: 2; }
+    section.story .copy h3 { font-size: 24px; }
+    .summary { grid-template-columns: 1fr; }
+    .summary .kpi .kval { font-size: 26px; }
+    #schematic { height: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="logo">
+    <img src="NEOWATT_logo.png" alt="NEOWATT">
+    <div class="tagline">Energy beyond Earth</div>
+  </div>
+  <div class="title">HAPS Power Beaming · Capability Study</div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="story" class="active">The case</button>
+  <button data-tab="calc">Interactive study</button>
+</nav>
+
+<!-- ============ STORY TAB ============ -->
+<div class="tab-pane active" id="tab-story">
+
+  <section class="hero">
+    <h1>What capabilities could <span class="accent">power beaming</span> provide to HAPS?</h1>
+    <p class="lede">Today, HAPS cannot maintain year-round flight in mid-to-high latitudes, batteries take up to a third of the airframe, and fragile lightweight builds mean launches must wait for calm air. Power beaming can lift all three limits.</p>
+    <div class="questions">
+      <div class="q">
+        <div class="qnum">Capability 1</div>
+        <div class="qtxt"><b>Year-round flight at any latitude.</b> Close the winter deficit that grounds high-latitude HAPS for months.</div>
+      </div>
+      <div class="q">
+        <div class="qnum">Capability 2</div>
+        <div class="qtxt"><b>Less battery, more payload.</b> Redirect energy storage mass into sensors.</div>
+      </div>
+      <div class="q">
+        <div class="qnum">Capability 3</div>
+        <div class="qtxt"><b>Sturdier airframe.</b> Beamed power eases engineering constraints, enabling take-off in real weather.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: the solar trap -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 1 · The solar trap</h2>
+        <h3>Latitude and season limit flight.</h3>
+        <p>A solar HAPS flies only when the daily energy budget allows. At <strong>50°N</strong>, winter Sun is insufficient; at <strong>60°N</strong> this can last months.</p>
+        <p>The valuable missions – polar ISR, Arctic science, maritime surveillance – sit exactly where solar power fails.</p>
+      </div>
+      <div class="visual">
+        <h4>Days per year a solar HAPS can fly</h4>
+        <div id="covBars"></div>
+        <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+          Indicative capability of a current Zephyr-class solar HAPS.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: mass spiral -->
+  <section class="story alt">
+    <div class="inner flip">
+      <div class="copy">
+        <h2>Section 2 · The mass spiral</h2>
+        <h3>Battery weight is a large portion of airframe.</h3>
+        <p>A light solar plane carries <strong>~25 kg of battery</strong> on a <strong>75 kg</strong> maximum takeoff weight – a third of the airframe, just to make it through the night.</p>
+        <p>Beamed power works day or night, easing the energy storage requirements.</p>
+      </div>
+      <div class="visual">
+        <h4>Light solar plane 75 kg airframe – mass breakdown</h4>
+        <div class="mass-stack">
+          <div class="mass-seg batt"   style="flex: 25;">25 kg battery</div>
+          <div class="mass-seg struct" style="flex: 35;">35 kg structure</div>
+          <div class="mass-seg avi"    style="flex: 10;">10 kg avionics</div>
+          <div class="mass-seg pay"    style="flex: 5;">5 kg</div>
+        </div>
+        <div class="mass-legend">
+          <span><span class="sw batt"></span>Battery</span>
+          <span><span class="sw struct"></span>Structure</span>
+          <span><span class="sw avi"></span>Avionics &amp; comms</span>
+          <span><span class="sw pay"></span>Payload</span>
+        </div>
+        <div style="margin-top:14px; font-size:12px; color:var(--deep-tint);">
+          Indicative split for a 75 kg light solar plane.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: ground-up beaming -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 3 · Ground-up beaming</h2>
+        <h3>A laser from the ground, a receiver under the wing.</h3>
+        <p>A ground station – fixed, shipborne, or on a mobile mast – points a laser at a PV receiver mounted on the underside of the airframe. Slant range is just <strong>20–80 km</strong>, so the beam stays tight with a modest transmitter aperture.</p>
+        <p>Cleanest atmospheric path possible, but bound to line-of-sight and clear sky at the ground.</p>
+      </div>
+      <div class="visual">
+        <h4>Ground-up architecture</h4>
+        <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; display:block; border-radius:6px;">
+          <defs>
+            <linearGradient id="s3sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0E1A3D"/>
+              <stop offset="55%" stop-color="#394563"/>
+              <stop offset="100%" stop-color="#8FB3D9"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="200" fill="url(#s3sky)"/>
+          <rect x="0" y="200" width="400" height="40" fill="#1d2c4a"/>
+          <!-- HAPS -->
+          <g transform="translate(290, 60)">
+            <rect x="-45" y="-3" width="90" height="6" rx="2" fill="#F6F8FE"/>
+            <ellipse cx="0" cy="0" rx="10" ry="4" fill="#C6C1EE"/>
+            <rect x="-2.5" y="-12" width="5" height="9" fill="#F6F8FE"/>
+            <rect x="-18" y="4" width="36" height="3" fill="#8479D0"/>
+          </g>
+          <text x="290" y="42" font-family="Rajdhani" font-size="11" fill="#FFFFFF" text-anchor="middle">HAPS @ 20 km</text>
+          <text x="290" y="85" font-family="Rajdhani" font-size="10" fill="#C6C1EE" text-anchor="middle">receiver under wing</text>
+          <!-- ground station -->
+          <g transform="translate(80, 200)">
+            <rect x="-3" y="-40" width="6" height="40" fill="#F6F8FE"/>
+            <circle cx="0" cy="-46" r="9" fill="#8479D0"/>
+          </g>
+          <text x="80" y="225" font-family="Rajdhani" font-size="11" fill="#F6F8FE" text-anchor="middle">Ground laser</text>
+          <!-- beam -->
+          <line x1="83" y1="156" x2="287" y2="64" stroke="#8479D0" stroke-width="2.5" opacity="0.75" stroke-dasharray="0"/>
+          <text x="195" y="115" font-family="Rajdhani" font-size="11" fill="#C6C1EE" font-style="italic">20–80 km slant</text>
+        </svg>
+        <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+          A single ground station serves any HAPS within its line-of-sight window.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: space-down beaming -->
+  <section class="story alt">
+    <div class="inner flip">
+      <div class="copy">
+        <h2>Section 4 · Space-down beaming</h2>
+        <h3>A LEO transmitter constellation serving a HAPS constellation.</h3>
+        <p>A constellation of LEO transmitters serves a constellation of HAPS. Each satellite passes overhead briefly but frequently; coordinated across the constellation, every HAPS sees a transmitter many times per day.</p>
+        <p>Global coverage in one system, including the high-latitude regions ground stations cannot easily reach. The path is mostly above weather.</p>
+      </div>
+      <div class="visual">
+        <h4>Space-down architecture</h4>
+        <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; display:block; border-radius:6px;">
+          <defs>
+            <linearGradient id="s4space" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#070E21"/>
+              <stop offset="100%" stop-color="#0E1A3D"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="260" fill="url(#s4space)"/>
+          <!-- Earth curve at bottom -->
+          <ellipse cx="200" cy="540" rx="540" ry="320" fill="#1d2c4a"/>
+          <ellipse cx="200" cy="540" rx="540" ry="320" fill="none" stroke="#8479D0" stroke-width="0.6" opacity="0.4"/>
+          <!-- stratosphere band (HAPS altitude) -->
+          <line x1="0" y1="190" x2="400" y2="190" stroke="#C6C1EE" stroke-width="0.4" stroke-dasharray="3 5" opacity="0.5"/>
+          <text x="6" y="186" font-family="Rajdhani" font-size="9" fill="#C6C1EE" opacity="0.7">HAPS ~20 km</text>
+          <!-- LEO sats -->
+          <g>
+            <!-- sat 1 -->
+            <g transform="translate(70, 50)">
+              <rect x="-9" y="-5" width="18" height="10" fill="#F6F8FE"/>
+              <rect x="-22" y="-3" width="11" height="6" fill="#8479D0"/>
+              <rect x="11" y="-3" width="11" height="6" fill="#8479D0"/>
+            </g>
+            <!-- sat 2 -->
+            <g transform="translate(200, 38)">
+              <rect x="-9" y="-5" width="18" height="10" fill="#F6F8FE"/>
+              <rect x="-22" y="-3" width="11" height="6" fill="#8479D0"/>
+              <rect x="11" y="-3" width="11" height="6" fill="#8479D0"/>
+            </g>
+            <!-- sat 3 -->
+            <g transform="translate(330, 60)">
+              <rect x="-9" y="-5" width="18" height="10" fill="#F6F8FE"/>
+              <rect x="-22" y="-3" width="11" height="6" fill="#8479D0"/>
+              <rect x="11" y="-3" width="11" height="6" fill="#8479D0"/>
+            </g>
+          </g>
+          <text x="200" y="22" font-family="Rajdhani" font-size="11" fill="#FFFFFF" text-anchor="middle">LEO transmitter constellation (~675 km)</text>
+          <!-- HAPS instances -->
+          <g fill="#F6F8FE">
+            <g transform="translate(110, 195)">
+              <rect x="-22" y="-2" width="44" height="4" rx="1.5"/>
+              <ellipse cx="0" cy="0" rx="6" ry="2.5" fill="#C6C1EE"/>
+              <rect x="-1.5" y="-7" width="3" height="5" fill="#F6F8FE"/>
+              <rect x="-10" y="2" width="20" height="2" fill="#8479D0"/>
+            </g>
+            <g transform="translate(220, 200)">
+              <rect x="-22" y="-2" width="44" height="4" rx="1.5"/>
+              <ellipse cx="0" cy="0" rx="6" ry="2.5" fill="#C6C1EE"/>
+              <rect x="-1.5" y="-7" width="3" height="5" fill="#F6F8FE"/>
+              <rect x="-10" y="2" width="20" height="2" fill="#8479D0"/>
+            </g>
+            <g transform="translate(310, 198)">
+              <rect x="-22" y="-2" width="44" height="4" rx="1.5"/>
+              <ellipse cx="0" cy="0" rx="6" ry="2.5" fill="#C6C1EE"/>
+              <rect x="-1.5" y="-7" width="3" height="5" fill="#F6F8FE"/>
+              <rect x="-10" y="2" width="20" height="2" fill="#8479D0"/>
+            </g>
+          </g>
+          <!-- beams: one-to-many (Sat 2 → all 3 HAPS) and many-to-one (Sats 1+2+3 → HAPS 2) -->
+          <g stroke="#8479D0" stroke-width="1.6" opacity="0.65">
+            <!-- Sat 2 serves multiple HAPS -->
+            <line x1="200" y1="43" x2="110" y2="200"/>
+            <line x1="200" y1="43" x2="220" y2="202"/>
+            <line x1="200" y1="43" x2="310" y2="200"/>
+            <!-- HAPS 2 served by multiple sats -->
+            <line x1="70" y1="55" x2="220" y2="202"/>
+            <line x1="330" y1="65" x2="220" y2="202"/>
+          </g>
+        </svg>
+        <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+          Each HAPS sees several transmitter passes per day; the constellation keeps power flowing globally.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: the unlock -->
+  <section class="story">
+    <div class="inner">
+      <div class="copy">
+        <h2>Section 5 · What it unlocks</h2>
+        <h3>Three constraints lifted at once.</h3>
+        <p><strong>Persistence.</strong> A four-month polar platform becomes a 365-day asset.</p>
+        <p><strong>Payload.</strong> Freed battery mass becomes payload mass – 1:1, no propulsion changes.</p>
+        <p><strong>Robustness.</strong> Spend freed up mass on structure instead, and the launch envelope widens markedly: a heavier, sturdier airframe tolerates higher gust speeds, so launches and recoveries are no longer pinned to the calmest days.</p>
+        <div class="stats">
+          <div class="stat"><div class="n">+8 months</div><div class="l">at 60°N</div></div>
+          <div class="stat"><div class="n">≈25 kg</div><div class="l">payload margin freed</div></div>
+        </div>
+      </div>
+      <div class="visual">
+        <h4>Operable days per year – light solar plane at 60°N, 0.3 kW load</h4>
+        <div class="cov-row">
+          <span class="label">Today</span>
+          <div class="bar-container"><div class="bar" style="width:33%;"></div></div>
+          <span class="value">~120 d</span>
+        </div>
+        <div class="cov-row">
+          <span class="label">+5 kW beam</span>
+          <div class="bar-container"><div class="bar" style="width:100%;"></div></div>
+          <span class="value">365 d</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h3>Run the numbers on your own configuration</h3>
+    <p>Pick an architecture, a platform, a latitude. Watch operable days, freed mass and wind tolerance update live.</p>
+    <button class="go" id="goCalc">Open interactive study →</button>
+  </section>
+
+</div>
+
+<!-- ============ CALCULATOR TAB ============ -->
+<div class="tab-pane" id="tab-calc">
+
+<main class="calc">
+  <!-- INPUTS -->
+  <aside class="panel" id="inputs">
+    <h2>Architecture</h2>
+    <div class="toggle-group" id="archToggle">
+      <button type="button" data-arch="ground" class="active">Ground-up</button>
+      <button type="button" data-arch="space">Space-down</button>
+    </div>
+    <div class="rx-info" id="archInfo">
+      Ground laser → HAPS.
+    </div>
+
+    <h2>Platform class</h2>
+    <div class="toggle-group four" id="platformToggle">
+      <button type="button" data-pf="zephyr"   class="active">Light plane</button>
+      <button type="button" data-pf="phasa">Mid plane</button>
+      <button type="button" data-pf="sun">Heavy plane</button>
+      <button type="button" data-pf="sceye">Airship</button>
+    </div>
+    <div class="rx-info" id="pfInfo">
+      <b>Light solar plane</b>: ~75 kg maximum takeoff weight, 25 m² array, ~0.3 kW cruise, 5 kg payload.
+    </div>
+
+    <h2>Mission geometry</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Operating latitude</label><span class="value"><span id="latVal">50</span>°</span></div>
+      <input type="range" id="lat" min="0" max="85" step="1" value="50">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Day of year</label><span class="value"><span id="doyVal">355</span> (<span id="doyLabel">winter solstice</span>)</span></div>
+      <input type="range" id="doy" min="1" max="365" step="1" value="355">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Clear-sky fraction</label><span class="value"><span id="csVal">60</span>%</span></div>
+      <input type="range" id="cs" min="10" max="95" step="5" value="60">
+    </div>
+
+    <h2>Payload &amp; receiver</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Payload power draw</label><span class="value"><span id="payVal">0.20</span> kW</span></div>
+      <input type="range" id="pay" min="0" max="15" step="0.05" value="0.20">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Receiver area on HAPS</label><span class="value"><span id="rxVal">5.0</span> m²</span></div>
+      <input type="range" id="rx" min="0" max="50" step="0.5" value="5.0">
+    </div>
+
+    <h2>Beam</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Beamed power received</label><span class="value"><span id="txVal">10</span> kW</span></div>
+      <input type="range" id="tx" min="0" max="50" step="1" value="10">
+    </div>
+
+    <div class="delivered">
+      <span>Average delivered (<span id="dutyNote">continuous</span>)</span>
+      <b><span id="delVal">0.00</span> kW</b>
+    </div>
+
+    <h2>Mass uplift use</h2>
+    <div class="toggle-group" id="upliftToggle">
+      <button type="button" data-uplift="payload" class="active">Extra payload</button>
+      <button type="button" data-uplift="structure">Tougher airframe</button>
+    </div>
+    <div class="rx-info" id="upliftInfo">
+      Freed battery mass becomes extra payload. Toggle to route it into structure instead.
+    </div>
+  </aside>
+
+  <section class="results">
+
+    <div class="card">
+      <h3>Live schematic</h3>
+      <div id="schematic-wrap">
+        <svg id="schematic" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Operability by day of year</h3>
+      <div class="chart-wrap"><canvas id="yearChart"></canvas></div>
+      <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+        Days where the 24-h energy budget closes. Lavender = with beam, gray = solar-only.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>24-hour energy balance at the selected day</h3>
+      <div class="balance-bar" id="balanceBar">
+        <div class="balance-seg cru"  id="segCru"></div>
+        <div class="balance-seg pay"  id="segPay"></div>
+        <div class="balance-seg sol"  id="segSol"></div>
+        <div class="balance-seg beam" id="segBeam"></div>
+        <div class="balance-seg head" id="segHead"></div>
+        <div class="balance-seg def"  id="segDef"></div>
+      </div>
+      <div class="balance-legend">
+        <span><span class="swatch sw-cru"></span>Cruise demand</span>
+        <span><span class="swatch sw-pay"></span>Payload</span>
+        <span><span class="swatch sw-sol"></span>Solar in</span>
+        <span><span class="swatch sw-beam"></span>Beam in</span>
+        <span><span class="swatch sw-def"></span>Deficit</span>
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+        Daylight today: <b id="dlVal" style="color:var(--deep);">–</b> · Solar declination: <b id="decVal" style="color:var(--deep);">–</b>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="kpi">
+        <div class="klabel">Operable days per year</div>
+        <div class="kval"><span id="opBase">–</span> → <span id="opAug">–</span></div>
+        <div class="ksub">solar-only → with beam (<span id="opDelta">–</span>)</div>
+      </div>
+      <div class="kpi" id="kpiUplift">
+        <div class="klabel">Extra payload (battery freed)</div>
+        <div class="kval">+<span id="upVal">–</span> <span style="font-size:20px;">kg</span></div>
+        <div class="ksub" id="upSub">1:1 trade against night battery</div>
+      </div>
+      <div class="kpi" id="kpiWind">
+        <div class="klabel">Launch wind tolerance</div>
+        <div class="kval"><span id="windBase">–</span> → <span id="windAug">–</span> <span style="font-size:20px;">kn</span></div>
+        <div class="ksub">today → with mass added to structure</div>
+      </div>
+    </div>
+
+    <details class="card" style="margin-top:4px;">
+      <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model &amp; assumptions</summary>
+      <div style="margin-top:14px; font-size:13px; color:var(--deep); line-height:1.6;">
+
+        <p style="margin:0 0 6px;"><b>Equations</b></p>
+        <p style="margin:0 0 10px; font-size:12px; color:var(--deep-tint);">All quantities in SI (W, m², kg, h) unless noted.</p>
+        <ul style="margin:0 0 14px; padding-left:20px;">
+          <li><b>Solar declination:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">δ(d) = 23.44° · sin(2π·(d−81)/365)</span>.
+            Day-of-year d ∈ [1, 365]. Equinoxes near d=81 and d=264.</li>
+          <li><b>Sunrise hour angle:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">cos(H₀) = −tan(φ)·tan(δ)</span>.
+            Polar day if right-hand side ≤ −1, polar night if ≥ 1. Daylight hours: <span style="font-family:monospace; font-size:12px;">N = (24/π)·H₀</span>.</li>
+          <li><b>Daily horizontal solar energy</b> per m² at the array:<br>
+            <span style="font-family:monospace; font-size:12px;">E<sub>sun</sub> = (24·S/π)·c<sub>sky</sub>·[H₀·sin(φ)·sin(δ) + cos(φ)·cos(δ)·sin(H₀)]</span>&nbsp; [Wh/m²]<br>
+            <i>S</i> = 1361 W/m² (top-of-atmosphere; Kopp &amp; Lean 2011, SORCE/TIM). <i>c<sub>sky</sub></i> is the user-set clear-sky fraction. Standard horizontal-surface insolation integral – see Duffie &amp; Beckman, <i>Solar Engineering of Thermal Processes</i>.</li>
+          <li><b>Daily energy from beam:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">E<sub>beam</sub> = 24·P<sub>peak</sub>·η<sub>cap</sub>·duty·c<sub>sky</sub></span>&nbsp; [Wh]<br>
+            P<sub>peak</sub> is the user-set received power (electrical at the HAPS bus, ideal conditions). Capture factor <span style="font-family:monospace; font-size:12px;">η<sub>cap</sub> = min(1, A<sub>rx</sub> / A<sub>spot</sub>)</span> caps delivery when the receiver is smaller than the beam footprint. Atmospheric loss and PV conversion are absorbed into P<sub>peak</sub>: a 100 kW transmitter typically delivers ~14–47 kW electrical to the bus depending on receiver type (Landis on laser-power converters; Fraunhofer ISE GaAs monochromatic tables). A<sub>rx</sub> = 0 ⇒ zero delivered power.</li>
+          <li><b>Daily energy demand:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">E<sub>demand</sub> = 24·(P<sub>cruise</sub> + P<sub>payload</sub>)</span>.
+            Cruise power taken from the platform anchor; payload from the slider.</li>
+          <li><b>Operability of day d:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">E<sub>sun</sub>(d) + E<sub>beam</sub> ≥ E<sub>demand</sub></span>.
+            Counted across 365 days for the operable-days-per-year KPI.</li>
+          <li><b>Night energy gap and battery sizing:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">E<sub>night</sub> = (24−N)·(P<sub>cruise</sub>+P<sub>payload</sub>) − E<sub>beam</sub>·(24−N)/24</span>;<br>
+            <span style="font-family:monospace; font-size:12px;">m<sub>battery</sub> = max(0, E<sub>night</sub>) / DoD / (Wh/kg)</span>,
+            with DoD = 0.8 and 250 Wh/kg pack specific energy (mature Li-ion).</li>
+          <li><b>Wind / gust tolerance scaling:</b>&nbsp;
+            <span style="font-family:monospace; font-size:12px;">v<sub>gust</sub> ∝ √(W/S)</span> (Anderson, <i>Aircraft Performance and Design</i>, 1999; standard FAR Part 23 gust-load analysis). Calibrated so that a light-solar-plane wing-loading of ~3.4 kg/m² gives a ~8 kn calm-air launch limit.</li>
+        </ul>
+
+        <p style="margin:0 0 6px;"><b>Architecture parameters</b></p>
+        <ul style="margin:0 0 14px; padding-left:20px;">
+          <li><b>Ground-up:</b>&nbsp; A<sub>spot</sub> = 2 m² (small footprint at 20–80 km slant),&nbsp; duty = 1.0 (continuous within line-of-sight and clear sky).</li>
+          <li><b>Space-down:</b>&nbsp; A<sub>spot</sub> = 20 m² (larger footprint at LEO range),&nbsp; duty = 0.15 (averaged across a single transmitter's contact windows; a multi-satellite constellation can raise this).</li>
+        </ul>
+
+        <p style="margin:0 0 6px;"><b>Platform-class anchors</b></p>
+        <p style="margin:0 0 8px; font-size:12px; color:var(--deep-tint);">Each class is calibrated against a representative real-world platform from published manufacturer programme materials. Cruise figures are <i>continuous</i> electrical draw to hold altitude (propulsion + avionics), distinct from each platform's published <i>peak</i> generation rating.</p>
+        <ul style="margin:0 0 14px; padding-left:20px;">
+          <li><b>Light solar plane</b> – calibrated to Airbus Zephyr-S: 75 kg maximum takeoff weight, 22 m² wing, 25 m² solar array, ~1.5 kW peak generation, ~0.3 kW continuous cruise, 5 kg payload.</li>
+          <li><b>Mid solar plane</b> – calibrated to BAE Systems PHASA-35: 150 kg maximum takeoff weight, 35 m² wing, 50 m² array, ~3 kW peak, ~0.6 kW continuous cruise, 15 kg payload.</li>
+          <li><b>Heavy solar plane</b> – calibrated to AeroVironment / HAPSMobile Sunglider: 1000 kg maximum takeoff weight, 130 m² wing, 130 m² array, ~7 kW peak, ~1.8 kW continuous cruise, 70 kg payload.</li>
+          <li><b>Stratospheric airship</b> – calibrated to Sceye Inc.: 800 kg maximum takeoff weight, 240 m² envelope reference, 240 m² array, ~10 kW peak, ~4 kW continuous (includes pressure management), 250 kg payload.</li>
+        </ul>
+
+        <p style="margin:0 0 6px;"><b>Other physical constants</b></p>
+        <ul style="margin:0; padding-left:20px;">
+          <li><b>Solar irradiance (TOA):</b> S = 1361 W/m² – Kopp &amp; Lean (2011), <i>Geophys. Res. Lett.</i> 38, L01706.</li>
+          <li><b>HAPS atmosphere at 20 km:</b> ρ ≈ 0.089 kg/m³, p ≈ 5.5 kPa, T ≈ 217 K – U.S. Standard Atmosphere 1976 (NOAA/NASA/USAF).</li>
+          <li><b>Array efficiency on the HAPS itself:</b> η<sub>PV</sub><sup>sun</sup> = 25% (triple-junction GaAs cells under AM0; Fraunhofer ISE published efficiency tables).</li>
+          <li><b>Diffraction limit cited in §3:</b> <span style="font-family:monospace; font-size:12px;">D ≈ 2.44·λ·L / d<sub>spot</sub></span> – Born &amp; Wolf, <i>Principles of Optics</i>, §8.5.</li>
+          <li><b>Battery technology:</b> 250 Wh/kg, 80% useful DoD (mature aerospace Li-ion).</li>
+        </ul>
+
+        <p style="margin:10px 0 0; font-size:12px; color:var(--deep-tint);">
+          <b>Simplifications.</b> Horizontal-array model (no Sun-tracking, no cosine loss against wing tilt). Steady-state daily energy balance (no battery state-of-charge dynamics). Atmospheric absorption modelled as a single transmission factor per architecture. Ground-station LOS, pointing budget, and per-pass orbital geometry are absorbed into the duty-cycle factor. Cruise power held constant across season and altitude.
+        </p>
+      </div>
+    </details>
+
+  </section>
+</main>
+
+</div>
+
+<footer>
+  <div style="font-size:16px; font-weight:500; color:var(--white); margin-bottom:6px;">Get in touch</div>
+  <div><a href="mailto:contact@neowatt.co.uk">contact@neowatt.co.uk</a> · <a href="https://neowatt.co.uk">neowatt.co.uk</a></div>
+</footer>
+
+<script>
+(() => {
+  // ---------- platform anchors ----------
+  // cruise = continuous electrical draw to maintain altitude (propulsion + avionics),
+  // well below each class's *rated* peak generation. Anchor numbers traceable to
+  // published manufacturer specs – cited in the Model & Assumptions card.
+  const PLATFORMS = {
+    zephyr: { name: 'Light plane',  mtow: 75,   cruise: 300,   array: 25,  payload: 5,    wing: 22,
+              info: '<b>Light solar plane</b>: ~75 kg maximum takeoff weight, 25 m² array, ~0.3 kW cruise, 5 kg payload.' },
+    phasa:  { name: 'Mid plane',    mtow: 150,  cruise: 600,   array: 50,  payload: 15,   wing: 35,
+              info: '<b>Mid solar plane</b>: ~150 kg maximum takeoff weight, 50 m² array, ~0.6 kW cruise, 15 kg payload.' },
+    sun:    { name: 'Heavy plane',  mtow: 1000, cruise: 1800,  array: 130, payload: 70,   wing: 130,
+              info: '<b>Heavy solar plane</b>: ~1000 kg maximum takeoff weight, 130 m² array, ~1.8 kW cruise, 70 kg payload.' },
+    sceye:  { name: 'Airship',      mtow: 800,  cruise: 4000,  array: 240, payload: 250,  wing: 240,
+              info: '<b>Stratospheric airship</b>: ~800 kg maximum takeoff weight, 240 m² envelope, ~4 kW cruise, 250 kg payload.' }
+  };
+
+  // ---------- architecture parameters ----------
+  const ARCH = {
+    ground: { spot: 2,  duty: 1.00,
+              info: 'Ground laser → HAPS.',
+              dutyNote: 'continuous' },
+    space:  { spot: 20, duty: 0.15,
+              info: 'LEO laser → HAPS.',
+              dutyNote: 'avg over passes' }
+  };
+
+  // ---------- constants ----------
+  const S_TOA = 1361;          // W/m²
+  const HAPS_PV = 0.25;        // HAPS on-board PV efficiency (triple-junction at AM0)
+  const DOD = 0.8;             // battery depth-of-discharge
+  const WHKG = 250;            // pack-level specific energy, Wh/kg
+  const V_BASE_KN = 8;         // light solar plane calm-air launch limit (kn)
+  const WS_BASE = 75 / 22;     // ~3.4 kg/m² light solar plane wing-loading reference
+
+  // ---------- state ----------
+  const state = {
+    arch: 'ground',
+    pf: 'zephyr',
+    lat: 50,
+    doy: 355,
+    cs: 0.60,
+    pay: 200,        // W
+    rx: 5.0,         // m²
+    tx: 10000,       // W – peak beam power received at HAPS bus, ideal conditions
+    uplift: 'payload'
+  };
+
+  // ---------- solar geometry ----------
+  function declinationRad(doy) {
+    return 23.44 * Math.PI/180 * Math.sin(2*Math.PI*(doy - 81)/365);
+  }
+  function daylightHrs(latRad, decRad) {
+    const c = -Math.tan(latRad) * Math.tan(decRad);
+    if (c <= -1) return 24;
+    if (c >=  1) return 0;
+    const H0 = Math.acos(c);
+    return (24/Math.PI) * H0;
+  }
+  // Daily integrated horizontal insolation [Wh/m²]
+  function dailyInsolation(latRad, decRad, csky) {
+    const c = -Math.tan(latRad) * Math.tan(decRad);
+    let H0;
+    if (c <= -1) H0 = Math.PI;
+    else if (c >= 1) H0 = 0;
+    else H0 = Math.acos(c);
+    const bracket = H0*Math.sin(latRad)*Math.sin(decRad)
+                  + Math.cos(latRad)*Math.cos(decRad)*Math.sin(H0);
+    return (24*S_TOA/Math.PI) * csky * bracket;
+  }
+
+  // ---------- core model ----------
+  // state.tx is peak received power at the HAPS bus (W). Averaged delivery accounts
+  // for the duty cycle of the architecture (continuous for ground, ~15% for space),
+  // clear-sky availability, and receiver-area-limited capture.
+  function delivered() {
+    const a = ARCH[state.arch];
+    const cap = Math.min(1, state.rx / a.spot);
+    return state.tx * a.duty * cap * state.cs;  // W (24-h average at bus)
+  }
+  function eBeamDaily() { return delivered() * 24; }  // Wh/day
+
+  function isOperable(doy) {
+    const latR = state.lat * Math.PI/180;
+    const decR = declinationRad(doy);
+    const pf = PLATFORMS[state.pf];
+    const Esun = dailyInsolation(latR, decR, state.cs) * HAPS_PV * pf.array;
+    const Ebeam = eBeamDaily();
+    const Edem = 24 * (pf.cruise + state.pay);
+    return { Esun, Ebeam, Edem, operable: (Esun + Ebeam) >= Edem };
+  }
+  function isOperableSolarOnly(doy) {
+    const latR = state.lat * Math.PI/180;
+    const decR = declinationRad(doy);
+    const pf = PLATFORMS[state.pf];
+    const Esun = dailyInsolation(latR, decR, state.cs) * HAPS_PV * pf.array;
+    const Edem = 24 * (pf.cruise + state.pay);
+    return Esun >= Edem;
+  }
+  function operableDaysPerYear() {
+    let base = 0, aug = 0;
+    for (let d = 1; d <= 365; d++) {
+      if (isOperableSolarOnly(d)) base++;
+      if (isOperable(d).operable) aug++;
+    }
+    return { base, aug };
+  }
+
+  // ---------- night battery & mass uplift ----------
+  function freedBatteryMass() {
+    const pf = PLATFORMS[state.pf];
+    const latR = state.lat * Math.PI/180;
+    const decR = declinationRad(state.doy);
+    const N = daylightHrs(latR, decR);
+    const nightH = 24 - N;
+    const Pload = pf.cruise + state.pay;        // W continuous
+    const eNightDemand = nightH * Pload;        // Wh
+    const eBeamNight  = delivered() * nightH;   // Wh (assume beam available across 24h average)
+    const eNightBase = eNightDemand;
+    const eNightAug  = Math.max(0, eNightDemand - eBeamNight);
+    const mBase = eNightBase / DOD / WHKG;
+    const mAug  = eNightAug  / DOD / WHKG;
+    return Math.max(0, mBase - mAug);
+  }
+
+  // ---------- wind tolerance ----------
+  function windKnots(extraMass) {
+    const pf = PLATFORMS[state.pf];
+    const WS = (pf.mtow + extraMass) / pf.wing;
+    return V_BASE_KN * Math.sqrt(WS / WS_BASE);
+  }
+
+  // ---------- DOM helpers ----------
+  const $ = s => document.querySelector(s);
+  const $$ = s => document.querySelectorAll(s);
+
+  // ---------- tabs ----------
+  $$('nav.tabs button').forEach(b => b.addEventListener('click', () => {
+    $$('nav.tabs button').forEach(x => x.classList.toggle('active', x === b));
+    const t = b.dataset.tab;
+    $$('.tab-pane').forEach(p => p.classList.toggle('active', p.id === 'tab-' + t));
+    if (t === 'calc') recompute();
+  }));
+  $('#goCalc').addEventListener('click', () => {
+    document.querySelector('nav.tabs button[data-tab="calc"]').click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---------- input wiring ----------
+  $$('#archToggle button').forEach(b => b.addEventListener('click', () => {
+    $$('#archToggle button').forEach(x => x.classList.toggle('active', x === b));
+    state.arch = b.dataset.arch;
+    $('#archInfo').innerHTML = ARCH[state.arch].info;
+    $('#dutyNote').textContent = ARCH[state.arch].dutyNote;
+    recompute();
+  }));
+  $$('#platformToggle button').forEach(b => b.addEventListener('click', () => {
+    $$('#platformToggle button').forEach(x => x.classList.toggle('active', x === b));
+    state.pf = b.dataset.pf;
+    $('#pfInfo').innerHTML = PLATFORMS[state.pf].info;
+    recompute();
+  }));
+  $$('#upliftToggle button').forEach(b => b.addEventListener('click', () => {
+    $$('#upliftToggle button').forEach(x => x.classList.toggle('active', x === b));
+    state.uplift = b.dataset.uplift;
+    $('#upliftInfo').innerHTML = state.uplift === 'payload'
+      ? 'Freed battery mass becomes extra payload. Toggle to route it into structure instead.'
+      : 'Freed battery mass becomes structural margin. Toggle to route it into payload instead.';
+    recompute();
+  }));
+
+  function wireSlider(id, valId, transform, fmt) {
+    const el = $('#' + id);
+    el.addEventListener('input', () => {
+      const raw = parseFloat(el.value);
+      state[id] = transform ? transform(raw) : raw;
+      $('#' + valId).textContent = fmt ? fmt(raw) : raw;
+      recompute();
+    });
+  }
+  wireSlider('lat', 'latVal');
+  wireSlider('doy', 'doyVal');
+  $('#cs').addEventListener('input', e => {
+    const raw = parseFloat(e.target.value);
+    state.cs = raw / 100;
+    $('#csVal').textContent = raw;
+    recompute();
+  });
+  $('#pay').addEventListener('input', e => {
+    const raw = parseFloat(e.target.value);
+    state.pay = raw * 1000;
+    $('#payVal').textContent = raw.toFixed(2);
+    recompute();
+  });
+  $('#rx').addEventListener('input', e => {
+    const raw = parseFloat(e.target.value);
+    state.rx = raw;
+    $('#rxVal').textContent = raw.toFixed(1);
+    recompute();
+  });
+  $('#tx').addEventListener('input', e => {
+    const raw = parseFloat(e.target.value);
+    state.tx = raw * 1000;  // kW slider → W
+    $('#txVal').textContent = raw;
+    recompute();
+  });
+
+  // ---------- year-operability chart ----------
+  let yearChart = null;
+  function drawYearChart() {
+    const xs = [], augY = [], baseY = [];
+    for (let d = 1; d <= 365; d += 3) {
+      xs.push(d);
+      baseY.push(isOperableSolarOnly(d) ? 1 : 0);
+      augY.push(isOperable(d).operable ? 1 : 0);
+    }
+    const ctx = $('#yearChart').getContext('2d');
+    if (yearChart) { yearChart.destroy(); }
+    yearChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: xs,
+        datasets: [
+          { label: 'With beam',
+            data: augY,
+            borderColor: '#8479D0',
+            backgroundColor: 'rgba(132,121,208,0.35)',
+            fill: 'origin',
+            stepped: true,
+            pointRadius: 0,
+            borderWidth: 1.5,
+            order: 2 },
+          { label: 'Solar only',
+            data: baseY,
+            borderColor: '#394563',
+            backgroundColor: 'rgba(57,69,99,0.55)',
+            fill: 'origin',
+            stepped: true,
+            pointRadius: 0,
+            borderWidth: 1.5,
+            order: 1 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        scales: {
+          x: {
+            title: { display: true, text: 'Day of year', font: { family: 'Rajdhani', size: 12 } },
+            ticks: {
+              font: { family: 'Rajdhani' },
+              callback: (v, i) => {
+                const day = xs[i];
+                if (day === 1) return 'Jan';
+                if (day === 91 || day === 92) return 'Apr';
+                if (day === 181 || day === 182) return 'Jul';
+                if (day === 271 || day === 273) return 'Oct';
+                return '';
+              },
+              autoSkip: false,
+              maxRotation: 0
+            },
+            grid: { display: false }
+          },
+          y: {
+            display: false,
+            min: 0, max: 1.05
+          }
+        },
+        plugins: {
+          legend: { labels: { font: { family: 'Rajdhani' }, color: '#394563' } },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  }
+
+  // ---------- balance bar ----------
+  function updateBalance() {
+    const pf = PLATFORMS[state.pf];
+    const latR = state.lat * Math.PI/180;
+    const decR = declinationRad(state.doy);
+    const N = daylightHrs(latR, decR);
+    const Esun = dailyInsolation(latR, decR, state.cs) * HAPS_PV * pf.array;
+    const Ebeam = eBeamDaily();
+    const Edem = 24 * (pf.cruise + state.pay);
+    const cruise = pf.cruise * 24;
+    const payload = state.pay * 24;
+    const supply = Esun + Ebeam;
+    const deficit = Math.max(0, Edem - supply);
+    const headroom = Math.max(0, supply - Edem);
+
+    const setSeg = (id, val) => {
+      const el = $('#' + id);
+      el.style.flex = String(val);
+      const total = Math.max(supply, Edem);
+      if (total === 0 || val / total < 0.06) el.textContent = '';
+      else el.textContent = (val/1000).toFixed(1) + ' kWh';
+    };
+    setSeg('segCru', cruise);
+    setSeg('segPay', payload);
+    setSeg('segSol', Esun);
+    setSeg('segBeam', Ebeam);
+    setSeg('segHead', headroom);
+    setSeg('segDef', deficit);
+
+    $('#dlVal').textContent = N.toFixed(1) + ' h';
+    $('#decVal').textContent = (decR * 180/Math.PI).toFixed(1) + '°';
+  }
+
+  // ---------- schematic ----------
+  function drawSchematic() {
+    const svg = $('#schematic');
+    const ns = 'http://www.w3.org/2000/svg';
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const W = 800, H = 320;
+
+    // Sky gradient
+    const defs = document.createElementNS(ns, 'defs');
+    const sky = document.createElementNS(ns, 'linearGradient');
+    sky.setAttribute('id', 'sky');
+    sky.setAttribute('x1', '0'); sky.setAttribute('y1', '0');
+    sky.setAttribute('x2', '0'); sky.setAttribute('y2', '1');
+    [['0%','#0E1A3D'],['50%','#394563'],['85%','#8FB3D9'],['100%','#C6C1EE']].forEach(([o,c]) => {
+      const s = document.createElementNS(ns, 'stop');
+      s.setAttribute('offset', o); s.setAttribute('stop-color', c);
+      sky.appendChild(s);
+    });
+    defs.appendChild(sky);
+    svg.appendChild(defs);
+
+    // sky band
+    const skyR = document.createElementNS(ns, 'rect');
+    skyR.setAttribute('x', 0); skyR.setAttribute('y', 0);
+    skyR.setAttribute('width', W); skyR.setAttribute('height', H - 40);
+    skyR.setAttribute('fill', 'url(#sky)');
+    svg.appendChild(skyR);
+
+    // ground band
+    const gnd = document.createElementNS(ns, 'rect');
+    gnd.setAttribute('x', 0); gnd.setAttribute('y', H - 40);
+    gnd.setAttribute('width', W); gnd.setAttribute('height', 40);
+    gnd.setAttribute('fill', '#1d2c4a');
+    svg.appendChild(gnd);
+
+    // altitude label line
+    const HAPS_Y = 90;
+    const altLine = document.createElementNS(ns, 'line');
+    altLine.setAttribute('x1', 0); altLine.setAttribute('y1', HAPS_Y);
+    altLine.setAttribute('x2', W); altLine.setAttribute('y2', HAPS_Y);
+    altLine.setAttribute('stroke', '#C6C1EE'); altLine.setAttribute('stroke-dasharray', '4 6');
+    altLine.setAttribute('stroke-width', 0.6); altLine.setAttribute('opacity', 0.6);
+    svg.appendChild(altLine);
+
+    const altText = document.createElementNS(ns, 'text');
+    altText.setAttribute('x', W - 12); altText.setAttribute('y', HAPS_Y - 6);
+    altText.setAttribute('font-family', 'Rajdhani'); altText.setAttribute('font-size', 11);
+    altText.setAttribute('fill', '#C6C1EE'); altText.setAttribute('text-anchor', 'end');
+    altText.textContent = 'HAPS ~20 km';
+    svg.appendChild(altText);
+
+    // -------- HAPS drawing --------
+    const HAPS_X = 500;
+    const pf = PLATFORMS[state.pf];
+    // wingspan scaled
+    const span = Math.max(40, Math.min(220, Math.sqrt(pf.wing) * 14));
+    // wing
+    const wing = document.createElementNS(ns, 'rect');
+    wing.setAttribute('x', HAPS_X - span/2); wing.setAttribute('y', HAPS_Y - 4);
+    wing.setAttribute('width', span); wing.setAttribute('height', 8);
+    wing.setAttribute('rx', 3); wing.setAttribute('fill', '#F6F8FE');
+    svg.appendChild(wing);
+    // fuselage
+    const fus = document.createElementNS(ns, 'ellipse');
+    fus.setAttribute('cx', HAPS_X); fus.setAttribute('cy', HAPS_Y);
+    fus.setAttribute('rx', 14); fus.setAttribute('ry', 5);
+    fus.setAttribute('fill', '#C6C1EE');
+    svg.appendChild(fus);
+    // tail
+    const tail = document.createElementNS(ns, 'rect');
+    tail.setAttribute('x', HAPS_X - 4); tail.setAttribute('y', HAPS_Y - 16);
+    tail.setAttribute('width', 8); tail.setAttribute('height', 12);
+    tail.setAttribute('fill', '#F6F8FE');
+    svg.appendChild(tail);
+
+    // receiver area glow scaled
+    if (state.rx > 0) {
+      const rxW = Math.min(60, 4 + state.rx * 1.6);
+      const rxR = document.createElementNS(ns, 'rect');
+      rxR.setAttribute('x', HAPS_X - rxW/2);
+      rxR.setAttribute('y', HAPS_Y - 6);
+      rxR.setAttribute('width', rxW); rxR.setAttribute('height', 4);
+      rxR.setAttribute('fill', '#8479D0');
+      svg.appendChild(rxR);
+    }
+
+    // platform label
+    const pfLabel = document.createElementNS(ns, 'text');
+    pfLabel.setAttribute('x', HAPS_X); pfLabel.setAttribute('y', HAPS_Y + 22);
+    pfLabel.setAttribute('font-family', 'Rajdhani'); pfLabel.setAttribute('font-size', 11);
+    pfLabel.setAttribute('fill', '#FFFFFF'); pfLabel.setAttribute('text-anchor', 'middle');
+    pfLabel.setAttribute('font-weight', 600);
+    pfLabel.textContent = pf.name;
+    svg.appendChild(pfLabel);
+
+    // -------- transmitter --------
+    const beamKW = delivered() / 1000;
+    if (state.arch === 'ground') {
+      // ground mast
+      const mx = 120, my = H - 40;
+      const mast = document.createElementNS(ns, 'rect');
+      mast.setAttribute('x', mx - 4); mast.setAttribute('y', my - 50);
+      mast.setAttribute('width', 8); mast.setAttribute('height', 50);
+      mast.setAttribute('fill', '#F6F8FE');
+      svg.appendChild(mast);
+      const dish = document.createElementNS(ns, 'circle');
+      dish.setAttribute('cx', mx); dish.setAttribute('cy', my - 56);
+      dish.setAttribute('r', 12); dish.setAttribute('fill', '#8479D0');
+      svg.appendChild(dish);
+      // beam
+      const beam = document.createElementNS(ns, 'line');
+      beam.setAttribute('x1', mx); beam.setAttribute('y1', my - 56);
+      beam.setAttribute('x2', HAPS_X); beam.setAttribute('y2', HAPS_Y);
+      const w = Math.max(0.6, Math.min(8, Math.log(1 + beamKW * 4) * 1.4));
+      beam.setAttribute('stroke', '#8479D0'); beam.setAttribute('stroke-width', w);
+      beam.setAttribute('opacity', state.rx > 0 ? 0.85 : 0.2);
+      svg.appendChild(beam);
+      // label
+      const txt = document.createElementNS(ns, 'text');
+      txt.setAttribute('x', mx); txt.setAttribute('y', my - 76);
+      txt.setAttribute('font-family', 'Rajdhani'); txt.setAttribute('font-size', 11);
+      txt.setAttribute('fill', '#FFFFFF'); txt.setAttribute('text-anchor', 'middle');
+      txt.textContent = 'Ground laser';
+      svg.appendChild(txt);
+    } else {
+      // LEO satellite up top
+      const sx = 200, sy = 28;
+      const sat = document.createElementNS(ns, 'rect');
+      sat.setAttribute('x', sx - 14); sat.setAttribute('y', sy - 8);
+      sat.setAttribute('width', 28); sat.setAttribute('height', 16);
+      sat.setAttribute('fill', '#F6F8FE');
+      svg.appendChild(sat);
+      // panels
+      [-1, 1].forEach(s => {
+        const panel = document.createElementNS(ns, 'rect');
+        panel.setAttribute('x', sx + s * 14 + (s < 0 ? -28 : 0));
+        panel.setAttribute('y', sy - 4);
+        panel.setAttribute('width', 28); panel.setAttribute('height', 8);
+        panel.setAttribute('fill', '#8479D0');
+        svg.appendChild(panel);
+      });
+      // beam
+      const beam = document.createElementNS(ns, 'line');
+      beam.setAttribute('x1', sx); beam.setAttribute('y1', sy + 8);
+      beam.setAttribute('x2', HAPS_X); beam.setAttribute('y2', HAPS_Y);
+      const w = Math.max(0.6, Math.min(8, Math.log(1 + beamKW * 4) * 1.4));
+      beam.setAttribute('stroke', '#8479D0'); beam.setAttribute('stroke-width', w);
+      beam.setAttribute('opacity', state.rx > 0 ? 0.85 : 0.2);
+      svg.appendChild(beam);
+      const txt = document.createElementNS(ns, 'text');
+      txt.setAttribute('x', sx); txt.setAttribute('y', sy - 14);
+      txt.setAttribute('font-family', 'Rajdhani'); txt.setAttribute('font-size', 11);
+      txt.setAttribute('fill', '#FFFFFF'); txt.setAttribute('text-anchor', 'middle');
+      txt.textContent = 'LEO transmitter (~675 km)';
+      svg.appendChild(txt);
+    }
+
+    // latitude annotation
+    const latText = document.createElementNS(ns, 'text');
+    latText.setAttribute('x', 12); latText.setAttribute('y', H - 14);
+    latText.setAttribute('font-family', 'Rajdhani'); latText.setAttribute('font-size', 11);
+    latText.setAttribute('fill', '#C6C1EE');
+    const seasonName = doyLabel(state.doy);
+    const dayLabel = seasonName ? `day ${state.doy} (${seasonName})` : `day ${state.doy}`;
+    latText.textContent = `Lat ${state.lat}°, ${dayLabel}, clear-sky ${(state.cs*100).toFixed(0)}%`;
+    svg.appendChild(latText);
+  }
+
+  // ---------- section-1 coverage bars (story tab) ----------
+  // Illustrative values for a Zephyr-class solar HAPS, drawn from published
+  // industry capability statements. The interactive calculator below runs the
+  // full sunrise-equation model live for any latitude, season and platform.
+  function buildCoverageBars() {
+    const rows = [
+      { label: 'Equator', days: 365 },
+      { label: '30°N',    days: 365 },
+      { label: '50°N',    days: 180 },
+      { label: '60°N',    days: 120 },
+      { label: '70°N',    days: 60  }
+    ];
+    const max = 365;
+    const html = rows.map(r => `
+      <div class="cov-row">
+        <span class="label">${r.label}</span>
+        <div class="bar-container"><div class="bar" style="width:${(100*r.days/max).toFixed(1)}%"></div></div>
+        <span class="value">${r.days} d</span>
+      </div>
+    `).join('');
+    document.getElementById('covBars').innerHTML = html;
+  }
+
+  // ---------- KPI updates ----------
+  function updateKPIs() {
+    const { base, aug } = operableDaysPerYear();
+    $('#opBase').textContent = base;
+    $('#opAug').textContent  = aug;
+    const delta = aug - base;
+    const dEl = $('#opDelta');
+    dEl.textContent = (delta >= 0 ? '+' : '') + delta + ' d';
+    dEl.className = '';
+
+    const freed = freedBatteryMass();
+    $('#upVal').textContent = freed.toFixed(1);
+    if (state.uplift === 'payload') {
+      $('#kpiUplift .klabel').textContent = 'Extra payload (battery freed)';
+      $('#upSub').textContent = '1:1 trade against night battery';
+    } else {
+      $('#kpiUplift .klabel').textContent = 'Structural margin (battery freed)';
+      $('#upSub').textContent = 'redirected into airframe mass';
+    }
+
+    const vBase = windKnots(0);
+    const vAug = windKnots(state.uplift === 'structure' ? freed : 0);
+    $('#windBase').textContent = vBase.toFixed(1);
+    $('#windAug').textContent = vAug.toFixed(1);
+
+    $('#delVal').textContent = (delivered()/1000).toFixed(2);
+  }
+
+  // ---------- helpers ----------
+  function doyLabel(d) {
+    if (d <= 10 || d >= 355) return 'winter solstice';
+    if (d >= 80 && d <= 100) return 'spring equinox';
+    if (d >= 170 && d <= 190) return 'summer solstice';
+    if (d >= 260 && d <= 280) return 'autumn equinox';
+    return '';
+  }
+
+  function recompute() {
+    $('#doyLabel').textContent = doyLabel(state.doy) || `day ${state.doy}`;
+    drawSchematic();
+    updateBalance();
+    drawYearChart();
+    updateKPIs();
+  }
+
+  // ---------- init ----------
+  buildCoverageBars();
+  // initial slider value displays
+  $('#latVal').textContent = state.lat;
+  $('#doyVal').textContent = state.doy;
+  $('#csVal').textContent  = Math.round(state.cs * 100);
+  $('#payVal').textContent = (state.pay/1000).toFixed(2);
+  $('#rxVal').textContent  = state.rx.toFixed(1);
+  $('#txVal').textContent  = state.tx/1000;
+  recompute();
+})();
+</script>
+</body>
+</html>
