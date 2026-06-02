@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+# Source of truth is the `master` branch (the Vite project).
+# This workflow builds the site and publishes the `dist/` output directly to
+# GitHub Pages. There is no `gh-pages` branch and no manual deploy step:
+# pushing to `master` is the deploy.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: # allow manual re-deploys from the Actions tab
+
+# Permissions required by the official Pages deploy actions.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let an in-flight one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist # Vite build output; includes public/CNAME for the custom domain
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
