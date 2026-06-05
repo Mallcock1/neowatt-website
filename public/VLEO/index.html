@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>VLEO Power Beaming Capability Study – NEOWATT</title>
+<title>VLEO Power Beaming Capability Study - NEOWATT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,6 +22,12 @@
     --white: #FFFFFF;
     --ok: #3EAF7C;
     --warn: #D4A14A;
+    --storm: #E27272;
+    /* Capability marker colours - chosen to be visually distinct without western emotional valence */
+    --cap1: #8479D0;  /* lavender - brand */
+    --cap2: #3FA7B5;  /* teal */
+    --cap3: #B47BA8;  /* mauve */
+    --cap4: #748DA8;  /* slate */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -146,6 +152,45 @@
     margin-bottom: 6px;
   }
   section.hero .q .qtxt { font-size: 16px; color: var(--white); font-weight: 400; }
+  .cap-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .cap-dot.cap1 { background: var(--cap1); }
+  .cap-dot.cap2 { background: var(--cap2); }
+  .cap-dot.cap3 { background: var(--cap3); }
+  .cap-dot.cap4 { background: var(--cap4); }
+  section.story .copy .cap-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  section.story .copy .cap-badge.cap1 {
+    background: rgba(132,121,208,0.15);
+    color: var(--cap1);
+  }
+  section.story .copy .cap-badge.cap2 {
+    background: rgba(63,167,181,0.15);
+    color: var(--cap2);
+  }
+  section.story .copy .cap-badge.cap3 {
+    background: rgba(180,123,168,0.15);
+    color: var(--cap3);
+  }
+  section.story .copy .cap-badge.cap4 {
+    background: rgba(116,141,168,0.15);
+    color: var(--cap4);
+  }
 
   /* ---------- NARRATIVE SECTIONS ---------- */
   section.story {
@@ -228,6 +273,47 @@
     font-weight: 600;
   }
   section.story .visual .chart-wrap { height: 280px; position: relative; }
+
+  /* Storm-demand distribution (Capability 4 story section) */
+  .storm-mini-dist {
+    margin-top: 14px;
+    border-top: 1px dashed var(--off-shadow);
+    padding-top: 10px;
+  }
+  .storm-mini-dist summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--deep-tint);
+    user-select: none;
+  }
+  .storm-mini-dist summary::-webkit-details-marker { display: none; }
+  .storm-mini-dist summary:hover { color: var(--deep); }
+  .storm-mini-dist .smd-chevron {
+    transition: transform 0.2s ease;
+    color: var(--deep-tint);
+  }
+  .storm-mini-dist[open] .smd-chevron { transform: rotate(180deg); }
+  .storm-mini-dist .smd-body {
+    margin-top: 10px;
+  }
+  .storm-mini-dist svg#stormMiniDist {
+    width: 100%;
+    height: 110px;
+    display: block;
+  }
+  .storm-mini-dist .smd-caption {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--deep-tint);
+    line-height: 1.5;
+  }
 
   /* CTA between story and calculator */
   section.cta {
@@ -349,6 +435,12 @@
     font-size: 15px;
     color: var(--lav-shadow);
     font-variant-numeric: tabular-nums;
+  }
+  .control-desc {
+    font-size: 11.5px;
+    color: var(--deep-tint);
+    line-height: 1.4;
+    margin: 2px 0 0;
   }
   input[type=range] {
     -webkit-appearance: none;
@@ -566,7 +658,8 @@
 
 <nav class="tabs">
   <button data-tab="story" class="active">The case</button>
-  <button data-tab="calc">Interactive study</button>
+  <button data-tab="calc">Platform study</button>
+  <button data-tab="storm">Geomagnetic storm study</button>
 </nav>
 
 <!-- ============ STORY TAB ============ -->
@@ -574,19 +667,23 @@
 
   <section class="hero">
     <h1>What could your VLEO satellites do<br>with <span class="accent">supplemental power</span> from orbit?</h1>
-    <p class="lede">Quantify what laser power beaming from NEOWATT could unlock for your platform – across three capability dimensions.</p>
-    <div class="questions" style="grid-template-columns: repeat(3, 1fr);">
-      <div class="q">
-        <div class="qnum">Capability 1</div>
+    <p class="lede">Quantify what laser power beaming from NEOWATT could unlock for your platform - across four capability dimensions.</p>
+    <div class="questions" style="grid-template-columns: repeat(2, 1fr); max-width: 820px;">
+      <div class="q" data-cap="1">
+        <div class="qnum"><span class="cap-dot cap1"></span>Capability 1</div>
         <div class="qtxt"><b>Lower altitude.</b> Fly below today's power-limited floor.</div>
       </div>
-      <div class="q">
-        <div class="qnum">Capability 2</div>
+      <div class="q" data-cap="2">
+        <div class="qnum"><span class="cap-dot cap2"></span>Capability 2</div>
         <div class="qtxt"><b>Longer eclipse runtime.</b> Sustain payload through the eclipse.</div>
       </div>
-      <div class="q">
-        <div class="qnum">Capability 3</div>
+      <div class="q" data-cap="3">
+        <div class="qnum"><span class="cap-dot cap3"></span>Capability 3</div>
         <div class="qtxt"><b>Larger bus.</b> Support more payload at any altitude.</div>
+      </div>
+      <div class="q" data-cap="4">
+        <div class="qnum"><span class="cap-dot cap4"></span>Capability 4</div>
+        <div class="qtxt"><b>Geomagnetic storm resilience.</b> Design for nominal, beam through space-weather tails.</div>
       </div>
     </div>
   </section>
@@ -595,9 +692,9 @@
   <section class="story">
     <div class="inner">
       <div class="copy">
-        <h2>Section 1 · The constraint</h2>
+        <div class="cap-badge cap1"><span class="cap-dot cap1"></span>Capability 1 · Lower Altitude</div>
         <h3>Thruster power scales steeply with altitude.</h3>
-        <p>Drag rises sharply as you descend into VLEO, and thruster power follows – from ~300 W at 250 km to ~4 kW at 150 km. An order of magnitude in 100 km.</p>
+        <p>Drag rises sharply as you descend into VLEO, and thruster power follows - from ~300 W at 250 km to ~4 kW at 150 km. An order of magnitude in 100 km.</p>
         <p>For a fixed power budget, that curve is a hard altitude floor.</p>
       </div>
       <div class="visual">
@@ -607,59 +704,52 @@
     </div>
   </section>
 
-  <!-- Section 2: today's limit -->
+  <!-- Capability 1 continued: power floor + beaming -->
   <section class="story alt">
     <div class="inner flip">
       <div class="copy">
-        <h2>Section 2 · The power-limited floor</h2>
-        <h3>Your budget sets the lowest altitude you can hold.</h3>
-        <p>A <strong>1.6 kW</strong> bus with <strong>0.8 kW</strong> for payload leaves <strong>0.8 kW</strong> for thrusters. Where that line meets the demand curve – around <strong>208 km</strong> – is your practical limit.</p>
-        <p>Going lower means more solar or more battery. Both add drag and mass – fighting the goal.</p>
+        <div class="cap-badge cap1"><span class="cap-dot cap1"></span>Capability 1 · Lower Altitude</div>
+        <h3>Your power budget sets the floor. Beaming lowers it.</h3>
+        <p>A <strong>1.6 kW</strong> bus with <strong>0.8 kW</strong> for payload leaves <strong>0.8 kW</strong> for thrusters. The altitude where that headroom runs out - around <strong>208 km</strong> - is your practical limit. Going lower means more solar or more battery, both adding drag and mass.</p>
+        <p>NEOWATT beams laser power from a transmitter satellite in sunlight to the receiver. Even <strong>0.3 kW</strong> delivered to the bus shifts the floor. At <strong>0.5 kW</strong>, expect <strong>15–20 km lower</strong> without resizing. At <strong>1 kW</strong>, sub-180 km becomes feasible.</p>
       </div>
       <div class="visual">
-        <h4>Today's operating envelope</h4>
+        <h4>Thruster power headroom vs altitude</h4>
         <div class="chart-wrap"><canvas id="storyChart2"></canvas></div>
       </div>
     </div>
   </section>
 
-  <!-- Section 3: power beaming -->
+  <!-- Section 4: eclipse -->
   <section class="story">
     <div class="inner">
       <div class="copy">
-        <h2>Section 3 · Going lower</h2>
-        <h3>Beamed power lowers the altitude floor.</h3>
-        <p>NEOWATT beams laser power from a transmitter satellite in sunlight to the receiver. Even <strong>0.3 kW</strong> delivered to the bus shifts the floor.</p>
-        <p>At <strong>0.5 kW</strong>, expect <strong>15–20 km lower</strong> without resizing. At <strong>1 kW</strong>, sub-180 km becomes feasible.</p>
-      </div>
-      <div class="visual">
-        <h4>With supplemental power</h4>
-        <div class="chart-wrap"><canvas id="storyChart3"></canvas></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 4: eclipse -->
-  <section class="story alt">
-    <div class="inner flip">
-      <div class="copy">
-        <h2>Section 4 · Through eclipse</h2>
+        <div class="cap-badge cap2"><span class="cap-dot cap2"></span>Capability 2 · Eclipse Runtime</div>
         <h3>Longer payload duty cycle in the eclipse.</h3>
-        <p>In eclipse, payload draw comes from batteries. High-power instruments – IR, radar, active comms – drain capacity fast. Beamed power from a transmitter still in sunlight cuts the net battery drain.</p>
-        <p>VLEO eclipses last <strong>30–35 min</strong>. A partial supplement is the difference between a curtailed and a complete pass.</p>
+        <p>In eclipse, payload draw comes from batteries. High-power instruments - IR, radar, active comms - drain capacity fast. Beamed power from a transmitter still in sunlight cuts the net battery drain.</p>
+        <p>VLEO eclipses last <strong>~31 min</strong>. Without beaming, batteries may only sustain the payload for <strong>~22 min (71%)</strong>. With even modest supplemental power, the payload operates through the <strong>full eclipse - 100%</strong>.</p>
       </div>
       <div class="visual">
         <h4>Payload runtime in eclipse</h4>
         <div style="margin-top:8px;">
+          <div style="margin-bottom:12px; font-size:14px; color:var(--deep-tint); font-weight:500;">
+            Eclipse duration: <b style="color:var(--deep);"><span id="eStoryEclipse">31</span> min</b>
+          </div>
           <div class="eclipse-row">
             <span class="label">Batteries only</span>
             <div class="bar-container"><div class="bar full"></div><div class="bar base" id="eStoryBase"></div></div>
             <span class="value"><span id="eStoryBaseVal">22</span> min</span>
           </div>
+          <div class="eclipse-pct" id="eStoryBasePct" style="text-align:right; font-size:13px; color:var(--deep-tint); margin:-4px 0 6px 0;">
+            71%
+          </div>
           <div class="eclipse-row">
             <span class="label">+ power beaming</span>
             <div class="bar-container"><div class="bar full"></div><div class="bar aug" id="eStoryAug"></div></div>
             <span class="value"><span id="eStoryAugVal">34</span> min</span>
+          </div>
+          <div class="eclipse-pct" id="eStoryAugPct" style="text-align:right; font-size:13px; margin:-4px 0 6px 0;">
+            <span id="eStoryAugPctText" style="color:var(--ok); font-weight:600;">100%</span>
           </div>
           <div style="margin-top:14px; font-size:13px; color:var(--deep-tint);">
             Example: 0.8 kW payload, 35% of orbit in eclipse, 300 Wh battery, 0.3 kW delivered.
@@ -670,20 +760,46 @@
   </section>
 
   <!-- Section 5: death spiral / larger bus -->
+  <section class="story alt">
+    <div class="inner flip">
+      <div class="copy">
+        <div class="cap-badge cap3"><span class="cap-dot cap3"></span>Capability 3 · Larger Bus</div>
+        <h3>A larger bus, without the engineering cascade.</h3>
+        <p>Bigger bus → more drag → more power required → bigger solar array → more drag → more power required → …</p>
+        <p>Beamed power lands on the bus <strong>without adding drag</strong> (or via a small receiver - a fraction of an array's footprint). It's the only input that breaks the loop.</p>
+        <p>The result: more sustainable payload mass at every altitude, and feasibility where the loop otherwise rules you out.</p>
+      </div>
+      <div class="visual">
+        <h4>Sustainable payload mass vs altitude</h4>
+        <div class="chart-wrap"><canvas id="storyChart4"></canvas></div>
+        <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+          Assumes 30 W/kg payload specific power. Example: 4 m² array, 0.5 m² bus, 0.3 kW delivered.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: storm resilience / Capability 4 -->
   <section class="story">
     <div class="inner">
       <div class="copy">
-        <h2>Section 5 · Breaking the death spiral</h2>
-        <h3>A larger bus, without the engineering cascade.</h3>
-        <p>Bigger bus → more drag → more power required → bigger solar array → more drag → more power required → …</p>
-        <p>Beamed power lands on the bus <strong>without adding drag</strong> (or via a small receiver – a fraction of an array's footprint). It's the only input that breaks the loop.</p>
-        <p>The result: more sustainable payload at every altitude, and feasibility where the loop otherwise rules you out.</p>
+        <div class="cap-badge cap4"><span class="cap-dot cap4"></span>Capability 4 · Geomagnetic Storm Resilience</div>
+        <h3>Design for typical days. Beam through the storms.</h3>
+        <p>Atmospheric drag at VLEO varies with space weather. A severe geomagnetic storm can increase drag - and the power needed to hold altitude - to <strong>around 5× above a quiet day</strong>, for a few hours a few times a year.</p>
+        <p>With conventional approaches to VLEO, you overbuild the platform for that worst case and fly an oversized, overpriced satellite the rest of the time. With power beaming, you size for typical conditions and <strong>receive the extra power to maintain orbit</strong> during a geomagnetic storm - a smaller, lighter, cheaper satellite with the same resilience.</p>
       </div>
       <div class="visual">
-        <h4>Sustainable payload power vs altitude</h4>
-        <div class="chart-wrap"><canvas id="storyChart4"></canvas></div>
+        <h4>Space weather drives thruster power</h4>
+        <div class="storm-mini-dist">
+          <div class="smd-body">
+            <svg id="stormMiniDist" viewBox="0 0 400 110" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="smd-caption">
+              Drag in VLEO is driven mostly by space weather, and space weather events follow a heavy-tailed distribution. So the thruster power needed to hold orbit varies wildly: most of the time it sits near the median, but severe geomagnetic storms push it far into the tail. Onboard thrusters cover demand up to their limit; beyond that the beam supplies the rest.
+            </div>
+          </div>
+        </div>
         <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
-          Payload power = solar + beamed − power lost to drag. Example: 4 m² array, 0.5 m² bus, 0.3 kW delivered.
+          Based on observed VLEO drag variability across the solar cycle and major geomagnetic events.
         </div>
       </div>
     </div>
@@ -692,7 +808,8 @@
   <section class="cta">
     <h3>Run the numbers on your own configuration</h3>
     <p>Adjust altitude, power budget, payload, and beam parameters live.</p>
-    <button class="go" id="goCalc">Open interactive study →</button>
+    <button class="go" id="goCalc">Platform study →</button>
+    <button class="go" id="goStorm" style="margin-left:10px;">Geomagnetic storm study →</button>
   </section>
 
 </div>
@@ -810,17 +927,23 @@
         <div class="bar-container"><div class="bar full"></div><div class="bar base" id="ecBarBase"></div></div>
         <span class="value"><span id="ecBaseVal">0</span> min</span>
       </div>
+      <div style="text-align:right; font-size:13px; color:var(--deep-tint); margin:-4px 0 6px 0;" id="ecBasePctRow">
+        <span id="ecBasePct">0</span>%
+      </div>
       <div class="eclipse-row">
         <span class="label">+ power beaming</span>
         <div class="bar-container"><div class="bar full"></div><div class="bar aug" id="ecBarAug"></div></div>
         <span class="value"><span id="ecAugVal">0</span> min</span>
+      </div>
+      <div style="text-align:right; font-size:13px; margin:-4px 0 6px 0;" id="ecAugPctRow">
+        <span id="ecAugPctText" style="color:var(--ok); font-weight:600;">—</span>
       </div>
       <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
         Orbital period: <b id="orbPeriod" style="color:var(--deep);">—</b>.
         Beaming reduces net battery drain rate during eclipse.
       </div>
       <div id="ecNote" style="margin-top:10px; padding:10px 12px; background:rgba(212,161,74,0.12); border-left:3px solid var(--warn); border-radius:0 6px 6px 0; font-size:13px; color:var(--deep); display:none;">
-        Battery already covers the full eclipse at this payload draw – no benefit from beaming for duty cycle. (Beaming still helps with altitude and sustainable bus.)
+        Battery already covers the full eclipse at this payload draw - no benefit from beaming for duty cycle. (Beaming still helps with altitude and sustainable bus.)
       </div>
     </div>
 
@@ -842,6 +965,21 @@
       </div>
     </div>
 
+    <div class="card">
+      <h3>What this means</h3>
+      <div style="font-size:14px; color:var(--deep); line-height:1.55;">
+        <p style="margin:0 0 8px;">
+          With a <strong><span id="wtmBud">—</span> kW</strong> power budget and <strong><span id="wtmPay">—</span> kW</strong> reserved for payload, the platform can hold altitude down to about <strong><span id="wtmLoBase">—</span> km</strong> on its own. With <strong><span id="wtmDelivered">—</span> kW</strong> of beamed power, that floor drops to about <strong><span id="wtmLoAug">—</span> km</strong>, roughly <strong><span id="wtmLoDelta">—</span> km</strong> lower.
+        </p>
+        <p style="margin:0 0 8px;">
+          Through eclipse, beamed power adds about <strong><span id="wtmEcGain">—</span> min</strong> of payload runtime, and at the selected altitude it supports roughly <strong><span id="wtmBusGain">—</span> W</strong> of additional sustainable payload.
+        </p>
+        <p style="margin:10px 0 0; color:var(--deep-tint);">
+          These results are indicative of the capabilities that could be provided and depend on the modelling assumptions; actual capabilities may differ.
+        </p>
+      </div>
+    </div>
+
     <details class="card" style="margin-top:4px;">
       <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model &amp; assumptions</summary>
       <div style="margin-top:14px; font-size:13px; color:var(--deep); line-height:1.6;">
@@ -851,8 +989,8 @@
         <ul style="margin:0 0 14px; padding-left:20px;">
           <li><b>Electrical thruster power to hold altitude</b> against drag:<br>
             <span style="font-family:monospace; font-size:12px;">P<sub>thr</sub>(h, A) = K · ρ(h) · v² · A</span>&nbsp; [W]<br>
-            Derived from F<sub>drag</sub> = ½·C<sub>d</sub>·ρ·v²·A combined with an ion-thruster power model P<sub>elec</sub> = F<sub>drag</sub>·v<sub>exh</sub>/(2η<sub>thr</sub>), giving K = C<sub>d</sub>·v<sub>exh</sub>/(4η<sub>thr</sub>). Calibrated to K = 32 873 m/s so P<sub>thr</sub>(200 km, 2 m²) = 1 kW — implies v<sub>exh</sub>/(4η<sub>thr</sub>) ≈ 14.9 km/s (consistent with Hall-effect/ion thrusters with v<sub>exh</sub> ~20–40 km/s and η<sub>thr</sub> ~0.5–0.6). C<sub>d</sub> = 2.2 (free-molecular flat plate, Cook 1965; Moe &amp; Moe 2005) is absorbed into K.</li>
-          <li><b>Atmospheric density</b> — cubic Hermite spline in log-density through published anchors, C¹-smooth (no kinks at anchor points):<br>
+            Derived from F<sub>drag</sub> = ½·C<sub>d</sub>·ρ·v²·A combined with an ion-thruster power model P<sub>elec</sub> = F<sub>drag</sub>·v<sub>exh</sub>/(2η<sub>thr</sub>), giving K = C<sub>d</sub>·v<sub>exh</sub>/(4η<sub>thr</sub>). Calibrated to K = 32 873 m/s so P<sub>thr</sub>(200 km, 2 m²) = 1 kW - implies v<sub>exh</sub>/(4η<sub>thr</sub>) ≈ 14.9 km/s (consistent with Hall-effect/ion thrusters with v<sub>exh</sub> ~20–40 km/s and η<sub>thr</sub> ~0.5–0.6). C<sub>d</sub> = 2.2 (free-molecular flat plate, Cook 1965; Moe &amp; Moe 2005) is absorbed into K.</li>
+          <li><b>Atmospheric density</b> - cubic Hermite spline in log-density through published anchors, C¹-smooth (no kinks at anchor points):<br>
             Anchors (km, kg/m³): (130, 5×10⁻⁹), (150, 1×10⁻⁹), (200, 2.5×10⁻¹⁰), (250, 7×10⁻¹¹), (300, 2.3×10⁻¹¹), (350, 9.5×10⁻¹²), (450, 2.2×10⁻¹²). The 150–250 km values are Crisp-consistent; 130/300/350/450 km are NRLMSISE-00 nominal (F10.7 ≈ 140). Below 130 km and above 450 km the spline falls back to the outermost segment's log-slope.</li>
           <li><b>Orbital period</b> (circular two-body):<br>
             <span style="font-family:monospace; font-size:12px;">T = 2π √((R<sub>⊕</sub>+h)³ / μ<sub>⊕</sub>)</span>&nbsp; [s]<br>
@@ -861,27 +999,153 @@
           <li><b>Payload runtime in eclipse</b> (battery-limited, capped at eclipse duration):<br>
             <span style="font-family:monospace; font-size:12px;">t<sub>base</sub> = min( t<sub>ecl</sub>,&nbsp; E<sub>bat</sub> / P<sub>payload</sub> )</span><br>
             <span style="font-family:monospace; font-size:12px;">t<sub>aug</sub>&nbsp; = min( t<sub>ecl</sub>,&nbsp; E<sub>bat</sub> / max(0, P<sub>payload</sub> − P<sub>delivered</sub>) )</span><br>
-            E<sub>bat</sub> in Wh and P in W gives time in hours — multiply by 60 for minutes. <b>Simplifications:</b> (i) thrusters are assumed off in eclipse (many VLEO concepts thrust only in sunlight to conserve battery); (ii) battery starts eclipse fully charged; (iii) beaming is available in shadow (transmitter remains in sunlight, e.g. dawn–dusk SSO).</li>
+            E<sub>bat</sub> in Wh and P in W gives time in hours - multiply by 60 for minutes. <b>Simplifications:</b> (i) thrusters are assumed off in eclipse (many VLEO concepts thrust only in sunlight to conserve battery); (ii) battery starts eclipse fully charged; (iii) beaming is available in shadow (transmitter remains in sunlight, e.g. dawn–dusk SSO).</li>
           <li><b>Sustainable payload</b> at altitude h:<br>
             <span style="font-family:monospace; font-size:12px;">P<sub>payload, max</sub> = A<sub>array</sub>·S·η<sub>PV</sub> + P<sub>delivered</sub> − P<sub>thr</sub>(h, A<sub>array</sub>+A<sub>bus</sub>+A<sub>rcv</sub>)</span>&nbsp; [W]<br>
             Steady state: solar generation plus beam minus drag-power draw. Negative ⇒ the platform cannot close its power budget at this altitude. <b>Simplification:</b> solar generation assumes the array is normal to the Sun (no cosine loss); a body-mounted array would effectively give ~60% of this value on average.</li>
           <li><b>Lowest operable altitude</b> (floor): the altitude at which <span style="font-family:monospace; font-size:12px;">P<sub>thr</sub>(h, A) = P<sub>avail</sub></span>, solved by bisection.
             Available thrust power is <span style="font-family:monospace; font-size:12px;">P<sub>budget</sub> − P<sub>payload</sub></span> for the baseline, plus <span style="font-family:monospace; font-size:12px;">P<sub>delivered</sub></span> when beaming is on. Baseline drag area is A<sub>array</sub>+A<sub>bus</sub>; the beaming case adds A<sub>rcv</sub> when the specialised receiver is selected.</li>
-          <li><b>Required incident power at the receiver</b> (illustrative — atmospheric and geometric losses neglected):<br>
+          <li><b>Required incident power at the receiver</b> (illustrative - atmospheric and geometric losses neglected):<br>
             <span style="font-family:monospace; font-size:12px;">P<sub>rx</sub> = P<sub>delivered</sub> / η<sub>receiver</sub></span>.</li>
         </ul>
 
         <p style="margin:0 0 6px;"><b>Assumption values</b></p>
         <ul style="margin:0; padding-left:20px;">
           <li><b>Orbital velocity:</b> v = 7.8 km/s, held constant. v varies ~2.4% (7.83 → 7.64 km/s) over 130–450 km, dwarfed by the ~2000× density variation that dominates drag.</li>
-          <li><b>Solar flux:</b> S = 1361 W/m² — total solar irradiance, Kopp &amp; Lean (2011) SORCE/TIM. <b>PV efficiency:</b> η<sub>PV</sub> = 30% (triple-junction GaAs, e.g. Spectrolab XTJ Prime).</li>
+          <li><b>Solar flux:</b> S = 1361 W/m² - total solar irradiance, Kopp &amp; Lean (2011) SORCE/TIM. <b>PV efficiency:</b> η<sub>PV</sub> = 30% (triple-junction GaAs, e.g. Spectrolab XTJ Prime).</li>
           <li><b>Generic-panel receiver:</b> η<sub>receiver</sub> = 25%, A<sub>rcv</sub> = 0 (beam onto the existing array). Representative of Si/III–V single-wavelength response.</li>
           <li><b>Specialised receiver:</b> η<sub>receiver</sub> = 60%, A<sub>rcv</sub> = 0.3 m² × (1 + δ<sub>drag</sub>/100) (the slider adds a C<sub>d</sub> penalty). Consistent with reported wavelength-tuned PV demonstrations (Steinsiek et al.; LaserMotive).</li>
-          <li><b>Calibration benchmark:</b> P<sub>thr</sub> calibrated on the VLEO drag–power data summarised in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>. On the reference 2 m² platform the model gives 4 kW at 150 km, 1 kW at 200 km, and 280 W at 250 km — matching Crisp's 4 kW / 1 kW / 300 W reference points to within 7%. Interpolated densities between anchors agree with NRLMSISE-00 nominal values to within ~20%.</li>
+          <li><b>Calibration benchmark:</b> P<sub>thr</sub> calibrated on the VLEO drag–power data summarised in Crisp et al. (2020), <i>The benefits of very low earth orbit for earth observation missions</i>. On the reference 2 m² platform the model gives 4 kW at 150 km, 1 kW at 200 km, and 280 W at 250 km - matching Crisp's 4 kW / 1 kW / 300 W reference points to within 7%. Interpolated densities between anchors agree with NRLMSISE-00 nominal values to within ~20%.</li>
         </ul>
       </div>
     </details>
 
+  </section>
+</main>
+
+</div>
+
+<!-- ============ STORM RESILIENCE TAB ============ -->
+<div class="tab-pane" id="tab-storm">
+
+<main class="calc">
+  <!-- INPUTS -->
+  <aside class="panel" id="stormInputs">
+    <h2>Operating conditions</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Nominal altitude</label><span class="value"><span id="sAltVal">200</span> km</span></div>
+      <input type="range" id="sAlt" min="150" max="350" step="5" value="200">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Platform frontal area</label><span class="value"><span id="sAreaVal">2.0</span> m²</span></div>
+      <input type="range" id="sArea" min="0.5" max="20" step="0.5" value="2">
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Mission lifetime</label><span class="value"><span id="sLifeVal">5</span> yr</span></div>
+      <input type="range" id="sLife" min="1" max="10" step="1" value="5">
+    </div>
+
+    <h2>Thruster power</h2>
+
+    <div class="control">
+      <div class="control-head"><label>Onboard thruster power</label><span class="value"><span id="sOnboardVal">2.5</span> kW</span></div>
+      <input type="range" id="sOnboard" min="0.2" max="12" step="0.1" value="2.5">
+      <p class="control-desc">The thruster power you build into the platform. Nominal (median-day) demand here is <b id="sNomDemand">—</b> kW, so this is <b id="sOnboardX">—</b>× nominal.</p>
+    </div>
+
+    <div class="control">
+      <div class="control-head"><label>Supplemental beamed power</label><span class="value"><span id="sBeamVal">3.0</span> kW</span></div>
+      <input type="range" id="sBeam" min="0" max="12" step="0.1" value="3">
+      <p class="control-desc">Extra thrust power NEOWATT delivers during storms, on top of your onboard thrusters.</p>
+    </div>
+  </aside>
+
+  <section class="results">
+
+    <div class="card">
+      <h3>Time in deficit vs thruster power</h3>
+      <p style="margin:0 0 12px; font-size:14px; color:var(--deep); line-height:1.55;">
+        How much of the mission the satellite spends short of power - drag exceeding the available thrust, so it cannot hold altitude - against installed thruster power.
+      </p>
+      <div class="chart-wrap" style="height:300px;"><canvas id="availChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Thruster power distribution</h3>
+      <p style="margin:0 0 12px; font-size:14px; color:var(--deep); line-height:1.55;">
+        Where those storms sit. This is the distribution of the thruster power the satellite needs to hold its orbit across the full range of space weather. Most of the time demand sits near the nominal value; geomagnetic storms push it into the right tail. The lines mark your onboard thruster power and your onboard-plus-beam total; the shaded bands show what each covers.
+      </p>
+      <div class="chart-wrap" style="height:340px;"><canvas id="stormChart"></canvas></div>
+      <div style="margin-top:10px; font-size:12px; color:var(--deep-tint);">
+        Log-normal model of thruster-power variation at the nominal altitude (median = nominal power), with the spread fixed from observed thermospheric density variability. The right tail is the rare severe-storm regime.
+      </div>
+      <div style="margin-top:8px; display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--deep-tint);">
+        <span><span style="display:inline-block; width:14px; height:10px; background:rgba(132,121,208,0.55); border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Platform handles</span>
+        <span><span style="display:inline-block; width:14px; height:10px; background:rgba(63,167,181,0.55); border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Beam fills the gap</span>
+        <span><span style="display:inline-block; width:14px; height:10px; background:rgba(57,69,99,0.20); border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Beyond onboard + beam</span>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="kpi">
+        <div class="klabel">Orbit-keeping availability</div>
+        <div class="kval"><span id="sAvailBase">—</span>% → <span id="sAvailAug">—</span>%</div>
+        <div class="ksub">onboard alone → with <span id="sBeamKwSub">—</span> kW beamed</div>
+      </div>
+      <div class="kpi">
+        <div class="klabel">Time in deficit, no beaming</div>
+        <div class="kval"><span id="sDefBase">—</span> <span style="font-size:22px;">days</span></div>
+        <div class="ksub">total over the <span id="sDefLife">5</span>-year mission</div>
+      </div>
+      <div class="kpi">
+        <div class="klabel">Time in deficit, with beaming</div>
+        <div class="kval"><span id="sDefAug">—</span> <span style="font-size:22px;">days</span></div>
+        <div class="ksub">total over the mission, including beamed power</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <h3>What this means</h3>
+      <div style="font-size:14px; color:var(--deep); line-height:1.55;">
+        <p style="margin:0 0 8px;">
+          At <strong><span id="sWtmAlt">200</span> km</strong> the platform's nominal (median-day) thruster demand is <strong><span id="sWtmNom">—</span> kW</strong>; space weather pushes the actual demand above that for part of the time.
+        </p>
+        <p style="margin:0 0 8px;">
+          Your onboard thrusters provide <strong><span id="sWtmOnboard">—</span> kW</strong>, enough to meet demand <strong><span id="sWtmAvailBase">—</span>%</strong> of the time. Over a <strong><span id="sWtmLife">5</span>-year</strong> mission that leaves about <strong><span id="sWtmDefBase">—</span> days</strong> (<strong><span id="sWtmDefBasePct">—</span>% of the mission</strong>) when drag outstrips your thrusters and the platform cannot hold altitude.
+        </p>
+        <p style="margin:0;">
+          Adding <strong><span id="sWtmBeam">—</span> kW</strong> of beamed power raises the available thrust to <strong><span id="sWtmTotal">—</span> kW</strong> during storms, taking availability to <strong><span id="sWtmAvailAug">—</span>%</strong> and cutting the deficit to about <strong><span id="sWtmDefAug">—</span> days</strong> over the mission.
+        </p>
+        <p style="margin:10px 0 0; color:var(--deep-tint);">
+          These results are indicative of the capabilities that could be provided and depend on the modelling assumptions; actual capabilities may differ.
+        </p>
+      </div>
+    </div>
+
+    <details class="card" style="margin-top:4px;">
+      <summary style="cursor:pointer; font-size:13px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--deep-tint);">Model &amp; assumptions</summary>
+      <div style="margin-top:14px; font-size:13px; color:var(--deep); line-height:1.6;">
+        <p style="margin:0 0 6px;"><b>Variability model</b></p>
+        <p style="margin:0 0 10px;">
+          Thruster power at altitude h is modelled as P(h) · M, where M is a log-normal multiplier with μ=0 and a fixed log-space spread σ = 0.50 (see below). The median of M is 1 (i.e. the calibrated nominal power); the right tail captures combined solar-cycle and geomagnetic-storm variability.
+        </p>
+        <p style="margin:0 0 6px;"><b>Why log-normal, and why σ = 0.50?</b></p>
+        <p style="margin:0 0 10px;">
+          Thermospheric density at a fixed altitude is driven by solar (F10.7) and geomagnetic activity and is approximately log-normal over multi-year horizons. The size of the swing grows strongly with altitude: Emmert (2015) reports roughly a factor of 10 over a solar cycle near 400 km, but at the 200–250 km altitudes relevant here it is markedly smaller, of order a factor of 4–5. Mapping that VLEO-scale swing to the 5th–95th percentiles of the long-term distribution gives σ ≈ 0.50, with geomagnetic storms populating the rarer right tail. Reference: Emmert (2015), <i>Thermospheric mass density: A review</i>, Adv. Space Res. 56, 773.
+        </p>
+        <p style="margin:0 0 6px;"><b>Availability model</b></p>
+        <p style="margin:0 0 10px;">
+          For an available thruster power C, the platform can hold its orbit whenever demand is at or below C. The share of the time this holds is read directly from the demand distribution: availability = Φ( ln(C / P(h)) / σ ), where Φ is the standard-normal CDF. Time in deficit over the mission = (1 − availability) × mission duration. Beamed power raises C from the onboard value to onboard + beam during storms; a residual deficit remains only when demand exceeds even that combined total.
+        </p>
+        <p style="margin:0 0 6px;"><b>Why no storm rate?</b></p>
+        <p style="margin:0;">
+          Availability is a property of the distribution alone, so it needs no assumption about how often storms strike or how long they last. The trade-off: a time-in-deficit figure does not by itself say whether a single deficit lasts long enough to be mission-ending - that depends on how a given deficit's duration compares with the platform's altitude margin. It is the clean, assumption-free measure of how often the platform is short of power.
+        </p>
+      </div>
+    </details>
 
   </section>
 </main>
@@ -968,10 +1232,19 @@
         } else if (anchor === 'vert-top') {
           const pts = meta.data;
           const top = pts.reduce((a, b) => (b.y < a.y ? b : a));
-          // Default: just below top, label to the right of the line
-          x = top.x + 4; y = chartArea.top + 4;
-          align = 'left'; baseline = 'top';
-          // Collision: stack downward
+          const w = ctx.measureText(ds.label).width;
+          baseline = 'top';
+          // Pick the side first: to the right of the line, or to the left if
+          // that would overflow the right edge. Deciding before the collision
+          // pass means a label flipped to the left is still checked for
+          // overlaps (otherwise two near-by markers collide near the edge).
+          if (top.x + 4 + w > chartArea.right - 2) {
+            align = 'right'; x = top.x - 4;
+          } else {
+            align = 'left'; x = top.x + 4;
+          }
+          y = chartArea.top + 4;
+          // Collision: stack downward until clear of already-placed labels.
           let box = bboxOf(ds.label, x, y, align, baseline);
           let tries = 0;
           while (collides(box) && tries < 8) {
@@ -979,9 +1252,6 @@
             box = bboxOf(ds.label, x, y, align, baseline);
             tries++;
           }
-          // If label would overflow right edge, flip to left side of line
-          const w = ctx.measureText(ds.label).width;
-          if (x + w > chartArea.right - 2) { align = 'right'; x = top.x - 4; }
         } else if (anchor === 'region-below') {
           const yZero = ys.getPixelForValue(0);
           x = (chartArea.left + chartArea.right) / 2;
@@ -1021,7 +1291,7 @@
   // Atmospheric density (kg/m³). Anchors: 150–250 km reproduce Crisp et al.'s
   // thruster-power reference (4 kW, 1 kW, 300 W at 2 m²); 130/300/350/450 km
   // are NRLMSISE-00 nominal (F10.7 ≈ 140). Interpolation is a cubic Hermite
-  // spline in log-density — smooth (C¹) through every anchor, so scale height
+  // spline in log-density - smooth (C¹) through every anchor, so scale height
   // varies continuously instead of jumping between segments.
   const ATM_ANCHORS = [
     [130, 5.0e-9],
@@ -1103,13 +1373,17 @@
     tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     panes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
     if (name === 'calc') {
-      // resize charts after becoming visible
       setTimeout(() => calc.chart && calc.chart.resize(), 50);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    if (name === 'storm') {
+      setTimeout(() => stormCalc.chart && stormCalc.chart.resize(), 50);
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }
   tabs.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.tab)));
   document.getElementById('goCalc').addEventListener('click', () => activateTab('calc'));
+  document.getElementById('goStorm').addEventListener('click', () => activateTab('storm'));
 
   // ======== STORY CHARTS ========
   const baseAxisOpts = (yMax) => ({
@@ -1131,56 +1405,29 @@
     labelAnchor: 'curve-start'
   };
 
-  // Story chart 1 – just the curve
+  // Story chart 1 - just the curve
   new Chart(document.getElementById('storyChart1'), {
     type: 'line',
     data: { datasets: [JSON.parse(JSON.stringify(curveDataset))] },
     options: baseAxisOpts(5000)
   });
 
-  // Story chart 2 – curve + horizontal "today's available power" line + intersection marker
+  // Story chart 2 - curve + "available power" as a second filled curve
+  // The intersection of demand and available power IS the floor - no vline/hline needed.
   const todayBudget = 0.8; // kW left for thrusters at 1.6 budget, 0.8 payload
   const todayLimitKm = bisect(todayBudget);
-  new Chart(document.getElementById('storyChart2'), {
-    type: 'line',
-    data: { datasets: [
-      JSON.parse(JSON.stringify(curveDataset)),
-      { label:`Today: ${(todayBudget*1000).toFixed(0)} W available`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'horiz-right' },
-      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'vert-top' }
-    ] },
-    options: baseAxisOpts(5000)
-  });
-
-  // Story chart 3 – adds beamed power and new floor (same line styles as chart 2 for shared elements)
   const beamedKw = 0.3; // kW delivered to bus
   const augBudget = todayBudget + beamedKw;
   const augLimitKm = bisect(augBudget);
-  new Chart(document.getElementById('storyChart3'), {
+  // Headroom = available thruster power − demand. Where it hits zero = floor altitude.
+  const headroomBase = altGrid.map(h => ({ x:h, y:Math.max(0, todayBudget*1000 - thrusterPower(h)) }));
+  const headroomAug  = altGrid.map(h => ({ x:h, y:Math.max(0, augBudget*1000 - thrusterPower(h)) }));
+  new Chart(document.getElementById('storyChart2'), {
     type: 'line',
     data: { datasets: [
-      JSON.parse(JSON.stringify(curveDataset)),
-      { label:`Today: ${(todayBudget*1000).toFixed(0)} W`, data:[{x:150,y:todayBudget*1000},{x:350,y:todayBudget*1000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'horiz-right-below' },
-      { label:`Today's floor: ${todayLimitKm.toFixed(0)} km`, data:[{x:todayLimitKm,y:0},{x:todayLimitKm,y:5000}], borderColor:'#394563', borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, labelAnchor:'vert-top' },
-      { label:`+ beaming: ${(augBudget*1000).toFixed(0)} W`, data:[{x:150,y:augBudget*1000},{x:350,y:augBudget*1000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false, labelAnchor:'horiz-right-above' },
-      { label:`New floor: ${augLimitKm.toFixed(0)} km`, data:[{x:augLimitKm,y:0},{x:augLimitKm,y:5000}], borderColor:'#8479D0', borderWidth:2.5, pointRadius:0, fill:false, labelAnchor:'vert-top' }
+      { label:'Today (no beaming)', data:headroomBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-end' },
+      { label:'+ 0.3 kW beamed', data:headroomAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-end' }
     ] },
-    options: baseAxisOpts(5000)
-  });
-
-  // Story chart 4 – sustainable payload vs altitude (death spiral)
-  // Shares physics with the calculator: solar generation + beam − drag on (array + bus).
-  const SF_STORY = 1361, ETA_STORY = 0.30;
-  const susPay = (h, A, Ab, Bw) => SF_STORY*ETA_STORY*A + Bw - thrustPowerPhys(h, A + Ab);
-  const A_story = 4, Ab_story = 0.5;
-  const beam_story = 300; // W delivered
-  const sustainCurveBase = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, 0)) }));
-  const sustainCurveAug  = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, beam_story)) }));
-  new Chart(document.getElementById('storyChart4'), {
-    type: 'line',
-    data: { datasets: [
-      { label:'Today (no beaming)', data:sustainCurveBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-middle' },
-      { label:'+ 0.3 kW beamed', data:sustainCurveAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-middle' }
-    ]},
     options: {
       responsive:true, maintainAspectRatio:false,
       layout: { padding: { top: 14, right: 10 } },
@@ -1189,12 +1436,346 @@
           callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${Math.round(it.parsed.y)} W` } } },
       scales: {
         x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 50 }, grid:{ color:'#D7DCE9' } },
-        y: { min:0, max:1500, title:{ display:true, text:'Sustainable payload (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 500 }, grid:{ color:'#D7DCE9' } }
+        y: { min:0, max:1300, title:{ display:true, text:'Thruster headroom (W)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 200 }, grid:{ color:'#D7DCE9' } }
       }
     }
   });
 
-  // Story eclipse panel – fixed example
+  // Story chart 4 - sustainable payload MASS vs altitude (death spiral)
+  // Shares physics with the calculator: solar generation + beam − drag on (array + bus).
+  // Converted to kg using a representative payload specific power of 30 W/kg.
+  const SF_STORY = 1361, ETA_STORY = 0.30;
+  const SPEC_POWER = 30; // W/kg - representative payload specific power
+  const susPay = (h, A, Ab, Bw) => SF_STORY*ETA_STORY*A + Bw - thrustPowerPhys(h, A + Ab);
+  const A_story = 4, Ab_story = 0.5;
+  const beam_story = 300; // W delivered
+  const sustainCurveBase = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, 0) / SPEC_POWER) }));
+  const sustainCurveAug  = altGrid.map(h => ({ x:h, y:Math.max(0, susPay(h, A_story, Ab_story, beam_story) / SPEC_POWER) }));
+  new Chart(document.getElementById('storyChart4'), {
+    type: 'line',
+    data: { datasets: [
+      { label:'Today (no beaming)', data:sustainCurveBase, borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.12)', borderWidth:2, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-end' },
+      { label:'+ 0.3 kW beamed', data:sustainCurveAug, borderColor:'#8479D0', backgroundColor:'rgba(132,121,208,0.15)', borderWidth:2.5, tension:0.3, pointRadius:0, fill:true, labelAnchor:'curve-end' }
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      layout: { padding: { top: 14, right: 10 } },
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
+          callbacks: { title:(it)=>`${Math.round(it[0].parsed.x)} km`, label:(it)=>`${it.dataset.label}: ${it.parsed.y.toFixed(1)} kg` } } },
+      scales: {
+        x: { type:'linear', min:150, max:350, title:{ display:true, text:'Altitude (km)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 50 }, grid:{ color:'#D7DCE9' } },
+        y: { min:0, max:70, title:{ display:true, text:'Sustainable payload mass (kg)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' }, stepSize: 10 }, grid:{ color:'#D7DCE9' } }
+      }
+    }
+  });
+
+  // Story chart 5 - storm resilience (Capability 4): representative thruster-demand distribution.
+  (() => {
+    const sigma = 0.50;                          // log-normal sigma; VLEO-scale solar-cycle swing (~4-5x), see Emmert (2015)
+    const base_kw = thrustPowerPhys(200, REF_AREA) / 1000; // nominal at 200 km, 2 m²
+    const onboard = 2.5, beam = 3.0;             // representative onboard thrusters + beam, kW
+    const total = onboard + beam;
+    // Std-normal inverse CDF (Acklam) - used only to set the chart's x-domain.
+    const z = p => {
+      const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+      const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+      const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+      const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+      const plow = 0.02425, phigh = 1 - plow;
+      let q, r;
+      if (p < plow) { q = Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+      if (p <= phigh) { q = p - 0.5; r = q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+      q = Math.sqrt(-2*Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    };
+
+    // ---- Storm-demand distribution SVG ----
+    const svg = document.getElementById('stormMiniDist');
+    if (svg) {
+      const W = 400, H = 110;
+      const padL = 6, padR = 6, padT = 8, padB = 22;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      // X domain: extend past the onboard+beam marker so its line + label fit on the axis
+      const xMax = Math.max(base_kw * Math.exp(sigma * z(0.99995)), total * 1.15);
+      const xToPx = x => padL + (x / xMax) * plotW;
+      // Log-normal PDF
+      const pdf = x => x <= 0 ? 0 : Math.exp(-Math.pow(Math.log(x/base_kw), 2) / (2*sigma*sigma)) / (x * sigma * Math.sqrt(2*Math.PI));
+
+      // Build a histogram (bin counts proportional to PDF) for the "nod" feel
+      const nBins = 36;
+      const binW = xMax / nBins;
+      const bins = [];
+      let peak = 0;
+      for (let i = 0; i < nBins; i++) {
+        const xMid = (i + 0.5) * binW;
+        const y = pdf(xMid);
+        bins.push({ xLo: i * binW, xHi: (i + 1) * binW, y });
+        if (y > peak) peak = y;
+      }
+      const yScale = (plotH - 4) / peak;
+
+      // Compose SVG
+      let svgInner = '';
+      // Baseline axis
+      svgInner += `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#D7DCE9" stroke-width="1"/>`;
+
+      // Histogram bars, coloured by which zone they fall in
+      bins.forEach(b => {
+        const x = xToPx(b.xLo);
+        const w = Math.max(0.5, xToPx(b.xHi) - xToPx(b.xLo) - 1);
+        const h = b.y * yScale;
+        const y = padT + plotH - h;
+        let fill, opacity;
+        const xMid = (b.xLo + b.xHi) / 2;
+        if (xMid <= onboard) {
+          fill = '#8479D0'; opacity = 0.55;     // onboard zone (lavender)
+        } else if (xMid <= total) {
+          fill = '#3FA7B5'; opacity = 0.50;     // beam-fills zone (teal)
+        } else {
+          fill = '#394563'; opacity = 0.18;     // beyond onboard + beam
+        }
+        svgInner += `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="${fill}" fill-opacity="${opacity}"/>`;
+      });
+
+      // Power-level markers
+      const xAug  = xToPx(total);
+      const xBase = xToPx(onboard);
+      const yMarkTop = padT;
+      const yMarkBot = padT + plotH;
+
+      // Clamp label x positions so they never run off the SVG edges
+      const clampLabel = (x, halfW) => Math.min(W - padR - halfW, Math.max(padL + halfW, x));
+
+      // Onboard marker (slate)
+      svgInner += `<line x1="${xBase.toFixed(2)}" y1="${yMarkTop}" x2="${xBase.toFixed(2)}" y2="${yMarkBot}" stroke="#748DA8" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+      const xBaseLbl = clampLabel(xBase, 30);
+      svgInner += `<text x="${xBaseLbl.toFixed(2)}" y="${yMarkBot + 13}" font-family="Rajdhani" font-size="10" font-weight="600" fill="#748DA8" text-anchor="middle">onboard</text>`;
+
+      // Onboard + beam marker (lavender)
+      svgInner += `<line x1="${xAug.toFixed(2)}" y1="${yMarkTop}" x2="${xAug.toFixed(2)}" y2="${yMarkBot}" stroke="#8479D0" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+      const xAugLbl = clampLabel(xAug, 55);
+      svgInner += `<text x="${xAugLbl.toFixed(2)}" y="${yMarkBot + 13}" font-family="Rajdhani" font-size="10" font-weight="600" fill="#8479D0" text-anchor="middle">onboard + beam</text>`;
+
+      svg.innerHTML = svgInner;
+    }
+  })();
+
+  // ======== STORM RESILIENCE INTERACTIVE STUDY ========
+  // Standard-normal inverse CDF (Acklam approximation) - reused for the interactive panel.
+  function stdNormalInvCDF(p) {
+    const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+    const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+    const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+    const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+    const plow = 0.02425, phigh = 1 - plow;
+    let q, r;
+    if (p < plow) { q = Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    if (p <= phigh) { q = p - 0.5; r = q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+    q = Math.sqrt(-2*Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+
+  const stormCalc = {};
+  // Log-space spread of the thruster-power (density) multiplier, held fixed.
+  // Thermospheric density variability grows with altitude: the ~10x solar-cycle swing
+  // Emmert (2015) reports near 400 km is only ~4-5x at the 200-250 km altitudes here.
+  // Mapping that to the 5th-95th percentiles gives sigma ~= 0.50.
+  const SIGMA = 0.50;
+  // Standard-normal CDF (Abramowitz & Stegun 26.2.17), companion to stdNormalInvCDF.
+  function normCDF(z) {
+    const t = 1 / (1 + 0.2316419 * Math.abs(z));
+    const d = 0.3989422804014327 * Math.exp(-z * z / 2);
+    const p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+    return z > 0 ? 1 - p : p;
+  }
+  const sIn = {
+    alt:     document.getElementById('sAlt'),
+    area:    document.getElementById('sArea'),
+    life:    document.getElementById('sLife'),
+    onboard: document.getElementById('sOnboard'),
+    beam:    document.getElementById('sBeam')
+  };
+
+  // Nice tick step (1, 2, 5 × 10^n) so the x-axis grid stays clean across slider changes.
+  function niceStep(range, targetSteps = 8) {
+    const raw = range / targetSteps;
+    if (raw <= 0) return 1;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const norm = raw / mag;
+    if (norm < 1.5) return mag;
+    if (norm < 3)   return 2 * mag;
+    if (norm < 7)   return 5 * mag;
+    return 10 * mag;
+  }
+
+  // Initial empty chart - recompute() will populate datasets and scales on first call.
+  stormCalc.chart = new Chart(document.getElementById('stormChart').getContext('2d'), {
+    type: 'line',
+    data: { datasets: [
+      // 0: Full PDF outline (faint background)
+      { label:'Share of mission time', data: [], borderColor:'#394563', backgroundColor:'rgba(57,69,99,0.04)', borderWidth:1.5, tension:0.3, pointRadius:0, fill:true, order:5, labelAnchor:false },
+      // 1: Platform-handles zone (0 → onboard), lavender
+      { label:'Platform handles', data: [], borderColor:'transparent', backgroundColor:'rgba(132,121,208,0.32)', borderWidth:0, tension:0.3, pointRadius:0, fill:true, order:4, labelAnchor:false },
+      // 2: Beam-fills-this-gap zone (onboard → onboard+beam), teal
+      { label:'NEOWATT fills this gap', data: [], borderColor:'transparent', backgroundColor:'rgba(63,167,181,0.30)', borderWidth:0, tension:0.3, pointRadius:0, fill:true, order:3, labelAnchor:false },
+      // 3: vertical at onboard (slate)
+      { label:'', data: [], borderColor:'#748DA8', borderWidth:2.5, borderDash:[6,4], pointRadius:0, fill:false, order:2, labelAnchor:'vert-top' },
+      // 4: vertical at onboard + beam (lavender)
+      { label:'', data: [], borderColor:'#8479D0', borderWidth:2.5, borderDash:[6,4], pointRadius:0, fill:false, order:1, labelAnchor:'vert-top' }
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      animation: false,
+      layout: { padding: { top: 14, right: 10 } },
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor:'#0E1A3D', titleFont:{ family:'Rajdhani', weight:'600' }, bodyFont:{ family:'Rajdhani' },
+          callbacks: { title:(it)=>`${it[0].parsed.x.toFixed(2)} kW`, label:(it)=>it.dataset.label } } },
+      scales: {
+        x: { type:'linear', min:0, title:{ display:true, text:'Thruster power required (kW)', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ color:'#394563', font:{ family:'Rajdhani' } }, grid:{ color:'#D7DCE9' } },
+        y: { min:0, title:{ display:true, text:'Share of mission time', color:'#394563', font:{ family:'Rajdhani', size:12, weight:'500' } }, ticks:{ display:false }, grid:{ color:'#D7DCE9' } }
+      }
+    }
+  });
+
+  // ---- Deficit curve: time the platform is short of power vs installed thruster power ----
+  stormCalc.avail = new Chart(document.getElementById('availChart').getContext('2d'), {
+    type: 'line',
+    data: { datasets: [
+      // 0: days-in-deficit(C) curve
+      { label:'Days in deficit', data: [], borderColor:'#0E1A3D', borderWidth:2, tension:0.25, pointRadius:0, fill:false, order:3, labelAnchor:false },
+      // 1: marker at onboard power
+      { label:'', data: [], borderColor:'#748DA8', borderWidth:2.5, borderDash:[6,4], pointRadius:0, fill:false, order:2, labelAnchor:'vert-top' },
+      // 2: marker at onboard + beam
+      { label:'', data: [], borderColor:'#8479D0', borderWidth:2.5, borderDash:[6,4], pointRadius:0, fill:false, order:1, labelAnchor:'vert-top' },
+      // 3: horizontal reference at total mission length
+      { label:'', data: [], borderColor:'rgba(57,69,99,0.45)', borderWidth:1.5, borderDash:[4,4], pointRadius:0, fill:false, order:4, labelAnchor:'horiz-right-below' }
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false, animation:false,
+      layout:{ padding:{ top:14, right:10 } },
+      plugins:{ legend:{ display:false },
+        tooltip:{ backgroundColor:'#0E1A3D', titleFont:{family:'Rajdhani',weight:'600'}, bodyFont:{family:'Rajdhani'},
+          callbacks:{ title:(it)=>`${(+it[0].parsed.x).toFixed(1)} kW`, label:(it)=> it.datasetIndex===0 ? `${(+it.parsed.y).toFixed(it.parsed.y<1?2:(it.parsed.y<10?1:0))} days in deficit` : it.dataset.label } } },
+      scales:{
+        x:{ type:'linear', min:0, title:{display:true, text:'Thruster power (kW)', color:'#394563', font:{family:'Rajdhani',size:12,weight:'500'}}, ticks:{ color:'#394563', font:{family:'Rajdhani'} }, grid:{ color:'#D7DCE9' } },
+        y:{ type:'linear', min:0, title:{display:true, text:'Days in power deficit across mission', color:'#394563', font:{family:'Rajdhani',size:12,weight:'500'}}, ticks:{ color:'#394563', font:{family:'Rajdhani'}, callback:(value, index, ticks)=>{ const top = Math.max(...ticks.map(t=>t.value)); return value >= top - 0.5 ? '' : String(Math.round(value)); } }, grid:{ color:'#D7DCE9' } }
+      }
+    }
+  });
+
+  function stormRecompute() {
+    const alt     = +sIn.alt.value;
+    const area    = +sIn.area.value;
+    const sigma   = SIGMA;
+    const life    = +sIn.life.value;
+    const onboard = +sIn.onboard.value;
+    const beam    = +sIn.beam.value;
+    const total   = onboard + beam;
+
+    // Nominal (median-day) thruster demand at this altitude/area, in kW
+    const base_kw = thrustPowerPhys(alt, area) / 1000;
+
+    // Availability = share of time demand <= available power C, read straight off the demand
+    // distribution (the inverted CDF). No storm rate or decorrelation time is needed.
+    const avail    = (C) => C <= 0 ? 0 : normCDF(Math.log(C / base_kw) / sigma);
+    const availOn  = avail(onboard);
+    const availTot = avail(total);
+    const missionDays = 365.25 * life;
+    const defDaysOn   = (1 - availOn)  * missionDays;   // time in deficit over the mission
+    const defDaysTot  = (1 - availTot) * missionDays;
+
+    const avFmt = (v) => v >= 1 ? '100' : Math.min(v * 100, 99.99).toFixed(v >= 0.999 ? 2 : 1);
+    const dFmt  = (d) => d >= 10 ? String(Math.round(d)) : (d >= 1 ? d.toFixed(1) : d.toFixed(2));
+
+    // ---- Input echoes ----
+    document.getElementById('sAltVal').textContent     = alt;
+    document.getElementById('sAreaVal').textContent    = area.toFixed(1);
+    document.getElementById('sLifeVal').textContent    = life;
+    document.getElementById('sOnboardVal').textContent = onboard.toFixed(1);
+    document.getElementById('sBeamVal').textContent    = beam.toFixed(1);
+    document.getElementById('sNomDemand').textContent  = base_kw.toFixed(2);
+    document.getElementById('sOnboardX').textContent   = (onboard / base_kw).toFixed(1);
+
+    // Shared x-range for both charts (a bit past the 99.9th percentile, and past the markers)
+    const xMax = Math.max(base_kw * Math.exp(sigma * stdNormalInvCDF(0.999)), total * 1.12, base_kw * 2);
+
+    // ---- Deficit curve (days short of power over the mission, vs thruster power) ----
+    // Fixed full-range y-axis (0 .. mission length) so it doesn't rescale as the user drags
+    // thruster power; a dashed reference line marks the total mission length.
+    const ac = stormCalc.avail;
+    const defAt = (C) => (1 - avail(C)) * missionDays;
+    // Headroom above the mission-length line leaves room for the top-pinned marker labels.
+    const yMaxDef = missionDays * 1.15;
+    const AN = 200, defPts = [];
+    for (let i = 0; i <= AN; i++) { const x = (i / AN) * xMax; defPts.push({ x, y: defAt(x) }); }
+    ac.data.datasets[0].data = defPts;
+    ac.data.datasets[1].data = [{ x: onboard, y: 0 }, { x: onboard, y: yMaxDef }];
+    ac.data.datasets[1].label = `Onboard: ${onboard.toFixed(1)} kW`;
+    ac.data.datasets[2].data = [{ x: total, y: 0 }, { x: total, y: yMaxDef }];
+    ac.data.datasets[2].label = `Onboard + beam: ${total.toFixed(1)} kW`;
+    ac.data.datasets[3].data = [{ x: 0, y: missionDays }, { x: xMax, y: missionDays }];
+    ac.data.datasets[3].label = `Mission length: ${Math.round(missionDays)} days`;
+    ac.options.scales.x.max = xMax;
+    ac.options.scales.x.ticks.stepSize = niceStep(xMax);
+    ac.options.scales.y.max = yMaxDef;
+    ac.update('none');
+
+    // ---- Demand distribution chart ----
+    const ch = stormCalc.chart;
+    const NB = 240;
+    const pdf = (x) => x <= 0 ? 0 : Math.exp(-Math.pow(Math.log(x/base_kw), 2) / (2*sigma*sigma)) / (x * sigma * Math.sqrt(2*Math.PI));
+    const grid = [];
+    for (let i=0; i<=NB; i++) grid.push({ x: (i/NB) * xMax, y: pdf((i/NB) * xMax) });
+    const insert = (xVal) => {
+      if (xVal <= 0 || xVal >= xMax) return;
+      let idx = grid.findIndex(p => p.x > xVal);
+      if (idx === -1) idx = grid.length;
+      grid.splice(idx, 0, { x: xVal, y: pdf(xVal) });
+    };
+    insert(onboard); insert(total);
+    const zonePlatform = grid.map(p => ({ x: p.x, y: p.x <= onboard ? p.y : 0 }));
+    const zoneBeam     = grid.map(p => ({ x: p.x, y: (p.x >= onboard && p.x <= total) ? p.y : 0 }));
+    const yPeak = Math.max(...grid.map(p => p.y));
+    const yMax  = yPeak * 1.18;
+    ch.data.datasets[0].data = grid;
+    ch.data.datasets[1].data = zonePlatform;
+    ch.data.datasets[2].data = zoneBeam;
+    ch.data.datasets[3].data = [{ x: onboard, y: 0 }, { x: onboard, y: yMax }];
+    ch.data.datasets[3].label = `Onboard: ${onboard.toFixed(1)} kW`;
+    ch.data.datasets[4].data = [{ x: total, y: 0 }, { x: total, y: yMax }];
+    ch.data.datasets[4].label = `Onboard + beam: ${total.toFixed(1)} kW`;
+    ch.options.scales.x.max = xMax;
+    ch.options.scales.x.ticks.stepSize = niceStep(xMax);
+    ch.options.scales.y.max = yMax;
+    ch.update('none');
+
+    // ---- KPIs ----
+    document.getElementById('sAvailBase').textContent = avFmt(availOn);
+    document.getElementById('sAvailAug').textContent  = avFmt(availTot);
+    document.getElementById('sBeamKwSub').textContent = beam.toFixed(1);
+    document.getElementById('sDefBase').textContent   = dFmt(defDaysOn);
+    document.getElementById('sDefAug').textContent    = dFmt(defDaysTot);
+    document.getElementById('sDefLife').textContent   = life;
+
+    // ---- What this means ----
+    document.getElementById('sWtmAlt').textContent       = alt;
+    document.getElementById('sWtmNom').textContent       = base_kw.toFixed(2);
+    document.getElementById('sWtmLife').textContent      = life;
+    document.getElementById('sWtmOnboard').textContent   = onboard.toFixed(1);
+    document.getElementById('sWtmAvailBase').textContent = avFmt(availOn);
+    document.getElementById('sWtmDefBase').textContent   = dFmt(defDaysOn);
+    document.getElementById('sWtmDefBasePct').textContent = avFmt(1 - availOn);
+    document.getElementById('sWtmBeam').textContent      = beam.toFixed(1);
+    document.getElementById('sWtmTotal').textContent     = total.toFixed(1);
+    document.getElementById('sWtmAvailAug').textContent  = avFmt(availTot);
+    document.getElementById('sWtmDefAug').textContent    = dFmt(defDaysTot);
+  }
+
+  Object.values(sIn).forEach(el => el.addEventListener('input', stormRecompute));
+  stormRecompute();
+
+  // Story eclipse panel - fixed example
   (() => {
     const T = 2*Math.PI*Math.sqrt(Math.pow(6371+200,3)/398600);
     const eclipseMin = T*0.35/60;
@@ -1203,11 +1784,26 @@
     const beamed  = 300; // W delivered
     const baseMin = Math.min(eclipseMin, battery/payload*60);
     const augMin  = Math.min(eclipseMin, battery/Math.max(1, payload-beamed)*60);
+    document.getElementById('eStoryEclipse').textContent = eclipseMin.toFixed(0);
     document.getElementById('eStoryBaseVal').textContent = baseMin.toFixed(0);
     document.getElementById('eStoryAugVal').textContent  = augMin.toFixed(0);
     const max = eclipseMin;
     document.getElementById('eStoryBase').style.width = (baseMin/max*100)+'%';
     document.getElementById('eStoryAug').style.width  = (augMin/max*100)+'%';
+    // Percentages
+    const basePct = Math.min(100, baseMin/eclipseMin*100);
+    const augPct = Math.min(100, augMin/eclipseMin*100);
+    document.getElementById('eStoryBasePct').textContent = `${basePct.toFixed(0)}%`;
+    const augPctEl = document.getElementById('eStoryAugPctText');
+    if (augPct >= 99.9) {
+      augPctEl.textContent = '100%';
+      augPctEl.style.color = '#3EAF7C';
+      augPctEl.style.fontWeight = '600';
+    } else {
+      augPctEl.textContent = `${augPct.toFixed(0)}%`;
+      augPctEl.style.color = '#394563';
+      augPctEl.style.fontWeight = '500';
+    }
   })();
 
   // ======== SCHEMATIC RENDERER (shared) ========
@@ -1350,7 +1946,7 @@
                    ec:$('ec'), bat:$('bat'), nw:$('nw'), dr:$('dr') };
 
   // Solar + payload physics for the sustainable-payload KPI and death-spiral story chart
-  const SOLAR_FLUX = 1361;     // W/m² — total solar irradiance, Kopp & Lean (2011) SORCE/TIM
+  const SOLAR_FLUX = 1361;     // W/m² - total solar irradiance, Kopp & Lean (2011) SORCE/TIM
   const PV_ETA     = 0.30;     // multi-junction efficiency (Spectrolab XTJ Prime class)
   // K_THRUST, V_ORB, thrustPowerPhys are defined in shared physics above.
   // Sustainable payload at altitude h with array A, bus area A_bus, receiver area A_rcv, beam B (kW delivered)
@@ -1429,7 +2025,7 @@
     const loBase = bisect(availBase, areaBase);
     const loAug  = bisect(availAug,  areaAug);
 
-    // ECLIPSE – battery-limited, with beaming reducing net drain
+    // ECLIPSE - battery-limited, with beaming reducing net drain
     const T = 2*Math.PI*Math.sqrt(Math.pow(6371+s.alt,3)/398600);
     const eclipseMin = T*s.ec/60;
     const payloadW = s.pay*1000;
@@ -1450,7 +2046,29 @@
     $('ecBarBase').style.width = (baseMin/maxBar*100)+'%';
     $('ecBarAug').style.width  = (augMin/maxBar*100)+'%';
 
-    // DRAG – absolute thruster power (watts) for this platform and altitude,
+    // Eclipse percentages
+    if (eclipseMin > 0.01) {
+      const bPct = Math.min(100, baseMin/eclipseMin*100);
+      const aPct = Math.min(100, augMin/eclipseMin*100);
+      $('ecBasePct').textContent = bPct.toFixed(0);
+      $('ecBasePctRow').style.display = 'block';
+      $('ecAugPctRow').style.display = 'block';
+      const augPctEl = $('ecAugPctText');
+      if (aPct >= 99.9) {
+        augPctEl.textContent = '100%';
+        augPctEl.style.color = '#3EAF7C';
+        augPctEl.style.fontWeight = '600';
+      } else {
+        augPctEl.textContent = `${aPct.toFixed(0)}%`;
+        augPctEl.style.color = '#394563';
+        augPctEl.style.fontWeight = '500';
+      }
+    } else {
+      $('ecBasePctRow').style.display = 'none';
+      $('ecAugPctRow').style.display = 'none';
+    }
+
+    // DRAG - absolute thruster power (watts) for this platform and altitude,
     // plus the delta vs the no-receiver baseline (only non-zero for the specialised receiver).
     // NOTE: changing the bus/array inputs IS the "resize your platform" story; we don't
     // secretly shrink the array based on the beam.
@@ -1476,8 +2094,18 @@
     const payloadAug  = sustainablePayload(s.alt, s.arr, s.bus, rcvDragArea, delivered);
     const feasibleBase = Math.max(0, payloadBase);
     const feasibleAug  = Math.max(0, payloadAug);
-    const busGain = feasibleAug - feasibleBase;
+    const busGain = Math.max(0, feasibleAug - feasibleBase);
     $('busGainVal').textContent = busGain.toFixed(0);
+
+    // "What this means" narrative
+    $('wtmBud').textContent       = s.bud.toFixed(2);
+    $('wtmPay').textContent       = s.pay.toFixed(2);
+    $('wtmDelivered').textContent = delivered.toFixed(2);
+    $('wtmLoBase').textContent    = loBase.toFixed(0);
+    $('wtmLoAug').textContent     = loAug.toFixed(0);
+    $('wtmLoDelta').textContent   = Math.max(0, dAlt).toFixed(0);
+    $('wtmEcGain').textContent    = Math.max(0, augMin - baseMin).toFixed(1);
+    $('wtmBusGain').textContent   = busGain.toFixed(0);
 
     // BALANCE BAR
     const maxKw = Math.max(thrKw + s.pay, s.bud + delivered, 0.01);
@@ -1485,12 +2113,17 @@
     const aP = Math.max(0, 100-tP-pP-nP);
     $('segThr').style.flex = tP; $('segPay').style.flex = pP;
     $('segNw').style.flex  = nP; $('segAvail').style.flex = aP;
-    $('segThr').textContent  = tP>10 ? `Thrusters ${thrKw.toFixed(2)} kW` : '';
-    $('segPay').textContent  = pP>10 ? `Payload ${s.pay.toFixed(2)} kW` : '';
-    $('segNw').textContent   = nP>10 ? `Beam +${delivered.toFixed(2)} kW` : '';
-    $('segAvail').textContent= aP>10 ? 'Headroom' : '';
+    // Label each segment with the most detail that fits its actual pixel width, so text is
+    // never clipped on narrow screens. Falls back to the value alone, then to nothing.
+    const barW = $('balanceBar').clientWidth || 0;
+    const fits = (pct, text) => (pct / 100 * barW) >= text.length * 8.5 + 8;
+    const segLabel = (pct, full, short) => fits(pct, full) ? full : (short && fits(pct, short) ? short : '');
+    $('segThr').textContent  = segLabel(tP, `Thrusters ${thrKw.toFixed(2)} kW`, `${thrKw.toFixed(2)}`);
+    $('segPay').textContent  = segLabel(pP, `Payload ${s.pay.toFixed(2)} kW`, `${s.pay.toFixed(2)}`);
+    $('segNw').textContent   = segLabel(nP, `Beam +${delivered.toFixed(2)} kW`, `+${delivered.toFixed(2)}`);
+    $('segAvail').textContent= segLabel(aP, 'Headroom', '');
 
-    // CHART — regenerate the thruster-demand curve for THIS platform's area
+    // CHART - regenerate the thruster-demand curve for THIS platform's area
     // so the curve, selected altitude marker, and floor lines are all consistent.
     const userCurveBase = altGridCalc.map(h => ({ x:h, y: thrustPowerPhys(h, areaBase) }));
     const userCurveAug  = altGridCalc.map(h => ({ x:h, y: thrustPowerPhys(h, areaAug)  }));
@@ -1530,6 +2163,9 @@
     });
   });
   recompute();
+  // Re-evaluate balance-bar labels (and chart layout) when the viewport size changes.
+  let _resizeT;
+  window.addEventListener('resize', () => { clearTimeout(_resizeT); _resizeT = setTimeout(recompute, 150); });
 })();
 </script>
 </body>
