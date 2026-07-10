@@ -28,5 +28,11 @@
     "name": "ScotlandIS",
     "logoPath": "./assets/images/supporters/scotlandis-logo.jpg",
     "url": "https://www.scotlandis.com/"
+  },
+  {
+    "id": "stac",
+    "name": "STAC",
+    "logoPath": "./assets/images/supporters/stac-logo.svg",
+    "url": "https://www.stac.ac/"
   }
 ]
