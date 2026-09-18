@@ -25,7 +25,7 @@ export default defineConfig({
       // In production, Vite copies public/ to dist/ and the host serves it correctly.
       name: "serve-static-subpages",
       configureServer(server) {
-        const pages = ["VLEO", "HAPS", "linktree"];
+        const pages = ["VLEO", "HAPS", "linktree", "privacy"];
         server.middlewares.use((req, res, next) => {
           for (const page of pages) {
             // Redirect /<name> → /<name>/ so relative URLs (logo, etc.) resolve correctly

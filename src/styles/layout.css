@@ -76,6 +76,21 @@
   flex-wrap: wrap;
 }
 
+.footer-wrap p {
+  margin: 0;
+}
+
+.footer-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: var(--color-white);
+}
+
 @media (max-width: 900px) {
   .section-grid {
     grid-template-columns: 1fr;
