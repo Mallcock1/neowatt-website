@@ -3,35 +3,30 @@
     "id": "incubation",
     "year": 2025,
     "title": "Incubated through the UK Space Agency",
-    "status": "Completed",
-    "description": "Initial R&D and concept validation."
+    "status": "Completed"
   },
   {
     "id": "initial-demonstrator",
     "year": 2026,
     "title": "Initial terrestrial demonstrator",
-    "status": "Planned",
-    "description": "Laser power beaming demonstrator development."
+    "status": "Planned"
   },
   {
     "id": "full-power-demonstrator",
     "year": 2027,
     "title": "Full power terrestrial demonstrator",
-    "status": "Planned",
-    "description": "Scale power and reliability for early commercial deployment."
+    "status": "Planned"
   },
   {
     "id": "orbital-demonstrator",
     "year": 2028,
     "title": "Orbital demonstrator",
-    "status": "Planned",
-    "description": "First in-space demonstration of high-precision power delivery."
+    "status": "Planned"
   },
   {
     "id": "operational-system",
     "year": 2030,
     "title": "Full operational space system",
-    "status": "Planned",
-    "description": "Serving high-power satellites, space stations, lunar bases, and off-Earth industry."
+    "status": "Planned"
   }
 ]
