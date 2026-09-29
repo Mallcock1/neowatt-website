@@ -1,26 +1,29 @@
 :root {
-  --color-primary: #0e1a3d;
-  --color-primary-shadow: #070e21;
-  --color-primary-tint: #394563;
+  /* Surfaces */
+  --bg: #05070d;
+  --bg-raised: #0a1330;
+  --line: rgba(230, 232, 239, 0.12);
+  --line-strong: rgba(230, 232, 239, 0.28);
 
-  --color-accent: #8479d0;
-  --color-accent-shadow: #4d4682;
-  --color-accent-tint: #c6c1ee;
+  /* Text */
+  --text: #e6e8ef;
+  --text-muted: #b2b7c8;
 
-  --color-bg: #f6f8fe;
-  --color-bg-shadow: #d7dce9;
-  --color-bg-tint: #ffffff;
+  /* Accent — reserved for the beam, active states and the primary CTA */
+  --accent: #8479d0;
+  --beam: #cfc8ff;
 
-  --color-black: #000000;
-  --color-white: #ffffff;
+  /* Type */
+  /* One typeface throughout, as in the deck */
+  --font-display: "Rajdhani", system-ui, sans-serif;
+  --font-body: "Rajdhani", system-ui, sans-serif;
+  --font-mono: var(--font-body);
 
-  --text-dark: #0f1835;
-  --text-light: #eef2ff;
-  --surface-line: rgba(13, 25, 60, 0.14);
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --container-width: 1160px;
+  /* Layout */
+  --container: 1240px;
+  --gutter: clamp(20px, 4vw, 48px);
+  --section-space: clamp(96px, 14vw, 180px);
+  --radius: 2px;
 
-  --shadow-soft: 0 10px 40px rgba(7, 14, 33, 0.18);
-  --shadow-card: 0 18px 50px rgba(7, 14, 33, 0.22);
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
 }
