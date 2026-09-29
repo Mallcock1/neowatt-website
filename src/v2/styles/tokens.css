@@ -1,0 +1,29 @@
+:root {
+  /* Surfaces */
+  --bg: #05070d;
+  --bg-raised: #0a1330;
+  --line: rgba(230, 232, 239, 0.12);
+  --line-strong: rgba(230, 232, 239, 0.28);
+
+  /* Text */
+  --text: #e6e8ef;
+  --text-muted: #8a90a2;
+
+  /* Accent — reserved for the beam, active states and the primary CTA */
+  --accent: #8479d0;
+  --beam: #cfc8ff;
+
+  /* Type */
+  /* One typeface throughout, as in the deck */
+  --font-display: "Rajdhani", system-ui, sans-serif;
+  --font-body: "Rajdhani", system-ui, sans-serif;
+  --font-mono: var(--font-body);
+
+  /* Layout */
+  --container: 1240px;
+  --gutter: clamp(20px, 4vw, 48px);
+  --section-space: clamp(96px, 14vw, 180px);
+  --radius: 2px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+}

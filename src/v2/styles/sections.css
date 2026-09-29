@@ -1,0 +1,670 @@
+/* ---------- Fixed 3D scene and overlays ---------- */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.no-webgl .scene,
+.no-webgl .overlay {
+  display: none;
+}
+
+.no-webgl {
+  background: var(--bg) url("/assets/images/v2/hero-beam.webp") center / cover fixed;
+}
+
+main {
+  position: relative;
+  z-index: 2;
+  overflow: clip; /* the copy scrims extend past the edges; clip (not hidden) keeps sticky working */
+}
+
+/* ---------- Nav ---------- */
+/* Hidden on the opening screen; slides in on scroll. One size, always. */
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 7, 13, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: opacity 350ms, transform 350ms var(--ease), visibility 0s 350ms;
+}
+
+.nav.is-visible {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: opacity 350ms, transform 350ms var(--ease);
+}
+
+.nav-brand img {
+  width: 140px;
+  height: auto;
+}
+
+.nav-cta {
+  display: inline-block;
+  padding: 0.6em 1.2em;
+  border: 1px solid var(--line-strong);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+.nav-cta:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .nav-brand img {
+    width: 118px;
+  }
+}
+
+/* ---------- Instrument readout ---------- */
+.hud {
+  position: fixed;
+  top: 50%;
+  right: var(--gutter);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 28px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.hud-readout {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  text-align: right;
+}
+
+.hud-alt {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text);
+}
+
+.hud-stage {
+  color: var(--beam);
+  font-weight: 700;
+}
+
+/* Altimeter: log scale with clickable ticks and a marker at the current altitude */
+.hud-scale {
+  position: relative;
+  width: 1px;
+  height: 46vh;
+  margin-right: 4px;
+  background: var(--line-strong);
+  pointer-events: auto;
+}
+
+.hud-tick {
+  position: absolute;
+  right: -3px;
+  width: 7px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  background: var(--line-strong);
+  cursor: pointer;
+}
+
+.hud-tick::before {
+  content: "";
+  position: absolute;
+  inset: -12px -8px -12px -90px;
+}
+
+.hud-tick em {
+  position: absolute;
+  right: 14px;
+  top: -0.6em;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-muted);
+  transition: color 200ms;
+}
+
+.hud-tick:hover em,
+.hud-tick:focus-visible em {
+  color: var(--text);
+}
+
+.hud-scale-marker {
+  position: absolute;
+  left: -4px;
+  width: 9px;
+  height: 9px;
+  margin-bottom: -4px;
+  border: 1px solid var(--beam);
+  background: var(--accent);
+  /* No transition: this is repositioned every frame, and retargeting a CSS
+     transition each frame collapses Chromium's compositor after a few seconds. */
+}
+
+@media (max-width: 760px) {
+  .hud {
+    top: 76px;
+    gap: 16px;
+    transform: none;
+  }
+
+  .hud-scale {
+    display: none;
+  }
+
+  .hud-alt {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---------- Text panels: tall, with the copy pinned mid-viewport ---------- */
+.panel {
+  position: relative;
+  min-height: 320vh;
+  padding: 0 var(--gutter);
+}
+
+.panel-copy {
+  position: sticky;
+  top: 50%;
+  display: grid;
+  gap: 22px;
+  max-width: 30rem;
+  transform: translateY(-50%);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.85);
+}
+
+/* Soft scrim so copy stays legible whatever the scene is doing behind it */
+.panel-copy::before {
+  content: "";
+  position: absolute;
+  inset: -48px -64px;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 50%, rgba(5, 7, 13, 0.62), rgba(5, 7, 13, 0) 70%);
+  pointer-events: none;
+}
+
+.panel-wide .panel-copy {
+  max-width: 42rem;
+}
+
+.panel-left .panel-copy {
+  margin-left: max(0px, calc((100vw - var(--container)) / 2));
+}
+
+.panel-right .panel-copy {
+  margin-left: auto;
+  margin-right: max(200px, calc((100vw - var(--container)) / 2 + 180px));
+}
+
+.panel h1,
+.panel h2 {
+  font-size: clamp(2.6rem, 5.4vw, 4.8rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.panel p:not(.label) {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+/* Purple highlights are always bold */
+.accent {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.js .panel .panel-copy {
+  opacity: 0;
+  transform: translateY(calc(-50% + 24px));
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+}
+
+.js .panel.is-in .panel-copy {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+
+/* Hero: a short pause, then a short move to the first stop */
+.panel-hero {
+  min-height: 170vh;
+}
+
+.hero-logo {
+  width: clamp(240px, 32vw, 480px);
+  height: auto;
+}
+
+/* Logo leads, tagline centred beneath it */
+.panel-hero .panel-copy {
+  width: fit-content;
+  max-width: 40rem;
+  justify-items: center;
+  text-align: center;
+}
+
+/* The logo leads; the tagline sits beneath it, as on the deck cover */
+.panel-hero h1 {
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Team */
+.founders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 170px));
+  gap: 32px;
+  margin: 4px 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.founders li {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.founders img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 20%;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  filter: grayscale(1) contrast(1.05);
+}
+
+.founders li p:not(.label) {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.founders a,
+.growing a {
+  justify-self: start;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.founders a:hover,
+.growing a:hover {
+  color: var(--text);
+}
+
+/* The team page is the tallest: sit it just below the nav bar, and tighten it on
+   short screens so it always fits */
+#team .panel-copy {
+  top: calc(50% + 32px);
+}
+
+@media (max-height: 760px) {
+  #team .panel-copy {
+    gap: 14px;
+  }
+
+  .founders {
+    grid-template-columns: repeat(2, minmax(0, 130px));
+  }
+}
+
+/* Founders, with the "we are growing" note beside them (below them on phones) */
+.team-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.growing {
+  display: grid;
+  gap: 8px;
+  max-width: 17rem;
+  margin-bottom: 8px;
+  padding-left: 24px;
+  border-left: 1px solid var(--line-strong);
+}
+
+.logo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logo-row img {
+  width: auto;
+  height: var(--h, 26px);
+  opacity: 0.7;
+  transition: opacity 200ms;
+}
+
+.logo-row a:hover img {
+  opacity: 1;
+}
+
+/* Coloured SVG logos flattened to a white silhouette */
+.logo-mono {
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 760px) {
+  .founders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .logo-row {
+    gap: 18px 24px;
+  }
+
+  .team-row {
+    display: grid;
+    gap: 14px;
+  }
+
+  .founders {
+    grid-template-columns: repeat(2, minmax(0, 120px));
+  }
+
+  .founders img {
+    aspect-ratio: 1;
+  }
+
+  #team .panel-copy {
+    gap: 14px;
+  }
+
+  .growing {
+    max-width: none;
+    margin: 0;
+    padding-left: 14px;
+  }
+
+  .panel .growing p:not(.label) {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 760px) {
+  .panel-copy {
+    top: 62%;
+  }
+
+  .panel-right .panel-copy {
+    margin-right: 0;
+  }
+
+  /* Satellite stops: copy above or below the spacecraft, never beside it */
+  .m-above .panel-copy {
+    top: 31%;
+  }
+
+  .m-below .panel-copy {
+    top: 74%;
+  }
+
+  .panel-hero .panel-copy {
+    margin-inline: auto;
+  }
+}
+
+/* ---------- Contact ---------- */
+.panel-contact {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 25vh;
+}
+
+.panel-contact .panel-copy {
+  position: relative;
+  top: auto;
+  justify-items: center;
+  max-width: 36rem;
+  margin-inline: auto;
+  transform: none;
+  text-align: center;
+}
+
+.js .panel-contact.is-in .panel-copy {
+  transform: none;
+}
+
+/* Contact uses three sizes only: heading, body (email, field) and label */
+.contact-email {
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  transition: color 200ms;
+}
+
+.contact-email:hover {
+  color: var(--beam);
+}
+
+.newsletter {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 460px);
+  margin-top: 40px;
+  text-align: left;
+  text-shadow: none;
+}
+
+.newsletter-row {
+  display: flex;
+  border: 1px solid var(--line-strong);
+  background: rgba(5, 7, 13, 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.newsletter input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.25rem;
+}
+
+.newsletter input::placeholder {
+  color: var(--text-muted);
+}
+
+.newsletter input:focus {
+  outline: none;
+}
+
+.newsletter-row:focus-within {
+  border-color: var(--beam);
+}
+
+.newsletter .btn {
+  border: 0;
+  border-left: 1px solid var(--line-strong);
+  background: var(--accent);
+}
+
+.newsletter .btn:hover {
+  background: #968cdc;
+}
+
+.newsletter .btn::after {
+  display: none;
+}
+
+.form-status {
+  min-height: 1.4em;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.form-status.success {
+  color: var(--beam);
+}
+
+.form-status.error {
+  color: #ff8fa8;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: var(--container);
+  margin: auto auto 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.footer a {
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--text);
+}
+
+/* ---------- Preview lock screen ---------- */
+.locked body > :not(.gate):not(noscript) {
+  display: none;
+}
+
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: var(--bg);
+}
+
+.gate-form {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 380px);
+}
+
+.gate-form img {
+  width: 220px;
+  margin: 0 auto 28px;
+}
+
+.gate-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.25rem;
+}
+
+.gate-form input:focus {
+  outline: none;
+}
+
+.gate-form .btn {
+  border: 0;
+  border-left: 1px solid var(--line-strong);
+  background: var(--accent);
+}
+
+.gate-form .btn::after {
+  display: none;
+}
+
+.gate-noscript {
+  position: fixed;
+  inset: auto 0 24px;
+  z-index: 101;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* Short phones: tighten the team page further so it fits under the nav bar */
+@media (max-width: 760px) and (max-height: 760px) {
+  #team .panel-copy {
+    gap: 10px;
+  }
+
+  .founders {
+    grid-template-columns: repeat(2, minmax(0, 88px));
+    gap: 24px;
+  }
+
+  .founders img {
+    margin-bottom: 4px;
+  }
+
+  .logo-row {
+    gap: 12px 20px;
+  }
+
+  .logo-row img {
+    height: calc(var(--h, 26px) * 0.8);
+  }
+
+  .panel .growing p:not(.label) {
+    font-size: 0.9rem;
+  }
+}

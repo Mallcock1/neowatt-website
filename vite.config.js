@@ -47,6 +47,15 @@ export default defineConfig({
       }
     }
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        // Redesign preview, served unlisted (noindex) at /v2/
+        v2: path.resolve(__dirname, "v2/index.html")
+      }
+    }
+  },
   server: {
     host: true,
     port: 5173
