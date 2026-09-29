@@ -814,3 +814,30 @@ main {
     margin: 0;
   }
 }
+
+/* Phones: founders, then experience logos, then the "we are growing" note, then supporters */
+@media (max-width: 760px) {
+  #team .team-row {
+    display: contents;
+  }
+
+  #team h2 {
+    order: 0;
+  }
+
+  #team .founders {
+    order: 1;
+  }
+
+  #team .experience {
+    order: 2;
+  }
+
+  #team .growing {
+    order: 3;
+  }
+
+  #team .supported {
+    order: 4;
+  }
+}
