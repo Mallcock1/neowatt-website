@@ -203,7 +203,7 @@ function initScene() {
 
     // Nothing animates on its own, so skip frames where nothing changed
     const stamp = `${key}|${creep}`;
-    if (stamp !== lastRendered) {
+    if (stamp !== lastRendered || scene.takeDirty()) {
       lastRendered = stamp;
       const { altitude, dim } = scene.render(key, time, creep);
 

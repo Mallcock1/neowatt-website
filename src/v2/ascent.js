@@ -148,7 +148,7 @@ const KEYS = [
     fov: 44,
     portrait: true
   },
-  { pos: () => farPos(20000), target: () => framed(farPos(20000), EARTH_C, -6600, 0), fov: 40 }, // the grid
+  { pos: () => farPos(20000), target: () => framed(farPos(20000), EARTH_C, -7600, 0), fov: 40 }, // the grid
   { pos: () => farPos(27000), target: () => framed(farPos(27000), EARTH_C, PORTRAIT ? -6500 : -11500, 2500), fov: 40 }, // team
   { pos: () => farPos(34000), target: () => framed(farPos(34000), EARTH_C, 0, 11500), fov: 40 } // contact
 ];
@@ -209,8 +209,9 @@ bool earthBlocks(vec3 d, float L) {
 `;
 
 // ---------- Planet shader: Earth ray-traced per pixel ----------
-// An exact, smooth sphere at every scale (no tessellation), with a sunlit side, a soft
-// terminator and a faint rim.
+// An exact sphere at every scale (no tessellation), drawn as a hologram briefing map:
+// the surface is cut into 1-degree tiles, land tiles are lit, coastline tiles brighter.
+// The land comes from a 360 x 180 mask (Natural Earth, public domain), one texel per tile.
 const planetFrag = /* glsl */ `
 precision highp float;
 uniform mat4 uInvProj;
@@ -219,10 +220,19 @@ uniform vec3 uUp;
 uniform float uDist;
 uniform float uAlt;
 uniform vec3 uSun;
+uniform mat3 uGeo;
+uniform sampler2D uLand;
+uniform float uLandReady;
 varying vec2 vNdc;
 
 const float R = 6371.0;
-const float H = 8.0;
+const vec2 TILES = vec2(360.0, 180.0);
+
+float land(vec2 tile) {
+  tile.x = mod(tile.x, TILES.x);
+  tile.y = clamp(tile.y, 0.0, TILES.y - 1.0);
+  return step(0.5, texture2D(uLand, (tile + 0.5) / TILES).r);
+}
 
 void main() {
   // Unproject onto the near plane: the far plane is numerically unstable with this depth range
@@ -244,7 +254,39 @@ void main() {
 
 
   if (tE > 0.0) {
-    vec3 surf = vec3(0.016, 0.022, 0.05) + vec3(0.14, 0.16, 0.24) * day;
+    // Geographic position of this pixel, in tiles
+    vec3 g = uGeo * n;
+    vec2 p = vec2(atan(g.y, g.x) / 6.2831853 + 0.5, asin(clamp(g.z, -1.0, 1.0)) / 3.1415927 + 0.5) * TILES;
+    vec2 tile = floor(p);
+    vec2 f = fract(p);
+    vec2 fw = min(fwidth(p), vec2(1.0));
+    float size = max(fw.x, fw.y); // tiles per screen pixel
+
+    // Each tile is a square with a gap around it. Where tiles shrink towards a pixel
+    // (far away, or near the limb) the gaps and the land detail fade to an even tone,
+    // so nothing shimmers as the camera moves.
+    vec2 e = smoothstep(vec2(0.1) - fw, vec2(0.1) + fw, f) * (1.0 - smoothstep(vec2(0.9) - fw, vec2(0.9) + fw, f));
+    float far = smoothstep(0.12, 0.4, size);
+    float square = mix(e.x * e.y, 0.75, far);
+
+    // Up close a tile fills much of the screen, so it breaks into a 6 x 6 block of pixels
+    vec2 sf = fract(p * 6.0);
+    vec2 sfw = min(fw * 6.0, vec2(1.0));
+    vec2 se = smoothstep(vec2(0.14) - sfw, vec2(0.14) + sfw, sf) * (1.0 - smoothstep(vec2(0.86) - sfw, vec2(0.86) + sfw, sf));
+    float near = 1.0 - smoothstep(0.004, 0.02, size);
+    square *= mix(1.0, se.x * se.y, near);
+
+    float isLand = land(tile);
+    float inland = min(min(land(tile + vec2(1.0, 0.0)), land(tile - vec2(1.0, 0.0))), min(land(tile + vec2(0.0, 1.0)), land(tile - vec2(0.0, 1.0))));
+    float coast = isLand * (1.0 - inland);
+    float lit = mix(isLand, 0.3, smoothstep(0.5, 1.2, size));
+
+    vec3 landCol = mix(vec3(0.15, 0.14, 0.33), vec3(0.46, 0.43, 0.86), coast * (1.0 - far));
+    vec3 surf = vec3(0.014, 0.018, 0.042) + vec3(0.03, 0.035, 0.06) * day;
+    surf += vec3(0.022, 0.026, 0.055) * square * (1.0 - lit);
+    // Dimmer at low altitude, where the land sits behind the copy
+    float level = mix(0.4, 1.0, smoothstep(300.0, 6000.0, uAlt));
+    surf += landCol * lit * square * level * uLandReady;
     float rim = pow(1.0 - clamp(dot(n, -d), 0.0, 1.0), 5.0);
     col = mix(surf, vec3(0.16, 0.18, 0.4), clamp(rim * 0.45, 0.0, 1.0));
   }
@@ -614,10 +656,41 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
     uSun: { value: SUN.clone() }
   };
 
+  // Where the globe sits under the journey: the start point is over the UK, and the
+  // final pulled-back view is centred on the Atlantic coast of Africa, with Europe above.
+  const geo = new THREE.Matrix3();
+  {
+    const lat0 = (54 * Math.PI) / 180;
+    const lon0 = (-3 * Math.PI) / 180;
+    const away = v3(FAR_DIR.x, 0, FAR_DIR.z).normalize().negate();
+    const north = UP.clone().multiplyScalar(Math.sin(lat0)).addScaledVector(away, Math.cos(lat0)).normalize();
+    const meridian = UP.clone().addScaledVector(north, -UP.dot(north)).normalize();
+    const east = new THREE.Vector3().crossVectors(north, meridian);
+    const x0 = meridian.clone().multiplyScalar(Math.cos(lon0)).addScaledVector(east, -Math.sin(lon0));
+    const y0 = meridian.clone().multiplyScalar(Math.sin(lon0)).addScaledVector(east, Math.cos(lon0));
+    geo.set(x0.x, x0.y, x0.z, y0.x, y0.y, y0.z, north.x, north.y, north.z);
+  }
+  let dirty = false;
+  const landReady = { value: 0 };
+  const landMask = new THREE.TextureLoader().load("/assets/images/v2/land-mask.png", () => {
+    landReady.value = 1;
+    dirty = true;
+  });
+  landMask.magFilter = landMask.minFilter = THREE.NearestFilter;
+  landMask.generateMipmaps = false;
+  landMask.wrapS = THREE.RepeatWrapping;
+
   const planet = new THREE.Mesh(
     new THREE.PlaneGeometry(2, 2),
     new THREE.ShaderMaterial({
-      uniforms: { ...shared, uInvProj: { value: new THREE.Matrix4() }, uCamRot: { value: new THREE.Matrix3() } },
+      uniforms: {
+        ...shared,
+        uInvProj: { value: new THREE.Matrix4() },
+        uCamRot: { value: new THREE.Matrix3() },
+        uGeo: { value: geo },
+        uLand: { value: landMask },
+        uLandReady: landReady
+      },
       vertexShader: "varying vec2 vNdc; void main() { vNdc = position.xy; gl_Position = vec4(position.xy, 0.0, 1.0); }",
       fragmentShader: planetFrag,
       depthTest: false,
@@ -819,5 +892,12 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
     return { altitude: alt, dim };
   }
 
-  return { render };
+  // True once after something changed without a scroll (the land mask finishing loading)
+  const takeDirty = () => {
+    const was = dirty;
+    dirty = false;
+    return was;
+  };
+
+  return { render, takeDirty };
 }
