@@ -684,7 +684,7 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
   }
   let dirty = false;
   const landReady = { value: 0 };
-  const landMask = new THREE.TextureLoader().load("/assets/images/v2/land-mask.png", () => {
+  const landMask = new THREE.TextureLoader().load("/assets/images/land-mask.png", () => {
     landReady.value = 1;
     dirty = true;
   });

@@ -23,7 +23,7 @@
 }
 
 .no-webgl {
-  background: var(--bg) url("/assets/images/v2/hero-beam.webp") center / cover fixed;
+  background: var(--bg) url("/assets/images/hero-beam.webp") center / cover fixed;
 }
 
 main {
@@ -581,92 +581,6 @@ main {
 
 .footer a:hover {
   color: var(--text);
-}
-
-/* ---------- Preview lock screen ---------- */
-.locked body > :not(.gate):not(noscript) {
-  display: none;
-}
-
-.gate {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  padding: var(--gutter);
-  background: var(--bg);
-}
-
-.gate-form {
-  display: grid;
-  gap: 14px;
-  width: min(100%, 380px);
-}
-
-.gate-form img {
-  width: 220px;
-  margin: 0 auto 28px;
-}
-
-.gate-form input {
-  flex: 1;
-  min-width: 0;
-  padding: 0 16px;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font-size: 1.25rem;
-}
-
-.gate-form input:focus {
-  outline: none;
-}
-
-.gate-form .btn {
-  border: 0;
-  border-left: 1px solid var(--line-strong);
-  background: var(--accent);
-}
-
-.gate-form .btn::after {
-  display: none;
-}
-
-.gate-noscript {
-  position: fixed;
-  inset: auto 0 24px;
-  z-index: 101;
-  text-align: center;
-  color: var(--text-muted);
-}
-
-/* Short phones: tighten the team page further so it fits under the nav bar */
-@media (max-width: 760px) and (max-height: 760px) {
-  #team .panel-copy {
-    gap: 10px;
-  }
-
-  .founders {
-    grid-template-columns: repeat(2, minmax(0, 88px));
-    gap: 24px;
-  }
-
-  .founders img {
-    margin-bottom: 4px;
-  }
-
-  .logo-row {
-    gap: 12px 20px;
-  }
-
-  .logo-row img {
-    height: calc(var(--h, 26px) * 0.8);
-  }
-
-  .panel .growing p:not(.label) {
-    font-size: 0.9rem;
-  }
 }
 
 /* ---------- Journey menu ---------- */

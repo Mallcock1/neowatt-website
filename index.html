@@ -1,14 +1,28 @@
 <!doctype html>
-<html lang="en" class="locked">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
     <title>NEOWATT | Energy beyond Earth</title>
     <meta
       name="description"
       content="NEOWATT is building the power infrastructure for the space industrial revolution"
     />
+    <meta property="og:title" content="NEOWATT | Energy beyond Earth" />
+    <meta
+      property="og:description"
+      content="Power infrastructure for the space industrial revolution"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neowatt.co.uk/" />
+    <meta property="og:image" content="https://neowatt.co.uk/assets/icons/favicon-dark.png" />
+    <meta property="og:image:secure_url" content="https://neowatt.co.uk/assets/icons/favicon-dark.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content="https://neowatt.co.uk/assets/icons/favicon-dark.png" />
+    <link rel="canonical" href="https://neowatt.co.uk/" />
     <meta name="theme-color" content="#05070d" />
     <link rel="icon" href="/assets/icons/favicon-dark.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,21 +31,9 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap"
     />
-    <script type="module" src="/src/v2/main.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </head>
   <body>
-    <div class="gate" id="gate">
-      <form class="gate-form" id="gate-form" autocomplete="off">
-        <img src="/assets/images/v2/neowatt-logo.png" alt="NEOWATT" width="1200" height="241" />
-        <label class="label" for="gate-password">Preview password</label>
-        <div class="newsletter-row">
-          <input id="gate-password" type="password" required />
-          <button class="btn btn-primary" type="submit">Enter</button>
-        </div>
-        <p class="form-status error" id="gate-status" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-    <noscript><p class="gate-noscript">This preview needs JavaScript.</p></noscript>
     <a class="skip-link" href="#contact">Skip to contact</a>
     <canvas class="scene" id="scene" aria-hidden="true"></canvas>
     <div class="overlay overlay-dim" id="dim" aria-hidden="true"></div>
@@ -65,7 +67,7 @@
     <main>
       <section class="panel panel-hero panel-left m-below" id="top" data-hold="0.12">
         <div class="panel-copy">
-          <img class="hero-logo" src="/assets/images/v2/neowatt-logo.png" alt="NEOWATT" width="1200" height="241" />
+          <img class="hero-logo" src="/assets/images/logos/neowatt-logo.png" alt="NEOWATT" width="1200" height="241" />
           <h1>Energy beyond Earth</h1>
         </div>
       </section>
@@ -106,13 +108,13 @@
           <div class="team-row">
           <ul class="founders">
             <li>
-              <img src="/assets/images/v2/team-matthew-allcock.webp" alt="Dr. Matt Allcock" width="720" height="1079" loading="lazy" />
+              <img src="/assets/images/team/matthew-allcock.webp" alt="Dr. Matt Allcock" width="720" height="1079" loading="lazy" />
               <p>Dr. Matt Allcock</p>
               <p class="label">CEO &amp; Co-founder</p>
               <a href="https://www.linkedin.com/in/matthew-allcock/" target="_blank" rel="noopener">LinkedIn</a>
             </li>
             <li>
-              <img src="/assets/images/v2/team-cofounder.webp" alt="Co-founder, in stealth" width="240" height="360" loading="lazy" />
+              <img src="/assets/images/team/cofounder.webp" alt="Co-founder, in stealth" width="240" height="360" loading="lazy" />
               <p>In stealth</p>
               <p class="label">CTO &amp; Co-founder</p>
             </li>
@@ -120,21 +122,21 @@
           <aside class="growing" aria-label="Join the team">
             <p class="label">We are growing</p>
             <p>We are growing the team and speaking with advisors across space, energy, and photonics.</p>
-            <a href="mailto:contact@neowatt.co.uk">Get in touch</a>
+            <a href="#contact">Get in touch</a>
           </aside>
           </div>
           <p class="label experience">Experience from</p>
           <ul class="logo-row experience">
-            <li><img src="/assets/images/v2/logos/esa.png" alt="ESA" style="--h: 26px" loading="lazy" /></li>
-            <li><img src="/assets/images/v2/logos/edf.png" alt="EDF" style="--h: 26px" loading="lazy" /></li>
-            <li><img src="/assets/images/v2/logos/starion.png" alt="Starion" style="--h: 14px" loading="lazy" /></li>
-            <li><img src="/assets/images/v2/logos/stealth-a.png" alt="In stealth" style="--h: 34px" loading="lazy" /></li>
-            <li><img src="/assets/images/v2/logos/stealth-b.png" alt="In stealth" style="--h: 58px" loading="lazy" /></li>
+            <li><img src="/assets/images/logos/esa.png" alt="ESA" style="--h: 26px" loading="lazy" /></li>
+            <li><img src="/assets/images/logos/edf.png" alt="EDF" style="--h: 26px" loading="lazy" /></li>
+            <li><img src="/assets/images/logos/starion.png" alt="Starion" style="--h: 14px" loading="lazy" /></li>
+            <li><img src="/assets/images/logos/stealth-a.png" alt="In stealth" style="--h: 34px" loading="lazy" /></li>
+            <li><img src="/assets/images/logos/stealth-b.png" alt="In stealth" style="--h: 58px" loading="lazy" /></li>
           </ul>
           <p class="label supported">Supported by</p>
           <ul class="logo-row supported">
-            <li><a href="https://www.ukspaceaccelerator.co.uk/" target="_blank" rel="noopener"><img src="/assets/images/v2/supporters/uksa-accelerator.png" alt="UK Space Agency Accelerator" style="--h: 34px" loading="lazy" /></a></li>
-            <li><a href="https://fiftyyears.com/5050" target="_blank" rel="noopener"><img src="/assets/images/v2/supporters/5050.png" alt="5050" style="--h: 34px" loading="lazy" /></a></li>
+            <li><a href="https://www.ukspaceaccelerator.co.uk/" target="_blank" rel="noopener"><img src="/assets/images/supporters/uksa-accelerator.png" alt="UK Space Agency Accelerator" style="--h: 34px" loading="lazy" /></a></li>
+            <li><a href="https://fiftyyears.com/5050" target="_blank" rel="noopener"><img src="/assets/images/supporters/5050.png" alt="5050" style="--h: 34px" loading="lazy" /></a></li>
             <li><a href="https://www.stac.ac/" target="_blank" rel="noopener"><img class="logo-mono" src="/assets/images/supporters/stac-logo.svg" alt="STAC" style="--h: 40px" loading="lazy" /></a></li>
           </ul>
         </div>

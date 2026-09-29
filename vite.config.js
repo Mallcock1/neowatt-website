@@ -8,9 +8,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [
     {
-      // Images referenced only as strings in JSON (supporter logos, team photos)
-      // are invisible to Vite's bundler, so copy the whole assets/ dir into the
-      // build output verbatim. Matches what scripts/build-previews.mjs does.
+      // The page and the scene refer to images by absolute path (/assets/...), which
+      // Vite's bundler does not follow, so copy the whole assets/ dir into the build
+      // output verbatim. The sub-pages in public/ use the logo and favicon from it too.
       name: "copy-assets-dir",
       closeBundle() {
         const src = path.resolve(__dirname, "assets");
@@ -47,15 +47,6 @@ export default defineConfig({
       }
     }
   ],
-  build: {
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "index.html"),
-        // Redesign preview, served unlisted (noindex) at /v2/
-        v2: path.resolve(__dirname, "v2/index.html")
-      }
-    }
-  },
   server: {
     host: true,
     port: 5173

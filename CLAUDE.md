@@ -33,20 +33,28 @@ npm run preview    # serve the built dist/ locally
 
 ## Project layout
 
-- `index.html` — the page entry (Vite root). Contains the SEO/Open Graph meta tags.
-- `src/` — JavaScript and styles.
-- `assets/` — images/models referenced as plain strings in JSON; a Vite plugin
+- `index.html` — the page entry (Vite root). Holds all the copy, one `<section
+  class="panel">` per stop, and the SEO/Open Graph meta tags.
+- `src/main.js` — maps scroll position to the camera (a pause at each panel, then
+  a ride to the next), plus the menu, altitude readout and newsletter form.
+- `src/scene.js` — the three.js scene: Earth, satellites, power beams, and one
+  camera keyframe per panel in `KEYS`. Adding or removing a panel in `index.html`
+  needs a matching keyframe here.
+- `src/styles/` — `tokens.css` (colours, type), `base.css`, `sections.css`.
+- `assets/` — images referenced by absolute path (`/assets/...`); a Vite plugin
   in [`vite.config.js`](vite.config.js) copies the whole dir into `dist/` verbatim.
+  `assets/images/land-mask.png` is the 360 x 180 land map the Earth is drawn from.
 - `public/` — static files copied to `dist/` as-is, including:
   - `CNAME` — the custom domain.
-  - `HAPS/`, `VLEO/`, `scan/` — standalone static sub-pages served at
-    `/HAPS`, `/VLEO`, `/scan` (dev-server middleware in `vite.config.js`
-    mirrors this locally).
-- `preview-dist/` — committed preview builds (`npm run build:previews`) used for
-  sharing design variants. Generated output; regenerate rather than hand-edit.
+  - `HAPS/`, `VLEO/`, `linktree/`, `privacy/`, `scan/` — standalone static
+    sub-pages (dev-server middleware in `vite.config.js` mirrors this locally).
+    They use the logo and favicon from `assets/`.
 
 ## Gotchas
 
+- The co-founder is in stealth: the headshot and two of the "experience from"
+  logos are blurred in the image files themselves. Do not add the originals, his
+  name or his LinkedIn to the page until told he is out of stealth.
 - `dist/` is build output — never commit it or edit it by hand.
 - Default Vite base path (`/`) is correct for the apex custom domain; do not set
   a subpath `base`.

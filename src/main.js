@@ -2,9 +2,8 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/sections.css";
 
-import { bindEmailCaptureForm } from "../js/form-email-capture";
-import { initAscent } from "./ascent";
-import { unlock } from "./gate";
+import { bindEmailCaptureForm } from "./form-email-capture";
+import { initAscent } from "./scene";
 
 const NEWSLETTER_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwp6yVhEvSS5paW-viO8SgCOGNKb2QHhi27FByRXu7LCUHovFD1-ND59oTq7-cRG76EbA/exec";
@@ -333,27 +332,23 @@ function initNav() {
 }
 
 document.documentElement.classList.add("js");
-// Nothing is built until the preview password has been entered
-unlock().then(() => {
-  window.scrollTo({ top: 0, behavior: "instant" });
-  buildScale();
-  buildMenu();
-  // Links to a section (Contact, the logo) fade there too
-  document.querySelectorAll('a[href^="#"]').forEach((link) => {
-    const panel = document.querySelector(link.getAttribute("href"));
-    const stop = panels.indexOf(panel);
-    if (stop < 0) return;
-    link.addEventListener("click", (event) => {
-      event.preventDefault();
-      fadeToStop(stop);
-    });
+buildScale();
+buildMenu();
+// Links to a section (Contact, the logo) fade there too
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  const panel = document.querySelector(link.getAttribute("href"));
+  const stop = panels.indexOf(panel);
+  if (stop < 0) return;
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    fadeToStop(stop);
   });
-  markTallPanels();
-  window.addEventListener("resize", markTallPanels);
-  window.addEventListener("load", markTallPanels);
-  initScrollControl();
-  initScene();
-  initNav();
-  bindEmailCaptureForm(document.getElementById("email-form"), NEWSLETTER_SCRIPT_URL);
-  document.getElementById("year").textContent = new Date().getFullYear();
 });
+markTallPanels();
+window.addEventListener("resize", markTallPanels);
+window.addEventListener("load", markTallPanels);
+initScrollControl();
+initScene();
+initNav();
+bindEmailCaptureForm(document.getElementById("email-form"), NEWSLETTER_SCRIPT_URL);
+document.getElementById("year").textContent = new Date().getFullYear();

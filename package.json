@@ -6,11 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "build:previews": "node scripts/build-previews.mjs",
-    "preview:previews": "vite preview --outDir preview-dist --host",
-    "previews": "npm run build:previews && npm run preview:previews",
-    "export:hero-stills": "playwright test scripts/export-hero-stills.spec.js --config scripts/playwright.hero-stills.config.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "three": "^0.177.0"
