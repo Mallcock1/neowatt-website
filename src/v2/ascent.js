@@ -67,7 +67,7 @@ function beamFrame(a, b) {
 }
 
 // ---------- Places ----------
-const NODES = [orbitPos(4, 150, 520), orbitPos(-3, -120, 500), orbitPos(-9, 200, 560), orbitPos(-15, -60, 530), orbitPos(-21, 90, 500)];
+const NODES = [orbitPos(4, 150, 600), orbitPos(-3, -120, 500), orbitPos(-9, 200, 560), orbitPos(-15, -60, 530), orbitPos(-21, 90, 500)];
 // Links between the background grid nodes. Node 0 (the transmitter) only fires the beam we follow.
 const NODE_LINKS = [[1, 2], [1, 3], [2, 3], [3, 4]];
 const TX = NODES[0]; // the transmitter we start behind
@@ -104,8 +104,8 @@ const PORTRAIT_FOV = 70;
 // `place` is where the satellite sits on a phone: "upper" or "lower".
 function aim(pos, subject, right, up, place) {
   if (!PORTRAIT) return framed(pos, subject, right, up);
-  const shift = 0.28 * pos.distanceTo(subject);
-  return framed(pos, subject, 0, place === "upper" ? -shift : shift);
+  const reach = pos.distanceTo(subject);
+  return framed(pos, subject, 0, place === "upper" ? -0.28 * reach : 0.44 * reach);
 }
 
 // ---------- Camera keyframes, one per text panel ----------
@@ -166,7 +166,9 @@ const SUBJECTS = [TX, TX, SAT, VLEO, EARTH_C, EARTH_C, EARTH_C];
 function rideEase(x, L) {
   const k = Math.log(Math.max(L / 0.03, 1));
   if (k < 2) return smoother(x);
-  const half = (u) => (0.5 * (Math.exp(2 * k * u) - 1)) / (Math.exp(k) - 1);
+  // The extra factor ramps the speed up from zero over the first tenth of the ride (and
+  // down to zero over the last tenth), so the camera never lurches away from a stop
+  const half = (u) => ((0.5 * (Math.exp(2 * k * u) - 1)) / (Math.exp(k) - 1)) * smoothstep(0, 0.1, u);
   return x <= 0.5 ? half(x) : 1 - half(1 - x);
 }
 
@@ -181,6 +183,14 @@ function slerpDir(out, a, b, t) {
     .multiplyScalar(Math.sin((1 - t) * angle) / s)
     .addScaledVector(b, Math.sin(t * angle) / s)
     .normalize();
+}
+
+// Easing for the pull-back from a close-up to a far view, L km away
+function pullBack(x, L) {
+  const k = Math.log(Math.max(L / 0.03, 1));
+  if (k < 2) return smoother(x);
+  const y = 1 - Math.pow(1 - x, 2.5); // ease out: slows over the last fifth of the ride
+  return ((Math.exp(k * y) - 1) / (Math.exp(k) - 1)) * smoothstep(0, 0.1, x);
 }
 
 // Interpolate a world point: direction from Earth's centre linearly, altitude
@@ -642,7 +652,9 @@ function globalMesh(uniforms) {
 // ---------- Scene ----------
 export function initAscent(canvas, { reducedMotion = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true });
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+  // Supersampling: draw at more pixels than the screen has and let the browser scale
+  // the picture down, which smooths thin outlines such as the satellites' edges
+  const pixelRatio = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2), 2.5);
   renderer.setPixelRatio(pixelRatio);
   renderer.setClearColor(0x000000, 1);
 
@@ -725,7 +737,9 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
       uniforms: starUniforms,
       vertexShader: starVert,
       fragmentShader: starFrag,
-      transparent: true,
+      // Not flagged transparent, so the stars draw in the first pass, straight after the
+      // planet and before the spacecraft, which then cover them
+      transparent: false,
       blending: THREE.AdditiveBlending,
       depthTest: false,
       depthWrite: false
@@ -801,7 +815,7 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
     const last = KEYS.length - 1;
     const kc = Math.min(Math.max(k, 0), last);
     const i = Math.min(Math.floor(kc), last - 1);
-    const t = smoother(kc - i);
+    let t = smoother(kc - i);
     const a = KEYS[i];
     const b = KEYS[i + 1];
     const anim = reducedMotion ? 0 : time;
@@ -833,7 +847,13 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
       slerpDir(look, dirA, dirB, turn);
       target.copy(camera.position).add(look);
     } else {
-      lerpPoint(camera.position, a.pos(), b.pos(), t);
+      const from = a.pos();
+      const to = b.pos();
+      // Pulling back from a satellite to the whole planet: leave it as gradually as the
+      // beam rides do (distance grows geometrically from a few metres), then ease out
+      // into the far view
+      if (a.linear) t = pullBack(kc - i, from.distanceTo(to));
+      lerpPoint(camera.position, from, to, t);
       lerpPoint(target, a.target(), b.target(), t);
     }
     const fovOf = (key) => (PORTRAIT && key.portrait ? (key.portrait === true ? PORTRAIT_FOV : key.portrait) : key.fov);

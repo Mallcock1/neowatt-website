@@ -35,6 +35,7 @@
     <a class="skip-link" href="#contact">Skip to contact</a>
     <canvas class="scene" id="scene" aria-hidden="true"></canvas>
     <div class="overlay overlay-dim" id="dim" aria-hidden="true"></div>
+    <div class="fade" aria-hidden="true"></div>
 
     <header class="nav" id="nav">
       <a class="nav-brand" href="#top" aria-label="NEOWATT home">
@@ -42,6 +43,10 @@
       </a>
       <nav class="nav-links" aria-label="Primary">
         <a class="nav-cta" href="#contact">Contact</a>
+        <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="menu" id="menu" hidden></ul>
       </nav>
     </header>
 
@@ -49,7 +54,7 @@
     <aside class="hud" aria-label="Journey position">
       <div class="hud-readout">
         <p class="label">Altitude</p>
-        <p class="hud-alt" id="hud-alt">520 km</p>
+        <p class="hud-alt" id="hud-alt">600 km</p>
         <p class="label hud-stage" id="hud-stage">Low Earth orbit</p>
       </div>
       <div class="hud-scale" id="hud-scale">
@@ -97,7 +102,7 @@
 
       <section class="panel panel-left panel-wide" id="team">
         <div class="panel-copy">
-          <h2>Team</h2>
+          <h2>Founding Team</h2>
           <div class="team-row">
           <ul class="founders">
             <li>

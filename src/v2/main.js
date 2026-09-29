@@ -23,11 +23,17 @@ const TICKS = [
 // next stop over the remainder. Panels are tall so one wheel notch moves the
 // camera only a few percent of a ride.
 const HOLD = 0.45;
-// Off: it moves the scroll position on its own, which makes scrolling back up feel
-// different from scrolling down. The pauses and ride easing make it unnecessary.
-const MAGNET = false;
-const MAGNET_IDLE_MS = 350;
-const MAGNET_RANGE = 0.25;
+// If scrolling stops part-way through a ride, carry on to the stop the visitor was
+// heading for, so nobody is left between stops with nothing on screen. It always
+// follows the direction of the last scroll, so down and up behave the same way.
+const SETTLE_IDLE_MS = 220;
+// Menu: [label, panel to jump to]
+const MENU = [
+  ["Home", 0],
+  ["Vision", 4],
+  ["Team", 5],
+  ["Contact", 6]
+];
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -53,7 +59,10 @@ function scrollState() {
       if (i === panels.length - 1) return { key: i, creep: 0 };
       const hold = holdOf(i);
       const riding = Math.max(0, (p - hold) / (1 - hold));
-      const creep = p < hold ? p / hold : 1 - riding;
+      // Eases in and out, so the slow dolly never reverses abruptly where a pause
+      // turns into a ride
+      const ease = (t) => t * t * (3 - 2 * t);
+      const creep = p < hold ? ease(p / hold) : 1 - ease(Math.min(riding / 0.3, 1));
       return { key: i + riding, creep };
     }
   }
@@ -79,7 +88,7 @@ const scaleFraction = (km) => Math.min(Math.max((Math.log10(Math.max(km, 100)) -
 // ---------- Scroll control: smooth jumps, idle magnet, keyboard ----------
 let scrollAnim = null;
 
-function animateScrollTo(targetY, duration = 650) {
+function animateScrollTo(targetY, duration = 650, inOut = false) {
   cancelScrollAnim();
   const startY = window.scrollY;
   const delta = targetY - startY;
@@ -89,7 +98,7 @@ function animateScrollTo(targetY, duration = 650) {
     return;
   }
   const t0 = performance.now();
-  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const ease = inOut ? (t) => t * t * (3 - 2 * t) : (t) => 1 - Math.pow(1 - t, 3);
   function step(now) {
     const t = Math.min((now - t0) / duration, 1);
     window.scrollTo({ top: startY + delta * ease(t), behavior: "instant" });
@@ -103,23 +112,68 @@ function cancelScrollAnim() {
   scrollAnim = null;
 }
 
-const goToStop = (i) => animateScrollTo(stopStart(Math.min(Math.max(i, 0), panels.length - 1)));
+const clampStop = (i) => Math.min(Math.max(i, 0), panels.length - 1);
+// Step to a neighbouring stop by scrolling there, so the ride plays
+const goToStop = (i) => animateScrollTo(stopStart(clampStop(i)));
+
+// Jump to any stop from a button: fade to black, move, fade back in. Scrolling there
+// instead would race the camera through every stop on the way.
+let snapCamera = false;
+let fading = false;
+function fadeToStop(i) {
+  if (fading) return;
+  const y = stopStart(clampStop(i));
+  if (Math.abs(window.scrollY - y) < 2) return;
+  cancelScrollAnim();
+  if (reducedMotion) {
+    snapCamera = true;
+    window.scrollTo({ top: y, behavior: "instant" });
+    return;
+  }
+  fading = true;
+  document.documentElement.classList.add("is-fading");
+  setTimeout(() => {
+    snapCamera = true;
+    window.scrollTo({ top: y, behavior: "instant" });
+    // Let the scene draw at the new stop before the fade lifts
+    setTimeout(() => {
+      document.documentElement.classList.remove("is-fading");
+      fading = false;
+    }, 120);
+  }, 380);
+}
 
 let lastUserScroll = performance.now();
-let magnetArmed = false;
+let lastScrollY = 0;
+let lastDirection = 1;
+let settleArmed = false;
+let touching = false;
 
 function initScrollControl() {
   const userInput = () => {
     cancelScrollAnim();
     lastUserScroll = performance.now();
-    magnetArmed = true;
   };
   ["wheel", "touchstart", "touchmove", "pointerdown"].forEach((ev) => window.addEventListener(ev, userInput, { passive: true }));
+  window.addEventListener("touchstart", () => (touching = true), { passive: true });
+  ["touchend", "touchcancel"].forEach((ev) =>
+    window.addEventListener(ev, () => {
+      touching = false;
+      lastUserScroll = performance.now();
+    })
+  );
+  lastScrollY = window.scrollY;
   window.addEventListener(
     "scroll",
     () => {
-      // Our own animations also fire scroll events; only user-driven ones count as activity
-      if (!scrollAnim) lastUserScroll = performance.now();
+      const y = window.scrollY;
+      // Our own animations also fire scroll events; only user-driven ones count
+      if (!scrollAnim) {
+        if (y !== lastScrollY) lastDirection = y > lastScrollY ? 1 : -1;
+        lastUserScroll = performance.now();
+        settleArmed = true;
+      }
+      lastScrollY = y;
     },
     { passive: true }
   );
@@ -136,23 +190,55 @@ function initScrollControl() {
       goToStop(key < stage - 0.02 ? stage : stage - 1);
     } else if (e.key === "Home") {
       e.preventDefault();
-      goToStop(0);
+      fadeToStop(0);
     } else if (e.key === "End") {
       e.preventDefault();
-      goToStop(panels.length - 1);
+      fadeToStop(panels.length - 1);
     }
   });
 }
 
-// If the user stops mid-ride near a stop, ease the page onto its plateau
-function runMagnet(key) {
-  if (!MAGNET || reducedMotion || scrollAnim || !magnetArmed) return;
-  if (performance.now() - lastUserScroll < MAGNET_IDLE_MS) return;
-  const stage = Math.round(key);
-  const off = key - stage;
-  if (Math.abs(off) < 0.015 || Math.abs(off) > MAGNET_RANGE) return;
-  magnetArmed = false;
-  animateScrollTo(off > 0 ? stopEnd(stage) : stopStart(stage));
+function runSettle(key) {
+  if (reducedMotion || scrollAnim || !settleArmed || touching) return;
+  if (performance.now() - lastUserScroll < SETTLE_IDLE_MS) return;
+  settleArmed = false;
+  const i = Math.floor(key);
+  const along = key - i;
+  if (along < 0.004 || i >= panels.length - 1) return; // parked at a stop already
+  const remaining = lastDirection > 0 ? 1 - along : along;
+  animateScrollTo(lastDirection > 0 ? stopStart(i + 1) : stopEnd(i), 700 + 900 * remaining, true);
+}
+
+function buildMenu() {
+  const button = document.getElementById("menu-button");
+  const menu = document.getElementById("menu");
+  menu.innerHTML = MENU.map(([name, stop]) => `<li><button type="button" data-stop="${stop}">${name}</button></li>`).join("");
+  const setOpen = (open) => {
+    menu.hidden = !open;
+    button.setAttribute("aria-expanded", String(open));
+  };
+  button.addEventListener("click", () => setOpen(menu.hidden));
+  menu.addEventListener("click", (e) => {
+    const item = e.target.closest("[data-stop]");
+    if (!item) return;
+    setOpen(false);
+    fadeToStop(Number(item.dataset.stop));
+  });
+  document.addEventListener("keydown", (e) => e.key === "Escape" && setOpen(false));
+  document.addEventListener("click", (e) => {
+    if (!menu.hidden && !e.target.closest("#menu, #menu-button")) setOpen(false);
+  });
+}
+
+// A panel whose copy is taller than the screen (small phones) scrolls normally
+// instead of being pinned, so none of it is cut off
+function markTallPanels() {
+  const room = window.innerHeight - document.getElementById("nav").offsetHeight - 16;
+  panels.forEach((panel) => {
+    if (panel.classList.contains("panel-contact")) return;
+    panel.classList.remove("is-tall");
+    panel.classList.toggle("is-tall", panel.querySelector(".panel-copy").offsetHeight > room);
+  });
 }
 
 function buildScale() {
@@ -165,7 +251,7 @@ function buildScale() {
   );
   hudScale.addEventListener("click", (e) => {
     const tick = e.target.closest("[data-stop]");
-    if (tick) goToStop(Number(tick.dataset.stop));
+    if (tick) fadeToStop(Number(tick.dataset.stop));
   });
 }
 
@@ -185,18 +271,23 @@ function initScene() {
   let creep = 0;
   let lastStageText = "";
   let lastRendered = null;
+  let lastTime = null;
   // Resizing clears the canvas and can change the framing, so force a redraw
   window.addEventListener("resize", () => (lastRendered = null));
 
   function frame(time) {
     const target = scrollState();
     // Light inertia so the camera glides rather than snapping to the scrollbar
-    if (reducedMotion) {
+    if (reducedMotion || snapCamera) {
       key = target.key;
       creep = target.creep;
+      snapCamera = false;
     } else {
-      key += (target.key - key) * 0.08;
-      creep += (target.creep - creep) * 0.08;
+      // Glide towards the scroll position at the same rate whatever the screen's refresh rate
+      const dt = lastTime === null ? 16.7 : Math.min(time - lastTime, 100);
+      const blend = 1 - Math.exp(-dt / 190);
+      key += (target.key - key) * blend;
+      creep += (target.creep - creep) * blend;
       if (Math.abs(target.key - key) < 0.0005) key = target.key;
       if (Math.abs(target.creep - creep) < 0.0005) creep = target.creep;
     }
@@ -221,7 +312,8 @@ function initScene() {
       panels.forEach((p, i) => p.classList.toggle("is-in", Math.abs(key - i) < 0.03));
     }
 
-    runMagnet(target.key);
+    lastTime = time;
+    runSettle(target.key);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
@@ -229,8 +321,13 @@ function initScene() {
 
 function initNav() {
   const nav = document.getElementById("nav");
-  // Hidden on the opening screen (the logo sits in the hero); slides in once you scroll
-  const update = () => nav.classList.toggle("is-visible", window.scrollY > window.innerHeight * 0.35);
+  // The nav bar and the altitude readout are hidden on the opening screen, and appear
+  // once you scroll
+  const update = () => {
+    const scrolled = window.scrollY > window.innerHeight * 0.35;
+    nav.classList.toggle("is-visible", scrolled);
+    document.documentElement.classList.toggle("is-scrolled", scrolled);
+  };
   update();
   window.addEventListener("scroll", update, { passive: true });
 }
@@ -240,6 +337,20 @@ document.documentElement.classList.add("js");
 unlock().then(() => {
   window.scrollTo({ top: 0, behavior: "instant" });
   buildScale();
+  buildMenu();
+  // Links to a section (Contact, the logo) fade there too
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    const panel = document.querySelector(link.getAttribute("href"));
+    const stop = panels.indexOf(panel);
+    if (stop < 0) return;
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      fadeToStop(stop);
+    });
+  });
+  markTallPanels();
+  window.addEventListener("resize", markTallPanels);
+  window.addEventListener("load", markTallPanels);
   initScrollControl();
   initScene();
   initNav();

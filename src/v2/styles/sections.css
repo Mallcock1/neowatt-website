@@ -668,3 +668,149 @@ main {
     font-size: 0.9rem;
   }
 }
+
+/* ---------- Journey menu ---------- */
+.nav-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.menu-button {
+  display: grid;
+  gap: 5px;
+  width: 42px;
+  height: 36px;
+  padding: 0 10px;
+  place-content: center;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+.menu-button span {
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: var(--text);
+}
+
+.menu-button:hover,
+.menu-button[aria-expanded="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 17px);
+  right: 0;
+  min-width: 230px;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  background: #070a14;
+}
+
+.menu button {
+  display: block;
+  width: 100%;
+  padding: 11px 22px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.menu button:hover,
+.menu button:focus-visible {
+  color: var(--text);
+  background: rgba(132, 121, 208, 0.18);
+}
+
+/* ---------- Altitude readout: hidden on the opening screen ---------- */
+.hud {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms, visibility 0s 400ms;
+}
+
+.is-scrolled .hud {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 760px) {
+  /* Copy above the satellite starts below the altitude readout, however tall it is */
+  .m-above .panel-copy {
+    top: 150px;
+  }
+
+  .js .m-above .panel-copy {
+    transform: translateY(24px);
+  }
+
+  .js .m-above.is-in .panel-copy {
+    transform: none;
+  }
+}
+
+/* Copy taller than the screen scrolls normally instead of being pinned */
+.panel.is-tall .panel-copy,
+.js .panel.is-tall .panel-copy,
+.js .panel.is-tall.is-in .panel-copy {
+  position: relative;
+  top: auto;
+  transform: none;
+  padding-top: 90px;
+}
+
+@media (max-width: 760px) {
+  /* Start below the altitude readout */
+  .panel.is-tall .panel-copy,
+  .js .panel.is-tall .panel-copy,
+  .js .panel.is-tall.is-in .panel-copy {
+    padding-top: 150px;
+  }
+
+  .panel-contact {
+    padding-top: max(25vh, 170px);
+  }
+}
+
+/* ---------- Fade between sections when jumping from a button ---------- */
+.fade {
+  position: fixed;
+  inset: 0;
+  z-index: 40; /* over the scene, copy and readout; under the nav bar */
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 380ms ease;
+}
+
+.is-fading .fade {
+  opacity: 1;
+}
+
+/* Phones: the team heading sits below the altitude readout */
+@media (max-width: 760px) {
+  #team .panel-copy {
+    top: calc(50% + 72px);
+    gap: 9px;
+  }
+
+  #team .founders {
+    margin: 0;
+  }
+}
