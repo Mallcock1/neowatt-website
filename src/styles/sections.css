@@ -575,6 +575,14 @@ main {
   color: var(--text-muted);
 }
 
+/* The footer sits inside a panel, whose rule for body text would otherwise make the
+   sentence larger than the link beside it */
+.panel .footer p,
+.footer a {
+  font: inherit;
+  color: inherit;
+}
+
 .footer a {
   text-decoration: none;
 }
