@@ -315,7 +315,7 @@ main {
   text-wrap: balance;
 }
 
-/* ---------- Invitation to scroll: bottom centre of the opening screen ---------- */
+/* ---------- Invitation to scroll: bottom centre, at every stop but the last ---------- */
 .scroll-hint {
   position: fixed;
   left: 50%;
@@ -368,7 +368,8 @@ main {
   }
 }
 
-.is-scrolled .scroll-hint,
+/* Hidden during a ride and at the last stop */
+.scroll-hint.is-hidden,
 .no-webgl .scroll-hint {
   opacity: 0;
   visibility: hidden;

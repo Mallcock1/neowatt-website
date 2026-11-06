@@ -10,6 +10,11 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* The page's script moves the scroll itself, frame by frame, which must not be smoothed */
+html.js {
+  scroll-behavior: auto;
+}
+
 body {
   margin: 0;
   background: var(--bg);

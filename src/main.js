@@ -27,9 +27,15 @@ const HOLD = 0.45;
 // speed the page was already moving. It never halts part-way: scrolling on during a ride
 // only moves it along, and scrolling the other way turns it round. So nobody is left
 // between stops, and nothing ever stops and then pulls.
-// However else the page ends up between stops (dragging the scrollbar, a touch that has
-// come to rest), the ride sets off after this long without scrolling.
+// On a touch screen the same goes for a swipe: lifting the finger sets the ride off, from
+// a pause as well as from part-way along.
+// However else the page ends up between stops (dragging the scrollbar), the ride sets
+// off after this long without scrolling.
 const SETTLE_IDLE_MS = 220;
+// A touch has to move the page this far to count as a swipe rather than a tap
+const SWIPE_MIN_PX = 16;
+// The camera counts as parked at a stop within this much of a ride
+const PARKED = 0.004;
 // The wheel counts as still turning for this long after its last event
 const WHEEL_ACTIVE_MS = 300;
 // Menu: [label, panel to jump to]
@@ -50,6 +56,7 @@ const hudStage = document.getElementById("hud-stage");
 const hudScale = document.getElementById("hud-scale");
 const hudMarker = document.getElementById("hud-marker");
 const dimEl = document.getElementById("dim");
+const scrollHint = document.getElementById("scroll-hint");
 
 const panelTop = (i) => panels[i].offsetTop;
 const panelSpan = (i) => (panels[i + 1]?.offsetTop ?? panelTop(i) + 1) - panelTop(i);
@@ -79,7 +86,8 @@ function scrollState() {
 // Scroll positions that put the camera exactly at stop i: the start of its plateau
 // (arriving) or the end of it (before departing).
 const stopStart = (i) => panelTop(i);
-const stopEnd = (i) => panelTop(i) + holdOf(i) * panelSpan(i) - 2;
+const rideStart = (i) => panelTop(i) + holdOf(i) * panelSpan(i);
+const stopEnd = (i) => rideStart(i) - 2;
 
 function formatKm(km) {
   if (km < 1) return `${Math.max(0, Math.round(km * 1000))} m`;
@@ -95,6 +103,10 @@ const scaleFraction = (km) => Math.min(Math.max((Math.log10(Math.max(km, 100)) -
 // ---------- Scroll control: smooth jumps, idle magnet, keyboard ----------
 let scrollAnim = null; // the one scroll animation in flight: { raf, dir }
 
+// Put the page at a scroll position at once. (Smooth scrolling is off while this script
+// runs, see html.js in base.css, so no browser animates the move itself.)
+const jump = (y) => window.scrollTo(0, y);
+
 // "push" is the starting speed as a multiple of the average speed. 0 starts from rest
 // and eases in and out; 3 starts fast and only eases out; anything between is a blend,
 // so an animation can pick up at whatever speed the page is already moving.
@@ -104,7 +116,7 @@ function animateScrollTo(targetY, duration = 650, push = 3) {
   const delta = targetY - startY;
   if (Math.abs(delta) < 1) return;
   if (reducedMotion) {
-    window.scrollTo({ top: targetY, behavior: "instant" });
+    jump(targetY);
     return;
   }
   const dir = Math.sign(delta);
@@ -131,7 +143,7 @@ function animateScrollTo(targetY, duration = 650, push = 3) {
     }
     const t = Math.min(elapsed / duration, 1);
     expected = startY + delta * ease(t);
-    window.scrollTo({ top: expected, behavior: "instant" });
+    jump(expected);
     if (t < 1) anim.raf = requestAnimationFrame(step);
     else scrollAnim = null;
   }
@@ -162,7 +174,7 @@ function fadeToStop(i, onArrive) {
   cancelScrollAnim();
   if (reducedMotion) {
     snapCamera = true;
-    window.scrollTo({ top: y, behavior: "instant" });
+    jump(y);
     onArrive?.();
     return;
   }
@@ -170,7 +182,7 @@ function fadeToStop(i, onArrive) {
   document.documentElement.classList.add("is-fading");
   setTimeout(() => {
     snapCamera = true;
-    window.scrollTo({ top: y, behavior: "instant" });
+    jump(y);
     // Let the scene draw at the new stop before the fade lifts
     setTimeout(() => {
       document.documentElement.classList.remove("is-fading");
@@ -192,6 +204,7 @@ let lastScrollTime = 0;
 let scrollSpeed = 0; // px per ms, signed, from the visitor's own scrolling
 let lastDirection = 1;
 let touching = false;
+let touchStartY = 0; // where the page was when the finger went down
 
 function initScrollControl() {
   // A finger or a press takes over from any animation
@@ -213,11 +226,20 @@ function initScrollControl() {
     },
     { passive: true }
   );
-  window.addEventListener("touchstart", () => (touching = true), { passive: true });
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      if (e.touches.length === 1) touchStartY = window.scrollY;
+      touching = true;
+    },
+    { passive: true }
+  );
   ["touchend", "touchcancel"].forEach((ev) =>
-    window.addEventListener(ev, () => {
+    window.addEventListener(ev, (e) => {
+      if (e.touches.length) return; // another finger is still down
       touching = false;
       lastUserScroll = performance.now();
+      swipe(window.scrollY - touchStartY);
     })
   );
   lastScrollY = window.scrollY;
@@ -261,23 +283,54 @@ function initScrollControl() {
   });
 }
 
-// Between stops with nothing driving the page: set off for the stop ahead
-function runSettle(key) {
-  if (reducedMotion || scrollAnim || touching) return;
+// Set off for the next stop in the direction given (1 on, -1 back). Part-way through a
+// ride, carry on from where the page is. Parked in a pause, step over what is left of the
+// pause first: only the creep changes there, and the camera glides that by itself.
+// minPush is the least starting speed, as a multiple of the ride's average: 1 when the
+// ride is answering the visitor's hand, so that it sets off at once.
+function ride(dir, minPush = 0) {
+  let { key } = scrollState();
+  if (key - Math.floor(key) < PARKED) {
+    const stop = Math.floor(key);
+    if (dir > 0 ? stop >= panels.length - 1 : stop <= 0) return; // no stop that way
+    jump(dir > 0 ? rideStart(stop) : stopStart(stop) - 1);
+    key = scrollState().key;
+  }
   const i = Math.floor(key);
   const along = key - i;
-  if (along < 0.004 || i >= panels.length - 1) return; // parked at a stop already
+  const targetY = dir > 0 ? stopStart(i + 1) : stopEnd(i);
+  const distance = Math.abs(targetY - window.scrollY);
+  const duration = 700 + 1100 * (dir > 0 ? 1 - along : along);
+  // Pick up at the speed the page is moving, if it is moving our way
+  const speed = performance.now() - lastScrollTime < 100 ? scrollSpeed * dir : 0;
+  const push = Math.min(Math.max((speed * duration) / Math.max(distance, 1), minPush), 2);
+  lastDirection = dir;
+  animateScrollTo(targetY, duration, push);
+}
+
+// A swipe asks for the next stop. The ride sets off as the finger lifts, rather than once
+// the page has coasted to a halt, so there is no moment of rest in between.
+function swipe(moved) {
+  if (Math.abs(moved) < SWIPE_MIN_PX) return;
+  if ((window.visualViewport?.scale ?? 1) > 1.01) return; // zoomed in: panning, not travelling
+  const { key } = scrollState();
+  const stop = Math.floor(key);
+  // Copy longer than the screen (a tall panel, the contact page) is read by scrolling it
+  const parked = key - stop < PARKED;
+  if (parked && (stop === panels.length - 1 || panels[stop].classList.contains("is-tall"))) return;
+  ride(Math.sign(moved), 1);
+}
+
+// Between stops with nothing driving the page: set off for the stop ahead. With reduced
+// motion this is a cut to that stop rather than a ride.
+function runSettle(key) {
+  if (scrollAnim || touching) return;
+  const i = Math.floor(key);
+  if (key - i < PARKED || i >= panels.length - 1) return; // parked at a stop already
   const now = performance.now();
   const wheeling = now - lastWheel < WHEEL_ACTIVE_MS;
   if (!wheeling && now - lastUserScroll < SETTLE_IDLE_MS) return;
-  const targetY = lastDirection > 0 ? stopStart(i + 1) : stopEnd(i);
-  const distance = Math.abs(targetY - window.scrollY);
-  const duration = 700 + 1100 * (lastDirection > 0 ? 1 - along : along);
-  // Pick up at the speed the page is moving, if it is moving our way. Under the wheel
-  // start at least at the average speed, so the ride answers the scroll at once.
-  const speed = now - lastScrollTime < 100 ? scrollSpeed * lastDirection : 0;
-  const push = Math.min(Math.max((speed * duration) / Math.max(distance, 1), wheeling ? 1 : 0), 2);
-  animateScrollTo(targetY, duration, push);
+  ride(lastDirection, wheeling ? 1 : 0);
 }
 
 function buildMenu() {
@@ -381,6 +434,11 @@ function initScene() {
 
       // Copy is shown only while the camera is parked at its stop
       panels.forEach((p, i) => p.classList.toggle("is-in", Math.abs(key - i) < 0.03));
+      // So is the invitation to scroll, at every stop that has another after it and room
+      // for it under the copy
+      const stop = Math.round(key);
+      const room = stop < panels.length - 1 && !panels[stop].matches("[data-no-hint], .is-tall");
+      scrollHint.classList.toggle("is-hidden", Math.abs(key - stop) >= 0.03 || !room);
     }
 
     lastTime = time;
@@ -416,8 +474,8 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     goToPanel(stop);
   });
 });
-// The invitation to scroll rides to the first stop
-document.getElementById("scroll-hint").addEventListener("click", () => goToStop(1));
+// The invitation to scroll rides to the next stop
+scrollHint.addEventListener("click", () => ride(1, 1));
 markTallPanels();
 window.addEventListener("resize", markTallPanels);
 window.addEventListener("load", markTallPanels);

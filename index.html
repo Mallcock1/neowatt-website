@@ -65,7 +65,7 @@
       </div>
     </aside>
 
-    <!-- Invitation to scroll, shown on the opening screen only -->
+    <!-- Invitation to scroll, shown at every stop that has another after it (and no data-no-hint) -->
     <button class="scroll-hint label" id="scroll-hint" type="button">Scroll</button>
 
     <main>
@@ -110,7 +110,8 @@
         </div>
       </section>
 
-      <section class="panel panel-left panel-wide" id="team">
+      <!-- data-no-hint: this block reaches the foot of the screen, where the invitation to scroll would sit -->
+      <section class="panel panel-left panel-wide" id="team" data-no-hint>
         <div class="panel-copy">
           <h2>Founding Team</h2>
           <div class="team-row">
