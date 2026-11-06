@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 // World units are kilometres. Earth's surface sits at the origin with "up" = +y.
 const R_EARTH = 6371;
@@ -145,6 +148,9 @@ const KEYS = [
     // Low over the beam's underside, so the view is near level and Earth's limb is in frame
     pos: () => VLEO.clone().addScaledVector(F2.along, -0.05).addScaledVector(SAT2_Z, -0.007).addScaledVector(SAT_X, 0.004),
     target: () => aim(KEYS[3].pos(), VLEO, -0.013, -0.004, "upper"),
+    // The view tips 43 degrees down on the way here, bringing Earth's horizon into the
+    // frame, so the turn runs through the descent rather than ahead of it
+    turn: 0.85,
     fov: 44,
     portrait: true
   },
@@ -514,20 +520,32 @@ function beam(scene, from, to, radius, { tip: withTip = true } = {}) {
 }
 
 // ---------- Models: dark hulls with hairline edges ----------
+// Edges are drawn as screen-space strips one CSS pixel wide rather than GL lines. GL
+// lines are a single buffer pixel whatever the screen, so after the supersampled picture
+// is scaled down they come out faint and broken; strips are antialiased like any face.
+// Their width is in pixels of the render size, which the scene sets on every resize.
+const edgeMaterials = [];
 function solid(geo, { hull = HULL, edge = EDGE, edgeOpacity = 0.8 } = {}) {
   const g = new THREE.Group();
   g.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: hull })));
-  g.add(
-    new THREE.LineSegments(
-      new THREE.EdgesGeometry(geo),
-      new THREE.LineBasicMaterial({ color: edge, transparent: true, opacity: edgeOpacity })
-    )
-  );
+  const material = new LineMaterial({ color: edge, transparent: true, opacity: edgeOpacity });
+  edgeMaterials.push(material);
+  g.add(new LineSegments2(new LineSegmentsGeometry().fromEdgesGeometry(new THREE.EdgesGeometry(geo)), material));
   return g;
 }
 
 function box(w, h, d, x = 0, y = 0, z = 0, opts) {
   const m = solid(new THREE.BoxGeometry(w, h, d), opts);
+  m.position.set(x, y, z);
+  return m;
+}
+
+// Eight-sided round part (an aperture), `top` and `bottom` being its radii at the +y
+// and -y ends
+function drum(top, bottom, h, x = 0, y = 0, z = 0, opts) {
+  const geo = new THREE.CylinderGeometry(top, bottom, h, 8);
+  geo.rotateY(Math.PI / 8); // flats square to the body
+  const m = solid(geo, opts);
   m.position.set(x, y, z);
   return m;
 }
@@ -568,12 +586,25 @@ const PANEL_LIT = new THREE.Color("#2a3466");
 // glows when powered.
 function satellite(scale) {
   const g = new THREE.Group();
+  // Bus, with a service module behind
   g.add(box(1, 1, 1.3));
-  const panels = [box(2.8, 0.04, 1, -2.05, 0, 0, { hull: PANEL_DARK, edgeOpacity: 0.55 }), box(2.8, 0.04, 1, 2.05, 0, 0, { hull: PANEL_DARK, edgeOpacity: 0.55 })];
+  g.add(box(0.74, 0.12, 0.96, 0, -0.56, 0));
+  // Solar wings: three hinged panels each, held off the bus by a boom and yoke
+  const panels = [];
+  for (const side of [-1, 1]) {
+    g.add(box(0.22, 0.06, 0.1, side * 0.61, 0, 0));
+    g.add(box(0.05, 0.06, 0.7, side * 0.73, 0, 0));
+    for (let n = 0; n < 3; n++) {
+      panels.push(box(0.88, 0.04, 1, side * (1.2 + n * 0.94), 0, 0, { hull: PANEL_DARK, edgeOpacity: 0.55 }));
+    }
+  }
   panels.forEach((p) => g.add(p));
-  g.add(box(0.6, 0.06, 0.12, -0.8, 0, 0));
-  g.add(box(0.6, 0.06, 0.12, 0.8, 0, 0));
-  g.add(box(0.5, 0.25, 0.5, 0, 0.62, 0, { hull: new THREE.Color("#241e4a"), edge: BEAM }));
+  // Power receiver: a flared aperture with an inner ring, on the side facing the beam
+  const receiver = { hull: new THREE.Color("#241e4a"), edge: BEAM };
+  g.add(drum(0.42, 0.28, 0.245, 0, 0.6225, 0, receiver));
+  g.add(drum(0.27, 0.27, 0.02, 0, 0.75, 0, { ...receiver, edgeOpacity: 0.5 }));
+  // Relay aperture, on the far side
+  g.add(drum(0.2, 0.27, 0.14, 0, -0.69, 0));
   const glow = glowSprite(1.6);
   glow.material.depthTest = false;
   glow.renderOrder = 3;
@@ -807,6 +838,10 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     PORTRAIT = width / height < 0.8;
+    for (const m of edgeMaterials) {
+      m.resolution.set(width * pixelRatio, height * pixelRatio);
+      m.linewidth = 0.6 * pixelRatio; // a hairline: just over half a CSS pixel
+    }
   }
   resize();
   window.addEventListener("resize", resize);
@@ -819,33 +854,44 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
     const a = KEYS[i];
     const b = KEYS[i + 1];
     const anim = reducedMotion ? 0 : time;
+    let gone = t; // how much of the ride's distance is behind the camera, 0 to 1
 
     if (b.linear) {
       const from = a.pos();
       const to = b.pos();
       const x = kc - i;
       // Position in the beam's own terms: distance along it, and an offset to one side.
-      // Distance eases geometrically. The offset swings slowly around the beam and
-      // never passes through it, so the beam keeps its place on screen.
+      // Distance eases geometrically.
       const { origin, dir } = b.axis;
       const s0 = latA.subVectors(from, origin).dot(dir);
       latA.addScaledVector(dir, -s0);
       const s1 = latB.subVectors(to, origin).dot(dir);
       latB.addScaledVector(dir, -s1);
       const L = Math.abs(s1 - s0);
-      const w = smoother(x);
-      const rho = lerp(latA.length(), latB.length(), w);
-      slerpDir(lat, latA.normalize(), latB.normalize(), w);
-      camera.position.copy(origin).addScaledVector(dir, lerp(s0, s1, rideEase(x, L))).addScaledVector(lat, rho);
-      // Aim has its own timing: on a long ride, turn from the satellite to looking down
-      // the beam over the first part of the ride, then hold that direction and arrive
-      // already facing the right way. (Tying the aim to the position easing made the
-      // camera swing round in the middle of the ride.)
+      // A long ride has one manoeuvre, as it leaves: over the first part the camera
+      // turns from the satellite to looking down the beam, and swings round the beam
+      // (never through it) to the side it will arrive on. From then on nothing changes
+      // but the distance, so the beam holds still on screen for the rest of the ride
+      // and the next satellite grows straight into place. (Spreading the swing over
+      // the whole ride made the beam swing round in the middle.)
+      // A key can stretch the turn over more of its ride with `turn`. That is for a
+      // ride whose turn brings Earth into view: done early it is a move of its own,
+      // the horizon sweeping up the screen before the descent begins.
+      // A short ride, between two views of the same satellite, flies a straight line.
+      const swing = L > 1 ? smoother(clamp01(x / 0.35)) : smoother(x);
+      const turn = L > 1 ? smoother(clamp01(x / (b.turn ?? 0.35))) : smoother(x);
+      let rho = 1;
+      if (L > 1) {
+        rho = lerp(latA.length(), latB.length(), swing);
+        slerpDir(lat, latA.normalize(), latB.normalize(), swing);
+      } else {
+        lat.lerpVectors(latA, latB, swing);
+      }
+      gone = rideEase(x, L);
+      camera.position.copy(origin).addScaledVector(dir, lerp(s0, s1, gone)).addScaledVector(lat, rho);
       dirA.copy(a.target()).sub(from).normalize();
       dirB.copy(b.target()).sub(to).normalize();
-      const turn = L > 1 ? smoother(clamp01(x / 0.35)) : smoother(x);
       slerpDir(look, dirA, dirB, turn);
-      target.copy(camera.position).add(look);
     } else {
       const from = a.pos();
       const to = b.pos();
@@ -853,15 +899,31 @@ export function initAscent(canvas, { reducedMotion = false } = {}) {
       // beam rides do (distance grows geometrically from a few metres), then ease out
       // into the far view
       if (a.linear) t = pullBack(kc - i, from.distanceTo(to));
+      gone = t;
       lerpPoint(camera.position, from, to, t);
-      lerpPoint(target, a.target(), b.target(), t);
+      // The aim turns evenly from one view to the next, by the shortest way. (Moving
+      // the look-at point between the two instead swung the view far to one side and
+      // back on the pull-out, where that point starts metres away and ends thousands
+      // of kilometres off.)
+      dirA.copy(a.target()).sub(from).normalize();
+      dirB.copy(b.target()).sub(to).normalize();
+      slerpDir(look, dirA, dirB, smoother(kc - i));
     }
     const fovOf = (key) => (PORTRAIT && key.portrait ? (key.portrait === true ? PORTRAIT_FOV : key.portrait) : key.fov);
     camera.fov = lerp(fovOf(a), fovOf(b), t);
     camera.updateProjectionMatrix();
-    camera.position.lerp(SUBJECTS[Math.round(kc)], creep * 0.1);
-    // Keep the aim direction fixed through the creep dolly
-    if (b.linear) target.copy(camera.position).add(look);
+    // The creep during a pause is a few metres along the way the next ride leaves, so
+    // the pause and the ride after it move the same way. The ride then starts from
+    // wherever the pause left the camera: the head start shrinks as the ride covers its
+    // distance, never faster, so the camera never backs up. It is for the satellite
+    // stops only: at the planet stops a visible creep would be thousands of kilometres.
+    if (creep > 0 && SUBJECTS[i] !== EARTH_C) {
+      const here = a.pos();
+      tmp.copy(b.pos()).sub(here).normalize();
+      camera.position.addScaledVector(tmp, creep * (1 - gone) * 0.1 * here.distanceTo(SUBJECTS[i]));
+    }
+    // The aim is a direction, so the creep does not turn the view
+    target.copy(camera.position).add(look);
     camera.lookAt(target);
     camera.updateMatrixWorld();
 

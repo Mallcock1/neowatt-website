@@ -22,10 +22,16 @@ const TICKS = [
 // next stop over the remainder. Panels are tall so one wheel notch moves the
 // camera only a few percent of a ride.
 const HOLD = 0.45;
-// If scrolling stops part-way through a ride, carry on to the stop the visitor was
-// heading for, so nobody is left between stops with nothing on screen. It always
-// follows the direction of the last scroll, so down and up behave the same way.
+// A ride between two stops is one continuous motion. As soon as the wheel takes the
+// page out of a pause, the ride carries on by itself to the stop ahead, starting at the
+// speed the page was already moving. It never halts part-way: scrolling on during a ride
+// only moves it along, and scrolling the other way turns it round. So nobody is left
+// between stops, and nothing ever stops and then pulls.
+// However else the page ends up between stops (dragging the scrollbar, a touch that has
+// come to rest), the ride sets off after this long without scrolling.
 const SETTLE_IDLE_MS = 220;
+// The wheel counts as still turning for this long after its last event
+const WHEEL_ACTIVE_MS = 300;
 // Menu: [label, panel to jump to]
 const MENU = [
   ["Home", 0],
@@ -58,10 +64,12 @@ function scrollState() {
       if (i === panels.length - 1) return { key: i, creep: 0 };
       const hold = holdOf(i);
       const riding = Math.max(0, (p - hold) / (1 - hold));
-      // Eases in and out, so the slow dolly never reverses abruptly where a pause
-      // turns into a ride
+      // The creep builds through the pause and is held as the ride sets off, so the
+      // ride starts from where the pause left the camera. The scene fades it out as the
+      // ride covers its distance; this lets go of it over the later part of the ride,
+      // so it is back at zero well before the next stop.
       const ease = (t) => t * t * (3 - 2 * t);
-      const creep = p < hold ? ease(p / hold) : 1 - ease(Math.min(riding / 0.3, 1));
+      const creep = p < hold ? ease(p / hold) : 1 - ease(Math.min(Math.max((riding - 0.5) / 0.4, 0), 1));
       return { key: i + riding, creep };
     }
   }
@@ -85,9 +93,12 @@ const LOG_MAX = Math.log10(36000);
 const scaleFraction = (km) => Math.min(Math.max((Math.log10(Math.max(km, 100)) - LOG_MIN) / (LOG_MAX - LOG_MIN), 0), 1);
 
 // ---------- Scroll control: smooth jumps, idle magnet, keyboard ----------
-let scrollAnim = null;
+let scrollAnim = null; // the one scroll animation in flight: { raf, dir }
 
-function animateScrollTo(targetY, duration = 650, inOut = false) {
+// "push" is the starting speed as a multiple of the average speed. 0 starts from rest
+// and eases in and out; 3 starts fast and only eases out; anything between is a blend,
+// so an animation can pick up at whatever speed the page is already moving.
+function animateScrollTo(targetY, duration = 650, push = 3) {
   cancelScrollAnim();
   const startY = window.scrollY;
   const delta = targetY - startY;
@@ -96,18 +107,40 @@ function animateScrollTo(targetY, duration = 650, inOut = false) {
     window.scrollTo({ top: targetY, behavior: "instant" });
     return;
   }
-  const t0 = performance.now();
-  const ease = inOut ? (t) => t * t * (3 - 2 * t) : (t) => 1 - Math.pow(1 - t, 3);
+  const dir = Math.sign(delta);
+  const ease = (t) => push * t * (1 - t) * (1 - t) + t * t * (3 - 2 * t);
+  let elapsed = 0;
+  let last = performance.now();
+  let expected = startY;
+  const anim = { dir, raf: 0 };
   function step(now) {
-    const t = Math.min((now - t0) / duration, 1);
-    window.scrollTo({ top: startY + delta * ease(t), behavior: "instant" });
-    scrollAnim = t < 1 ? requestAnimationFrame(step) : null;
+    elapsed += Math.max(now - last, 0);
+    last = now;
+    // Scrolling on during the animation puts the page ahead of it. Skip forward to where
+    // the page now is, rather than pulling it back.
+    if ((window.scrollY - expected) * dir > 2) {
+      const done = Math.min((window.scrollY - startY) / delta, 1);
+      let lo = Math.min(elapsed / duration, 1);
+      let hi = 1;
+      for (let n = 0; n < 20; n++) {
+        const mid = (lo + hi) / 2;
+        if (ease(mid) < done) lo = mid;
+        else hi = mid;
+      }
+      elapsed = hi * duration;
+    }
+    const t = Math.min(elapsed / duration, 1);
+    expected = startY + delta * ease(t);
+    window.scrollTo({ top: expected, behavior: "instant" });
+    if (t < 1) anim.raf = requestAnimationFrame(step);
+    else scrollAnim = null;
   }
-  scrollAnim = requestAnimationFrame(step);
+  anim.raf = requestAnimationFrame(step);
+  scrollAnim = anim;
 }
 
 function cancelScrollAnim() {
-  if (scrollAnim) cancelAnimationFrame(scrollAnim);
+  if (scrollAnim) cancelAnimationFrame(scrollAnim.raf);
   scrollAnim = null;
 }
 
@@ -119,14 +152,18 @@ const goToStop = (i) => animateScrollTo(stopStart(clampStop(i)));
 // instead would race the camera through every stop on the way.
 let snapCamera = false;
 let fading = false;
-function fadeToStop(i) {
+function fadeToStop(i, onArrive) {
   if (fading) return;
   const y = stopStart(clampStop(i));
-  if (Math.abs(window.scrollY - y) < 2) return;
+  if (Math.abs(window.scrollY - y) < 2) {
+    onArrive?.();
+    return;
+  }
   cancelScrollAnim();
   if (reducedMotion) {
     snapCamera = true;
     window.scrollTo({ top: y, behavior: "instant" });
+    onArrive?.();
     return;
   }
   fading = true;
@@ -138,22 +175,44 @@ function fadeToStop(i) {
     setTimeout(() => {
       document.documentElement.classList.remove("is-fading");
       fading = false;
+      onArrive?.();
     }, 120);
   }, 380);
 }
 
+// Going to Contact puts the cursor in the email box, so writing can start at once
+const CONTACT_STOP = panels.indexOf(document.getElementById("contact"));
+const focusEmail = () => document.getElementById("email")?.focus({ preventScroll: true });
+const goToPanel = (stop) => fadeToStop(stop, stop === CONTACT_STOP ? focusEmail : undefined);
+
 let lastUserScroll = performance.now();
+let lastWheel = -Infinity;
 let lastScrollY = 0;
+let lastScrollTime = 0;
+let scrollSpeed = 0; // px per ms, signed, from the visitor's own scrolling
 let lastDirection = 1;
-let settleArmed = false;
 let touching = false;
 
 function initScrollControl() {
+  // A finger or a press takes over from any animation
   const userInput = () => {
     cancelScrollAnim();
     lastUserScroll = performance.now();
   };
-  ["wheel", "touchstart", "touchmove", "pointerdown"].forEach((ev) => window.addEventListener(ev, userInput, { passive: true }));
+  ["touchstart", "touchmove", "pointerdown"].forEach((ev) => window.addEventListener(ev, userInput, { passive: true }));
+  // The wheel does not interrupt an animation going its way. Against it, the animation
+  // stops and the ride sets off the other way on the next frame.
+  window.addEventListener(
+    "wheel",
+    (e) => {
+      if (e.ctrlKey || !e.deltaY) return; // pinch zoom, sideways scroll
+      const dir = Math.sign(e.deltaY);
+      if (scrollAnim && scrollAnim.dir !== dir) cancelScrollAnim();
+      lastDirection = dir;
+      lastWheel = lastUserScroll = performance.now();
+    },
+    { passive: true }
+  );
   window.addEventListener("touchstart", () => (touching = true), { passive: true });
   ["touchend", "touchcancel"].forEach((ev) =>
     window.addEventListener(ev, () => {
@@ -167,12 +226,17 @@ function initScrollControl() {
     () => {
       const y = window.scrollY;
       // Our own animations also fire scroll events; only user-driven ones count
+      const now = performance.now();
       if (!scrollAnim) {
-        if (y !== lastScrollY) lastDirection = y > lastScrollY ? 1 : -1;
-        lastUserScroll = performance.now();
-        settleArmed = true;
+        // The wheel says which way it is turning. Otherwise go by which way the page
+        // moved. (A scroll event from an animation's last step can arrive after the
+        // wheel has turned it round, and must not turn it back.)
+        if (now - lastWheel > WHEEL_ACTIVE_MS && y !== lastScrollY) lastDirection = y > lastScrollY ? 1 : -1;
+        scrollSpeed = (y - lastScrollY) / Math.max(now - lastScrollTime, 1);
+        lastUserScroll = now;
       }
       lastScrollY = y;
+      lastScrollTime = now;
     },
     { passive: true }
   );
@@ -197,15 +261,23 @@ function initScrollControl() {
   });
 }
 
+// Between stops with nothing driving the page: set off for the stop ahead
 function runSettle(key) {
-  if (reducedMotion || scrollAnim || !settleArmed || touching) return;
-  if (performance.now() - lastUserScroll < SETTLE_IDLE_MS) return;
-  settleArmed = false;
+  if (reducedMotion || scrollAnim || touching) return;
   const i = Math.floor(key);
   const along = key - i;
   if (along < 0.004 || i >= panels.length - 1) return; // parked at a stop already
-  const remaining = lastDirection > 0 ? 1 - along : along;
-  animateScrollTo(lastDirection > 0 ? stopStart(i + 1) : stopEnd(i), 700 + 900 * remaining, true);
+  const now = performance.now();
+  const wheeling = now - lastWheel < WHEEL_ACTIVE_MS;
+  if (!wheeling && now - lastUserScroll < SETTLE_IDLE_MS) return;
+  const targetY = lastDirection > 0 ? stopStart(i + 1) : stopEnd(i);
+  const distance = Math.abs(targetY - window.scrollY);
+  const duration = 700 + 1100 * (lastDirection > 0 ? 1 - along : along);
+  // Pick up at the speed the page is moving, if it is moving our way. Under the wheel
+  // start at least at the average speed, so the ride answers the scroll at once.
+  const speed = now - lastScrollTime < 100 ? scrollSpeed * lastDirection : 0;
+  const push = Math.min(Math.max((speed * duration) / Math.max(distance, 1), wheeling ? 1 : 0), 2);
+  animateScrollTo(targetY, duration, push);
 }
 
 function buildMenu() {
@@ -221,7 +293,7 @@ function buildMenu() {
     const item = e.target.closest("[data-stop]");
     if (!item) return;
     setOpen(false);
-    fadeToStop(Number(item.dataset.stop));
+    goToPanel(Number(item.dataset.stop));
   });
   document.addEventListener("keydown", (e) => e.key === "Escape" && setOpen(false));
   document.addEventListener("click", (e) => {
@@ -341,9 +413,11 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   if (stop < 0) return;
   link.addEventListener("click", (event) => {
     event.preventDefault();
-    fadeToStop(stop);
+    goToPanel(stop);
   });
 });
+// The invitation to scroll rides to the first stop
+document.getElementById("scroll-hint").addEventListener("click", () => goToStop(1));
 markTallPanels();
 window.addEventListener("resize", markTallPanels);
 window.addEventListener("load", markTallPanels);
